@@ -161,7 +161,7 @@ export default async function ProductosAdminPage() {
                 style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6, margin: "6px 0" }}
               />
             )}
-            <form action={actionSubirFoto} encType="multipart/form-data" style={{ margin: "6px 0" }}>
+            <form action={actionSubirFoto} style={{ margin: "6px 0" }}>
               <input type="hidden" name="productoId" value={p.id} />
               <input type="file" name="foto" accept="image/*" required />
               <button type="submit">Subir foto</button>
