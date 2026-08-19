@@ -7,6 +7,7 @@ import {
   actualizarPrecios,
   aumentoMasivo,
 } from "@/lib/actions";
+import { subirFotoProducto } from "@/lib/actions-storage";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -71,6 +72,13 @@ async function actionAumentoMasivo(formData: FormData) {
   const seccionId = Number(formData.get("seccionId"));
   const porcentaje = Number(formData.get("porcentaje"));
   await aumentoMasivo(seccionId, porcentaje);
+  redirect("/admin/productos");
+}
+
+async function actionSubirFoto(formData: FormData) {
+  "use server";
+  const productoId = Number(formData.get("productoId"));
+  await subirFotoProducto(productoId, formData);
   redirect("/admin/productos");
 }
 
@@ -145,6 +153,19 @@ export default async function ProductosAdminPage() {
               <strong>{p.nombre}</strong>
               <span style={{ fontSize: 12, color: "#888" }}>{p.seccion.nombre}</span>
             </div>
+            {p.fotoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={p.fotoUrl}
+                alt={p.nombre}
+                style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6, margin: "6px 0" }}
+              />
+            )}
+            <form action={actionSubirFoto} encType="multipart/form-data" style={{ margin: "6px 0" }}>
+              <input type="hidden" name="productoId" value={p.id} />
+              <input type="file" name="foto" accept="image/*" required />
+              <button type="submit">Subir foto</button>
+            </form>
             {p.descripcion && (
               <p style={{ fontSize: 13, color: "#666", margin: "4px 0" }}>{p.descripcion}</p>
             )}
