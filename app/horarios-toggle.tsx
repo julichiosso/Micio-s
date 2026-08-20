@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { IconChevronDown } from "./icons";
 
 const horarios = [
   { dia: "Domingo", horario: "Cerrado", abierto: false },
@@ -26,7 +26,7 @@ export default function HorariosToggle() {
         <p className="text-white/60 text-[13px] font-normal">
           Jueves a domingos, 20 a 23 hs
         </p>
-        <ChevronDown
+        <IconChevronDown
           size={13}
           strokeWidth={2}
           className={`text-white/35 transition-transform duration-200 ${

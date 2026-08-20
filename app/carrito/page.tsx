@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Minus, Plus, ShoppingBag } from "lucide-react";
+import {
+  IconArrowLeft,
+  IconMinus,
+  IconPlus,
+  IconCarrito,
+} from "@/app/icons";
 import {
   getCarrito,
   actualizarCantidad,
@@ -43,10 +48,10 @@ export default function CarritoPage() {
       <div className="bg-[#141210] px-5 pt-6 pb-6 flex items-center gap-3">
         <Link
           href="/"
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white shrink-0"
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white shrink-0 active:opacity-60 transition-opacity"
           aria-label="Volver al inicio"
         >
-          <ArrowLeft size={18} />
+          <IconArrowLeft size={18} />
         </Link>
         <h1
           className="text-white text-[24px]"
@@ -56,18 +61,18 @@ export default function CarritoPage() {
         </h1>
       </div>
 
-      <div className="px-4 pt-6 pb-28">
+      <div className="px-4 pt-6 pb-32">
         {items.length === 0 ? (
           <div className="text-center pt-16">
             <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center mx-auto mb-4">
-              <ShoppingBag size={26} className="text-black/30" />
+              <IconCarrito size={26} className="text-black/30" />
             </div>
             <p className="text-black/50 text-[14px] mb-6">
               Todavía no agregaste nada.
             </p>
             <Link
               href="/"
-              className="inline-block bg-[#141210] text-white rounded-full px-6 py-3 font-semibold text-[14px]"
+              className="inline-block bg-[#141210] text-white rounded-full px-6 py-3 font-semibold text-[14px] active:scale-[0.98] transition-transform"
             >
               Ver el menú
             </Link>
@@ -78,7 +83,7 @@ export default function CarritoPage() {
               {items.map((item) => (
                 <div
                   key={`${item.productoId}-${item.tamanio}`}
-                  className="flex items-center justify-between bg-white rounded-2xl p-4"
+                  className="flex items-center justify-between bg-white rounded-2xl p-4 border border-black/[0.04]"
                 >
                   <div className="flex-1 min-w-0 pr-3">
                     <p className="font-bold text-black text-[15px] truncate">
@@ -98,10 +103,10 @@ export default function CarritoPage() {
                           item.cantidad - 1
                         )
                       }
-                      className="w-8 h-8 rounded-full bg-[#141210] text-white flex items-center justify-center"
+                      className="w-8 h-8 rounded-full bg-[#141210] text-white flex items-center justify-center active:opacity-70 transition-opacity"
                       aria-label="Restar"
                     >
-                      <Minus size={14} />
+                      <IconMinus size={14} />
                     </button>
                     <span className="w-5 text-center font-bold text-black text-[14px]">
                       {item.cantidad}
@@ -114,10 +119,10 @@ export default function CarritoPage() {
                           item.cantidad + 1
                         )
                       }
-                      className="w-8 h-8 rounded-full bg-[#141210] text-white flex items-center justify-center"
+                      className="w-8 h-8 rounded-full bg-[#141210] text-white flex items-center justify-center active:opacity-70 transition-opacity"
                       aria-label="Sumar"
                     >
-                      <Plus size={14} />
+                      <IconPlus size={14} />
                     </button>
                   </div>
                 </div>
@@ -126,9 +131,9 @@ export default function CarritoPage() {
 
             <Link
               href="/buscar"
-              className="flex items-center justify-center gap-2 border border-dashed border-black/20 text-black/60 rounded-2xl py-3.5 font-semibold text-[14px] mb-6"
+              className="flex items-center justify-center gap-2 border border-dashed border-black/20 text-black/60 rounded-2xl py-3.5 font-semibold text-[14px] mb-6 active:opacity-70 transition-opacity"
             >
-              <Plus size={16} />
+              <IconPlus size={16} />
               ¿Querés agregar algo más?
             </Link>
 
@@ -145,7 +150,7 @@ export default function CarritoPage() {
               />
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4">
+            <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4 z-20">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-black/60 font-medium text-[14px]">
                   Total
@@ -157,7 +162,7 @@ export default function CarritoPage() {
               <button
                 onClick={handleConfirmar}
                 disabled={!nombre.trim()}
-                className="w-full bg-[#141210] text-white rounded-full py-3.5 font-bold text-[15px] disabled:opacity-35"
+                className="w-full bg-[#141210] text-white rounded-full py-3.5 font-bold text-[15px] disabled:opacity-35 active:scale-[0.98] transition-all"
               >
                 Confirmar por WhatsApp
               </button>

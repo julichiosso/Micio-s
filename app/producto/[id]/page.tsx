@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { getProductoPorId } from "@/lib/queries/productos";
 import AgregarAlCarrito from "./agregar-al-carrito";
+import { IconArrowLeft, IconImage } from "@/app/icons";
 
 const LABELS_TAMANIO: Record<string, string> = {
   xl: "XL",
@@ -31,7 +31,7 @@ export default async function ProductoPage({
   return (
     <main className="min-h-screen bg-[#f7f3ea] pb-28">
       {/* Foto grande con header flotante encima */}
-      <div className="relative w-full aspect-square bg-black/5">
+      <div className="relative w-full aspect-square bg-[#e8e2d5]">
         {producto.fotoUrl ? (
           <Image
             src={producto.fotoUrl}
@@ -41,8 +41,9 @@ export default async function ProductoPage({
             priority
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-black/25 text-sm">
-            Sin foto todavía
+          // Fallback visual coherente: fondo neutro + ícono tenue
+          <div className="w-full h-full flex items-center justify-center">
+            <IconImage size={48} className="text-black/15" />
           </div>
         )}
 
@@ -52,7 +53,7 @@ export default async function ProductoPage({
             className="w-9 h-9 flex items-center justify-center rounded-full bg-[#141210]/70 text-white backdrop-blur-sm"
             aria-label="Volver"
           >
-            <ArrowLeft size={18} />
+            <IconArrowLeft size={18} />
           </Link>
         </div>
       </div>

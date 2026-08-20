@@ -72,6 +72,7 @@ export async function editarProducto(
     fotoUrl: string;
     seccionId: number;
     tieneTamanios: boolean;
+    destacado: boolean;
   }>
 ) {
   await requireAuth();
@@ -84,6 +85,22 @@ export async function eliminarProducto(id: number) {
   // Borrado lógico también acá: se desactiva, no desaparece del historial.
   await db.update(productos).set({ activo: false }).where(eq(productos.id, id));
   revalidatePath("/admin/productos");
+}
+
+export async function toggleDestacado(id: number, valor: boolean) {
+  await requireAuth();
+  await db.update(productos).set({ destacado: valor }).where(eq(productos.id, id));
+  revalidatePath("/admin/productos");
+  revalidatePath("/", "layout");
+}
+
+export async function borrarProductoDefinitivo(id: number) {
+  await requireAuth();
+  // Borrado real e irreversible de la base de datos.
+  await db.delete(precios).where(eq(precios.productoId, id));
+  await db.delete(productos).where(eq(productos.id, id));
+  revalidatePath("/admin/productos");
+  revalidatePath("/", "layout");
 }
 
 export async function reactivarProducto(id: number) {

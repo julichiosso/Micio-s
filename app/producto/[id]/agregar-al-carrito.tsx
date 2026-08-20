@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShoppingBag } from "lucide-react";
+import { IconCarrito } from "@/app/icons";
 import { agregarItemAlCarrito } from "@/lib/carrito";
 
 type Opcion = {
@@ -74,23 +74,25 @@ export default function AgregarAlCarrito({
         </p>
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4 flex gap-3">
+      {/* Barra fija inferior — z-20: sobre el contenido, bajo el carrito flotante
+          (pero el flotante no aparece en /producto/* por la lógica de CarritoFlotante) */}
+      <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4 flex gap-3 z-20">
         <button
           onClick={handleAgregar}
-          className="flex-1 flex items-center justify-center gap-2 bg-[#141210] text-white rounded-full py-3.5 font-bold text-[15px]"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#141210] text-white rounded-full py-3.5 font-bold text-[15px] active:scale-[0.98] transition-transform"
         >
           {agregado ? (
-            "¡Agregado!"
+            "Agregado"
           ) : (
             <>
-              <ShoppingBag size={17} />
+              <IconCarrito size={17} />
               Agregar al pedido
             </>
           )}
         </button>
         <button
           onClick={() => router.push("/carrito")}
-          className="px-5 rounded-full border border-black/15 text-black font-semibold text-[14px]"
+          className="px-5 rounded-full border border-black/15 text-black font-semibold text-[14px] active:scale-[0.98] transition-transform"
         >
           Ver pedido
         </button>

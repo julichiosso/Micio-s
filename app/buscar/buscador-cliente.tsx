@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, ArrowLeft } from "lucide-react";
+import { IconSearch, IconArrowLeft, IconImage } from "@/app/icons";
 
 type Item = {
   id: number;
@@ -36,13 +36,13 @@ export default function BuscadorCliente({ items }: { items: Item[] }) {
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white shrink-0"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white shrink-0 active:opacity-60 transition-opacity"
             aria-label="Volver al inicio"
           >
-            <ArrowLeft size={18} />
+            <IconArrowLeft size={18} />
           </Link>
-          <div className="flex-1 flex items-center gap-3 bg-white/[0.08] rounded-full px-4 py-3">
-            <Search size={18} className="text-white/40 shrink-0" />
+          <div className="flex-1 flex items-center gap-3 bg-white/[0.08] rounded-full px-4 py-3 border border-white/[0.06]">
+            <IconSearch size={18} className="text-white/40 shrink-0" />
             <input
               type="text"
               autoFocus
@@ -74,9 +74,9 @@ export default function BuscadorCliente({ items }: { items: Item[] }) {
             <Link
               key={item.id}
               href={`/producto/${item.id}`}
-              className="flex items-center gap-4 bg-white rounded-2xl p-3 active:scale-[0.98] transition-transform"
+              className="flex items-center gap-4 bg-white rounded-2xl p-3 active:scale-[0.98] transition-transform border border-black/[0.04]"
             >
-              <div className="w-[72px] h-[72px] rounded-xl bg-black/5 shrink-0 relative overflow-hidden">
+              <div className="w-[72px] h-[72px] rounded-xl bg-[#f0ebe0] shrink-0 relative overflow-hidden">
                 {item.fotoUrl ? (
                   <Image
                     src={item.fotoUrl}
@@ -85,8 +85,8 @@ export default function BuscadorCliente({ items }: { items: Item[] }) {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-black/25 text-[10px] text-center px-1">
-                    Sin foto
+                  <div className="w-full h-full flex items-center justify-center">
+                    <IconImage size={24} className="text-black/15" />
                   </div>
                 )}
               </div>
@@ -109,6 +109,8 @@ export default function BuscadorCliente({ items }: { items: Item[] }) {
                   </p>
                 )}
               </div>
+
+              <span className="text-black/20 text-2xl shrink-0">›</span>
             </Link>
           ))}
         </div>

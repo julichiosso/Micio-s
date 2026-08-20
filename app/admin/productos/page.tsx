@@ -4,12 +4,17 @@ import {
   editarProducto,
   eliminarProducto,
   reactivarProducto,
+  borrarProductoDefinitivo,
+  toggleDestacado,
   actualizarPrecios,
   aumentoMasivo,
 } from "@/lib/actions";
 import { subirFotoProducto } from "@/lib/actions-storage";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ProductoCard } from "./producto-card";
+
+// -------- Server actions inline --------
 
 async function actionCrearProducto(formData: FormData) {
   "use server";
@@ -22,47 +27,53 @@ async function actionCrearProducto(formData: FormData) {
   redirect("/admin/productos");
 }
 
-async function actionEditarProducto(formData: FormData) {
+async function actionToggleDestacado(id: number, valor: boolean) {
   "use server";
-  const id = Number(formData.get("id"));
-  await editarProducto(id, {
-    nombre: formData.get("nombre") as string,
-    descripcion: (formData.get("descripcion") as string) || undefined,
-  });
+  await toggleDestacado(id, valor);
+}
+
+async function actionDesactivar(id: number) {
+  "use server";
+  await eliminarProducto(id); // borrado lógico
   redirect("/admin/productos");
 }
 
-async function actionEliminarProducto(formData: FormData) {
+async function actionReactivar(id: number) {
   "use server";
-  const id = Number(formData.get("id"));
-  await eliminarProducto(id);
-  redirect("/admin/productos");
-}
-
-async function actionReactivarProducto(formData: FormData) {
-  "use server";
-  const id = Number(formData.get("id"));
   await reactivarProducto(id);
   redirect("/admin/productos");
 }
 
-async function actionActualizarPrecioUnico(formData: FormData) {
+async function actionEliminarDefinitivo(id: number) {
   "use server";
-  const productoId = Number(formData.get("productoId"));
-  const precio = Number(formData.get("precio"));
+  await borrarProductoDefinitivo(id);
+  redirect("/admin/productos");
+}
+
+async function actionEditarProducto(id: number, nombre: string, descripcion: string) {
+  "use server";
+  await editarProducto(id, { nombre, descripcion: descripcion || undefined });
+  redirect("/admin/productos");
+}
+
+async function actionSubirFoto(productoId: number, formData: FormData) {
+  "use server";
+  await subirFotoProducto(productoId, formData);
+  redirect("/admin/productos");
+}
+
+async function actionActualizarPrecioUnico(productoId: number, precio: number) {
+  "use server";
   await actualizarPrecios(productoId, [{ tamanio: "unico", precio }]);
   redirect("/admin/productos");
 }
 
-async function actionActualizarPreciosPizza(formData: FormData) {
+async function actionActualizarPreciosPizza(
+  productoId: number,
+  preciosMap: Record<string, number>
+) {
   "use server";
-  const productoId = Number(formData.get("productoId"));
-  const lista = ["xl", "media_xl", "clasica", "media_clasica"]
-    .map((tamanio) => ({
-      tamanio,
-      precio: Number(formData.get(`precio_${tamanio}`)),
-    }))
-    .filter((p) => !isNaN(p.precio) && p.precio > 0);
+  const lista = Object.entries(preciosMap).map(([tamanio, precio]) => ({ tamanio, precio }));
   await actualizarPrecios(productoId, lista);
   redirect("/admin/productos");
 }
@@ -75,160 +86,177 @@ async function actionAumentoMasivo(formData: FormData) {
   redirect("/admin/productos");
 }
 
-async function actionSubirFoto(formData: FormData) {
-  "use server";
-  const productoId = Number(formData.get("productoId"));
-  await subirFotoProducto(productoId, formData);
-  redirect("/admin/productos");
-}
-
-const LABELS: Record<string, string> = {
-  xl: "XL",
-  media_xl: "1/2 XL",
-  clasica: "Clásica",
-  media_clasica: "Clásica 1/2",
-  unico: "Único",
-};
+// -------- Page --------
 
 export default async function ProductosAdminPage() {
   const seccionesList = await getSeccionesAdmin();
   const productosList = await getProductosAdmin();
 
+  // Agrupar productos por sección
+  const porSeccion = seccionesList.map((s) => ({
+    ...s,
+    productos: productosList.filter((p) => p.seccion.id === s.id),
+  }));
+
   return (
-    <main style={{ padding: 20, maxWidth: 800, margin: "0 auto", fontFamily: "sans-serif" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <h1 style={{ fontSize: 22, fontWeight: "bold" }}>Productos</h1>
-        <Link href="/admin/secciones" style={{ fontSize: 14, color: "#555" }}>
-          Ir a secciones →
-        </Link>
+    <main className="min-h-screen bg-[#141210] pb-16">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-[#141210]/95 backdrop-blur-sm border-b border-white/[0.07] px-5 py-4 flex items-center justify-between">
+        <div>
+          <h1
+            className="text-white text-[20px] tracking-wide leading-none"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            ADMIN
+          </h1>
+          <p className="text-white/35 text-[12px] mt-0.5">Micio&apos;s Pizzería</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/secciones"
+            className="text-white/40 text-[13px] border border-white/[0.1] px-3 py-1.5 rounded-lg active:opacity-60 transition-opacity"
+          >
+            Secciones
+          </Link>
+          <Link
+            href="/"
+            className="text-white/40 text-[13px] active:opacity-60 transition-opacity"
+          >
+            Ver sitio
+          </Link>
+        </div>
       </div>
 
-      {/* Aumento masivo */}
-      <details style={{ marginBottom: 20, border: "1px solid #ddd", borderRadius: 8, padding: 12 }}>
-        <summary style={{ fontWeight: "bold", cursor: "pointer" }}>
-          Aumentar precios por sección
-        </summary>
-        <form action={actionAumentoMasivo} style={{ marginTop: 10, display: "flex", gap: 8 }}>
-          <select name="seccionId" required style={{ flex: 1 }}>
-            {seccionesList.map((s) => (
-              <option key={s.id} value={s.id}>{s.nombre}</option>
-            ))}
-          </select>
-          <input type="number" name="porcentaje" placeholder="% (ej: 10)" required style={{ width: 100 }} />
-          <button type="submit">Aplicar</button>
-        </form>
-      </details>
+      <div className="px-4 pt-5 flex flex-col gap-6">
 
-      {/* Crear producto */}
-      <details style={{ marginBottom: 24, border: "1px solid #ddd", borderRadius: 8, padding: 12 }}>
-        <summary style={{ fontWeight: "bold", cursor: "pointer" }}>+ Cargar producto nuevo</summary>
-        <form action={actionCrearProducto} style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
-          <select name="seccionId" required>
-            {seccionesList.map((s) => (
-              <option key={s.id} value={s.id}>{s.nombre}</option>
-            ))}
-          </select>
-          <input type="text" name="nombre" placeholder="Nombre del producto" required />
-          <input type="text" name="descripcion" placeholder="Descripción (opcional)" />
-          <label>
-            <input type="checkbox" name="tieneTamanios" /> Tiene varios tamaños (como las pizzas)
-          </label>
-          <button type="submit">Crear</button>
-        </form>
-      </details>
-
-      {/* Listado */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {productosList.map((p) => (
-          <div
-            key={p.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 12,
-              opacity: p.activo ? 1 : 0.5,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <strong>{p.nombre}</strong>
-              <span style={{ fontSize: 12, color: "#888" }}>{p.seccion.nombre}</span>
-            </div>
-            {p.fotoUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={p.fotoUrl}
-                alt={p.nombre}
-                style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6, margin: "6px 0" }}
-              />
-            )}
-            <form action={actionSubirFoto} style={{ margin: "6px 0" }}>
-              <input type="hidden" name="productoId" value={p.id} />
-              <input type="file" name="foto" accept="image/*" required />
-              <button type="submit">Subir foto</button>
-            </form>
-            {p.descripcion && (
-              <p style={{ fontSize: 13, color: "#666", margin: "4px 0" }}>{p.descripcion}</p>
-            )}
-            <p style={{ fontSize: 13, margin: "4px 0" }}>
-              {p.precios.length
-                ? p.precios
-                    .map((pr) => `${LABELS[pr.tamanio] ?? pr.tamanio}: $${pr.precio.toLocaleString("es-AR")}`)
-                    .join(" · ")
-                : "Sin precios cargados"}
-            </p>
-
-            {/* Editar precios */}
-            {p.tieneTamanios ? (
-              <form action={actionActualizarPreciosPizza} style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-                <input type="hidden" name="productoId" value={p.id} />
-                {["xl", "media_xl", "clasica", "media_clasica"].map((tam) => (
-                  <input
-                    key={tam}
-                    type="number"
-                    name={`precio_${tam}`}
-                    placeholder={LABELS[tam]}
-                    defaultValue={p.precios.find((pr) => pr.tamanio === tam)?.precio ?? ""}
-                    style={{ width: 90 }}
-                  />
+        {/* Crear producto nuevo */}
+        <details className="group border border-white/[0.1] rounded-2xl overflow-hidden bg-[#1a1814]">
+          <summary className="px-5 py-4 cursor-pointer text-white font-semibold text-[15px] flex items-center justify-between select-none">
+            Nuevo producto
+            <span className="text-white/30 text-[22px] font-light group-open:rotate-45 transition-transform">+</span>
+          </summary>
+          <div className="border-t border-white/[0.07] p-5">
+            <form action={actionCrearProducto} className="flex flex-col gap-3">
+              <select
+                name="seccionId"
+                required
+                className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+              >
+                {seccionesList.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-[#1a1814]">
+                    {s.nombre}
+                  </option>
                 ))}
-                <button type="submit">Guardar precios</button>
-              </form>
-            ) : (
-              <form action={actionActualizarPrecioUnico} style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                <input type="hidden" name="productoId" value={p.id} />
+              </select>
+              <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre del producto"
+                required
+                className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+              />
+              <input
+                type="text"
+                name="descripcion"
+                placeholder="Descripción (opcional)"
+                className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+              />
+              <label className="flex items-center gap-2.5 px-1 text-white/60 text-[14px] cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="tieneTamanios"
+                  className="w-4 h-4 rounded accent-[#c6f135]"
+                />
+                Tiene varios tamaños (pizzas)
+              </label>
+              <button
+                type="submit"
+                className="w-full bg-[#c6f135] text-[#141210] rounded-xl py-3 font-bold text-[15px] active:opacity-80 transition-opacity mt-1"
+              >
+                Crear producto
+              </button>
+            </form>
+          </div>
+        </details>
+
+        {/* Aumento masivo de precios */}
+        <details className="group border border-white/[0.1] rounded-2xl overflow-hidden bg-[#1a1814]">
+          <summary className="px-5 py-4 cursor-pointer text-white/60 font-medium text-[14px] flex items-center justify-between select-none">
+            Aumento masivo de precios
+            <span className="text-white/20 text-[20px] font-light group-open:rotate-45 transition-transform">+</span>
+          </summary>
+          <div className="border-t border-white/[0.07] p-5">
+            <form action={actionAumentoMasivo} className="flex flex-col gap-3">
+              <select
+                name="seccionId"
+                required
+                className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] outline-none border border-white/[0.08]"
+              >
+                {seccionesList.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-[#1a1814]">
+                    {s.nombre}
+                  </option>
+                ))}
+              </select>
+              <div className="flex gap-2">
                 <input
                   type="number"
-                  name="precio"
-                  placeholder="Precio"
-                  defaultValue={p.precios[0]?.precio ?? ""}
-                  style={{ width: 100 }}
+                  name="porcentaje"
+                  placeholder="% (ej: 10 o -5)"
+                  required
+                  className="flex-1 bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08]"
                 />
-                <button type="submit">Guardar precio</button>
-              </form>
-            )}
-
-            {/* Editar datos */}
-            <form action={actionEditarProducto} style={{ display: "flex", gap: 6, marginTop: 8 }}>
-              <input type="hidden" name="id" value={p.id} />
-              <input type="text" name="nombre" placeholder="Nuevo nombre" style={{ flex: 1 }} />
-              <input type="text" name="descripcion" placeholder="Nueva descripción" style={{ flex: 1 }} />
-              <button type="submit">Editar</button>
+                <button
+                  type="submit"
+                  className="shrink-0 bg-white/[0.08] text-white/70 rounded-xl px-5 py-3 font-semibold text-[14px] active:opacity-60 transition-opacity"
+                >
+                  Aplicar
+                </button>
+              </div>
             </form>
+          </div>
+        </details>
 
-            {/* Activar/desactivar */}
-            {p.activo ? (
-              <form action={actionEliminarProducto} style={{ marginTop: 8 }}>
-                <input type="hidden" name="id" value={p.id} />
-                <button type="submit" style={{ color: "#b00" }}>Desactivar</button>
-              </form>
-            ) : (
-              <form action={actionReactivarProducto} style={{ marginTop: 8 }}>
-                <input type="hidden" name="id" value={p.id} />
-                <button type="submit" style={{ color: "#080" }}>Reactivar</button>
-              </form>
-            )}
+        {/* Listado por sección */}
+        {porSeccion.map((seccion) => (
+          <div key={seccion.id}>
+            <p className="text-white/35 text-[11px] font-medium uppercase tracking-[0.12em] mb-3 px-1">
+              {seccion.nombre}
+              <span className="ml-2 text-white/20 normal-case tracking-normal">
+                ({seccion.productos.length})
+              </span>
+            </p>
+            <div className="flex flex-col gap-3">
+              {seccion.productos.length === 0 ? (
+                <p className="text-white/25 text-[13px] px-1">Sin productos en esta sección.</p>
+              ) : (
+                seccion.productos.map((p) => (
+                  <ProductoCard
+                    key={p.id}
+                    producto={p}
+                    secciones={seccionesList}
+                    actionToggleDestacado={actionToggleDestacado}
+                    actionDesactivar={actionDesactivar}
+                    actionReactivar={actionReactivar}
+                    actionEliminarDefinitivo={actionEliminarDefinitivo}
+                    actionEditarProducto={actionEditarProducto}
+                    actionSubirFoto={actionSubirFoto}
+                    actionActualizarPrecioUnico={actionActualizarPrecioUnico}
+                    actionActualizarPreciosPizza={actionActualizarPreciosPizza}
+                  />
+                ))
+              )}
+            </div>
           </div>
         ))}
+
+      </div>
+
+      {/* Footer de atribución en el admin también */}
+      <div className="px-5 pt-10 pb-4 text-center">
+        <p className="text-white/15 text-[11px]">
+          Panel de administración — Micio&apos;s Pizzería
+        </p>
       </div>
     </main>
   );

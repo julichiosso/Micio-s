@@ -1,30 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Search, MapPin, Menu } from "lucide-react";
 import {
   getSeccionesConFoto,
   getProductosDestacados,
+  getSecciones,
 } from "@/lib/queries/productos";
 import HorariosToggle from "./horarios-toggle";
-import HeaderCartBadge from "./header-cart-badge";
+import Header from "./header";
+import { IconSearch, IconPin } from "./icons";
 
 export default async function HomePage() {
   const secciones = await getSeccionesConFoto();
+  const todasLasSecciones = await getSecciones();
   const destacados = await getProductosDestacados(4);
+
+  const nombresSecciones = todasLasSecciones.map((s) => s.nombre);
 
   return (
     <main className="min-h-screen bg-[#141210] pb-24">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-1">
-        <Menu size={20} className="text-white/70" />
-        <span
-          className="text-white text-[17px] tracking-wide"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          MICIO&apos;S
-        </span>
-        <HeaderCartBadge />
-      </div>
+      {/* Header con sidebar integrado */}
+      <Header variante="oscura" secciones={nombresSecciones} />
 
       {/* Hero con video real del local */}
       <div className="relative h-[42vh] min-h-[300px] w-full overflow-hidden mt-3">
@@ -61,7 +56,7 @@ export default async function HomePage() {
           href="/buscar"
           className="flex items-center gap-3 bg-white/[0.07] rounded-full px-4 py-3.5 mb-7 border border-white/[0.06]"
         >
-          <Search size={18} className="text-white/40 shrink-0" />
+          <IconSearch size={18} className="text-white/40 shrink-0" />
           <span className="text-white/40 text-[14px]">
             Buscar pizzas, postres, bebidas...
           </span>
@@ -106,7 +101,7 @@ export default async function HomePage() {
           })}
         </div>
 
-        {/* Destacadas */}
+        {/* Destacadas — solo productos con destacado=true y foto real */}
         {destacados.length > 0 && (
           <>
             <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
@@ -124,18 +119,13 @@ export default async function HomePage() {
                     className="block bg-white/[0.04] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
                   >
                     <div className="relative h-44 w-full">
-                      {producto.fotoUrl ? (
-                        <Image
-                          src={producto.fotoUrl}
-                          alt={producto.nombre}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-[#1c1a17] flex items-center justify-center text-white/20 text-xs">
-                          Sin foto
-                        </div>
-                      )}
+                      {/* Siempre tiene foto (filtrado en la query) */}
+                      <Image
+                        src={producto.fotoUrl!}
+                        alt={producto.nombre}
+                        fill
+                        className="object-cover"
+                      />
                       <span className="absolute top-3 left-3 bg-[#141210]/60 backdrop-blur-md text-white/85 text-[10.5px] font-medium tracking-wide px-2.5 py-1 rounded-full">
                         {producto.seccion.nombre}
                       </span>
@@ -166,13 +156,26 @@ export default async function HomePage() {
           </>
         )}
 
-        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] px-4 py-3.5">
-          <MapPin size={17} strokeWidth={1.75} className="text-white/35 shrink-0" />
+        {/* Info de retiro */}
+        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] px-4 py-3.5 mb-8">
+          <IconPin size={17} className="text-white/35 shrink-0" />
           <p className="text-[12.5px] text-white/40 font-normal leading-snug">
             Pedís acá, confirmás por WhatsApp y retirás en el local. Pago en
             el local.
           </p>
         </div>
+
+        {/* Footer — Atribución Webya */}
+        <footer className="pb-6 text-center">
+          <a
+            href="https://instagram.com/webya.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/25 text-[11px] tracking-wide hover:text-white/40 transition-colors"
+          >
+            Impulsado por <span className="font-semibold">Webya</span>
+          </a>
+        </footer>
       </div>
     </main>
   );

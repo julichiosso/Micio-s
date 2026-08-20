@@ -34,12 +34,15 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#dcccaa] flex flex-col items-center justify-center px-6">
+    <main className="min-h-screen bg-[#141210] flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-black mb-1 text-center">
-          Panel de Micio&apos;s
+        <h1
+          className="text-white text-[28px] tracking-wide mb-1 text-center"
+          style={{ fontFamily: "var(--font-heading)" }}
+        >
+          MICIO&apos;S ADMIN
         </h1>
-        <p className="text-black/60 text-sm text-center mb-8">
+        <p className="text-white/40 text-sm text-center mb-8">
           Ingresá para administrar el catálogo
         </p>
 
@@ -50,7 +53,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Correo"
-            className="w-full bg-white/60 rounded-xl px-4 py-3 text-black placeholder:text-black/40 outline-none"
+            className="w-full bg-white/[0.06] rounded-xl px-4 py-3.5 text-white placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors text-[15px]"
           />
           <input
             type="password"
@@ -58,19 +61,19 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Contraseña"
-            className="w-full bg-white/60 rounded-xl px-4 py-3 text-black placeholder:text-black/40 outline-none"
+            className="w-full bg-white/[0.06] rounded-xl px-4 py-3.5 text-white placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors text-[15px]"
           />
 
           {error && (
-            <p className="text-red-700 text-sm text-center">{error}</p>
+            <p className="text-red-400 text-sm text-center mt-1">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={cargando}
-            className="w-full bg-black text-[#dcccaa] rounded-full py-3.5 font-bold mt-2 disabled:opacity-50"
+            className="w-full bg-[#c6f135] text-[#141210] rounded-xl py-3.5 font-bold text-[15px] mt-2 disabled:opacity-50 active:opacity-80 transition-opacity"
           >
-            {cargando ? "Entrando..." : "Entrar"}
+            {cargando ? "Entrando..." : "Entrar al panel"}
           </button>
         </form>
       </div>
