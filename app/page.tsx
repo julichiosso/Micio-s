@@ -61,8 +61,10 @@ export default function HomePage() {
           <div className="w-14 h-14 relative mb-3 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]">
             <Image src="/logo.png" alt="Micio's" fill className="object-contain" />
           </div>
-          <h1 className="text-white text-[30px] font-black leading-[0.95] tracking-tight">
-            Micio's
+          <h1 className="text-white text-[34px] font-normal leading-[0.9] tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
+            Pizza a la piedra,
+            <br />
+            hecha como se debe.
           </h1>
 
           {/* Horarios desplegables */}

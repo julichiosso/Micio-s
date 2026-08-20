@@ -62,7 +62,10 @@ export default async function ProductoPage({
         <p className="text-[11px] uppercase tracking-wider text-black/35 mb-1">
           {producto.seccion.nombre}
         </p>
-        <h1 className="text-[24px] font-black text-black leading-tight mb-1.5">
+        <h1
+          className="text-[26px] leading-[0.95] text-black mb-1.5"
+          style={{ fontFamily: "var(--font-heading)" }}
+        >
           {producto.nombre}
         </h1>
         {producto.descripcion && (
