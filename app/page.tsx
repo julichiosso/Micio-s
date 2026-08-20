@@ -22,19 +22,23 @@ export default async function HomePage() {
       <Header variante="oscura" secciones={nombresSecciones} />
 
       {/* Hero con video real del local */}
-      <div className="relative h-[42vh] min-h-[300px] w-full overflow-hidden mt-3">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="/hero.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/45 to-[#141210]/10" />
+      <div className="relative h-[42vh] min-h-[300px] w-full mt-3">
+        {/* Capa de video con overflow-hidden */}
+        <div className="absolute inset-0 overflow-hidden">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/hero.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/45 to-[#141210]/10" />
+        </div>
 
-        <div className="absolute inset-x-0 bottom-0 px-5 pb-6 flex flex-col items-start">
+        {/* Textos del hero */}
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-6 flex flex-col items-start z-10">
           <span className="bg-[#c6f135] text-[#141210] text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full mb-3">
             Take away
           </span>
