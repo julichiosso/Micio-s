@@ -48,7 +48,12 @@ export default function CarritoPage() {
         >
           <ArrowLeft size={18} />
         </Link>
-        <h1 className="text-white text-[22px] font-black">Tu pedido</h1>
+        <h1
+          className="text-white text-[24px]"
+          style={{ fontFamily: "var(--font-heading)" }}
+        >
+          Tu pedido
+        </h1>
       </div>
 
       <div className="px-4 pt-6 pb-28">
