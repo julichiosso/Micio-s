@@ -53,6 +53,20 @@ export async function getProductoPorId(id: number) {
   });
 }
 
+/**
+ * Trae todos los productos activos de todas las secciones, con sus precios
+ * y su sección. Se usa en el buscador global.
+ */
+export async function getTodosLosProductos() {
+  return db.query.productos.findMany({
+    where: eq(productos.activo, true),
+    with: {
+      precios: true,
+      seccion: true,
+    },
+  });
+}
+
 function normalizar(texto: string) {
   return texto
     .toLowerCase()
