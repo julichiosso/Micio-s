@@ -24,7 +24,14 @@ export default async function ProductoPage({
   if (!producto) notFound();
 
   const ordenTamanios = ["xl", "media_xl", "clasica", "media_clasica", "unico"];
-  const preciosOrdenados = [...producto.precios].sort(
+
+  // Protección extra: si por algún motivo quedaron precios duplicados del
+  // mismo tamaño, nos quedamos con uno solo por tamaño antes de renderizar.
+  const preciosUnicos = Array.from(
+    new Map(producto.precios.map((p) => [p.tamanio, p])).values()
+  );
+
+  const preciosOrdenados = preciosUnicos.sort(
     (a, b) => ordenTamanios.indexOf(a.tamanio) - ordenTamanios.indexOf(b.tamanio)
   );
 

@@ -160,8 +160,7 @@ export default async function HomePage() {
         <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] px-4 py-3.5 mb-8">
           <IconPin size={17} className="text-white/35 shrink-0" />
           <p className="text-[12.5px] text-white/40 font-normal leading-snug">
-            Pedís acá, confirmás por WhatsApp y retirás en el local. Pago en
-            el local.
+            Pedís acá, confirmás por WhatsApp, retirás y pagás en el local.
           </p>
         </div>
 

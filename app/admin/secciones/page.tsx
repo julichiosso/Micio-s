@@ -60,7 +60,7 @@ export default async function SeccionesAdminPage() {
       </div>
 
       <div className="px-4 pt-5 max-w-lg mx-auto flex flex-col gap-6">
-        {/* Crear nueva sección */}
+
         <div className="border border-white/[0.1] rounded-2xl p-5 bg-[#1a1814]">
           <p className="text-white font-semibold text-[15px] mb-3">Nueva sección</p>
           <form action={actionCrearSeccion} className="flex gap-2">

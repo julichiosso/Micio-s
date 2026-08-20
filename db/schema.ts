@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, boolean, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, boolean, timestamp, pgEnum, unique } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // Enum para los tamaños posibles de un producto
@@ -36,14 +36,23 @@ export const productos = pgTable("productos", {
 });
 
 // Precios: cada producto tiene 1 o varias filas acá según tieneTamanios
-export const precios = pgTable("precios", {
-  id: serial("id").primaryKey(),
-  productoId: integer("producto_id")
-    .notNull()
-    .references(() => productos.id, { onDelete: "cascade" }),
-  tamanio: tamanioEnum("tamanio").notNull(),
-  precio: integer("precio").notNull(), // guardamos en pesos, sin decimales
-});
+export const precios = pgTable(
+  "precios",
+  {
+    id: serial("id").primaryKey(),
+    productoId: integer("producto_id")
+      .notNull()
+      .references(() => productos.id, { onDelete: "cascade" }),
+    tamanio: tamanioEnum("tamanio").notNull(),
+    precio: integer("precio").notNull(),
+  },
+  (table) => [
+    unique("precio_producto_tamanio_unico").on(
+      table.productoId,
+      table.tamanio
+    ),
+  ]
+);
 
 // Relaciones (para que Drizzle pueda hacer queries anidadas tipo "traeme la seccion con sus productos y precios")
 export const seccionesRelations = relations(secciones, ({ many }) => ({

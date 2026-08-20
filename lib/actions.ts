@@ -111,33 +111,48 @@ export async function reactivarProducto(id: number) {
 
 // ---------- PRECIOS ----------
 
-// Reemplaza todos los precios de un producto de una (más simple que
-// editar de a uno cuando cambian varios tamaños juntos).
 export async function actualizarPrecios(
   productoId: number,
   listaPrecios: { tamanio: string; precio: number }[]
 ) {
   await requireAuth();
 
-  await db.delete(precios).where(eq(precios.productoId, productoId));
+  if (listaPrecios.length === 0) {
+    revalidatePath("/admin/productos");
+    return;
+  }
 
-  if (listaPrecios.length > 0) {
-    await db.insert(precios).values(
-      listaPrecios.map((p) => ({
-        productoId,
-        tamanio: p.tamanio as
-          | "xl"
-          | "media_xl"
-          | "clasica"
-          | "media_clasica"
-          | "unico",
-        precio: p.precio,
-      }))
-    );
+  for (const p of listaPrecios) {
+    const tamanio = p.tamanio as
+      | "xl"
+      | "media_xl"
+      | "clasica"
+      | "media_clasica"
+      | "unico";
+
+    await db
+      .insert(precios)
+      .values({ productoId, tamanio, precio: p.precio })
+      .onConflictDoUpdate({
+        target: [precios.productoId, precios.tamanio],
+        set: { precio: p.precio },
+      });
+  }
+
+  // Si algún tamaño que antes tenía precio ya no viene en la lista nueva,
+  // lo borramos (ej: el producto pasa de "varios tamaños" a "precio único").
+  const tamaniosNuevos = listaPrecios.map((p) => p.tamanio);
+  const preciosActuales = await db.query.precios.findMany({
+    where: eq(precios.productoId, productoId),
+  });
+  for (const precioActual of preciosActuales) {
+    if (!tamaniosNuevos.includes(precioActual.tamanio)) {
+      await db.delete(precios).where(eq(precios.id, precioActual.id));
+    }
   }
 
   revalidatePath("/admin/productos");
-  revalidatePath("/", "layout"); // refresca también el catálogo público
+  revalidatePath("/", "layout");
 }
 
 // Aumento masivo: sube (o baja) un % a todos los precios de una sección.
