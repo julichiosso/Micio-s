@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ShoppingBag } from "lucide-react";
 import { agregarItemAlCarrito } from "@/lib/carrito";
 
 type Opcion = {
@@ -38,46 +39,58 @@ export default function AgregarAlCarrito({
 
   return (
     <div>
-      {/* Selector de tamaño (si hay más de 1 opción) */}
       {!soloUnTamanio && (
-        <div className="flex flex-col gap-2 mb-6">
-          {opciones.map((op) => {
-            const activo = op.tamanio === seleccion.tamanio;
-            return (
-              <button
-                key={op.tamanio}
-                onClick={() => setSeleccion(op)}
-                className={`flex items-center justify-between rounded-xl px-4 py-3 text-left transition-colors ${
-                  activo
-                    ? "bg-black text-[#dcccaa]"
-                    : "bg-black/5 text-black"
-                }`}
-              >
-                <span className="font-medium">{op.label}</span>
-                <span>${op.precio.toLocaleString("es-AR")}</span>
-              </button>
-            );
-          })}
-        </div>
+        <>
+          <p className="text-[11px] uppercase tracking-wider text-black/40 mb-2.5">
+            Elegí el tamaño
+          </p>
+          <div className="flex flex-col gap-2 mb-6">
+            {opciones.map((op) => {
+              const activo = op.tamanio === seleccion.tamanio;
+              return (
+                <button
+                  key={op.tamanio}
+                  onClick={() => setSeleccion(op)}
+                  className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-left transition-colors ${
+                    activo
+                      ? "bg-[#141210] text-white"
+                      : "bg-white text-black"
+                  }`}
+                >
+                  <span className="font-semibold text-[14px]">{op.label}</span>
+                  <span className="font-bold text-[14px]">
+                    ${op.precio.toLocaleString("es-AR")}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </>
       )}
 
       {soloUnTamanio && (
-        <p className="text-xl font-bold text-black mb-6">
+        <p className="text-2xl font-black text-black mb-6">
           ${opciones[0].precio.toLocaleString("es-AR")}
         </p>
       )}
 
-      {/* Botones */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#dcccaa] border-t border-black/10 p-4 flex gap-3">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4 flex gap-3">
         <button
           onClick={handleAgregar}
-          className="flex-1 bg-black text-[#dcccaa] rounded-full py-3.5 font-bold"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#141210] text-white rounded-full py-3.5 font-bold text-[15px]"
         >
-          {agregado ? "¡Agregado!" : "Agregar al pedido"}
+          {agregado ? (
+            "¡Agregado!"
+          ) : (
+            <>
+              <ShoppingBag size={17} />
+              Agregar al pedido
+            </>
+          )}
         </button>
         <button
           onClick={() => router.push("/carrito")}
-          className="px-5 rounded-full border border-black text-black font-medium"
+          className="px-5 rounded-full border border-black/15 text-black font-semibold text-[14px]"
         >
           Ver pedido
         </button>

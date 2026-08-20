@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getProductoPorId } from "@/lib/queries/productos";
 import AgregarAlCarrito from "./agregar-al-carrito";
 
@@ -22,59 +23,64 @@ export default async function ProductoPage({
 
   if (!producto) notFound();
 
-  // Orden fijo para que XL siempre aparezca primero, etc.
   const ordenTamanios = ["xl", "media_xl", "clasica", "media_clasica", "unico"];
   const preciosOrdenados = [...producto.precios].sort(
     (a, b) => ordenTamanios.indexOf(a.tamanio) - ordenTamanios.indexOf(b.tamanio)
   );
 
   return (
-    <main className="min-h-screen bg-[#dcccaa] px-5 pt-6 pb-28">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-5">
-        <Link
-          href={`/${producto.seccion.nombre.toLowerCase()}`}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-black text-[#dcccaa] shrink-0"
-          aria-label="Volver"
-        >
-          ←
-        </Link>
-      </div>
-
-      {/* Foto */}
-      <div className="w-full aspect-square rounded-2xl bg-black/10 relative overflow-hidden mb-5">
+    <main className="min-h-screen bg-[#f7f3ea] pb-28">
+      {/* Foto grande con header flotante encima */}
+      <div className="relative w-full aspect-square bg-black/5">
         {producto.fotoUrl ? (
           <Image
             src={producto.fotoUrl}
             alt={producto.nombre}
             fill
             className="object-cover"
+            priority
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-black/30 text-sm">
+          <div className="w-full h-full flex items-center justify-center text-black/25 text-sm">
             Sin foto todavía
           </div>
         )}
+
+        <div className="absolute top-0 inset-x-0 pt-6 px-5">
+          <Link
+            href={`/${producto.seccion.nombre.toLowerCase()}`}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-[#141210]/70 text-white backdrop-blur-sm"
+            aria-label="Volver"
+          >
+            <ArrowLeft size={18} />
+          </Link>
+        </div>
       </div>
 
       {/* Info */}
-      <h1 className="text-2xl font-bold text-black mb-1">{producto.nombre}</h1>
-      {producto.descripcion && (
-        <p className="text-black/60 mb-5">{producto.descripcion}</p>
-      )}
+      <div className="px-5 pt-5">
+        <p className="text-[11px] uppercase tracking-wider text-black/35 mb-1">
+          {producto.seccion.nombre}
+        </p>
+        <h1 className="text-[24px] font-black text-black leading-tight mb-1.5">
+          {producto.nombre}
+        </h1>
+        {producto.descripcion && (
+          <p className="text-black/55 text-[14px] leading-snug mb-6">
+            {producto.descripcion}
+          </p>
+        )}
+        {!producto.descripcion && <div className="mb-6" />}
 
-      {/* Selector de tamaño + agregar al carrito (client component) */}
-      <AgregarAlCarrito
-        producto={{
-          id: producto.id,
-          nombre: producto.nombre,
-        }}
-        opciones={preciosOrdenados.map((p) => ({
-          tamanio: p.tamanio,
-          label: LABELS_TAMANIO[p.tamanio] ?? p.tamanio,
-          precio: p.precio,
-        }))}
-      />
+        <AgregarAlCarrito
+          producto={{ id: producto.id, nombre: producto.nombre }}
+          opciones={preciosOrdenados.map((p) => ({
+            tamanio: p.tamanio,
+            label: LABELS_TAMANIO[p.tamanio] ?? p.tamanio,
+            precio: p.precio,
+          }))}
+        />
+      </div>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { ArrowLeft, Search } from "lucide-react";
 import { getSeccionConProductos } from "@/lib/queries/productos";
 
 export default async function SeccionPage({
@@ -18,19 +19,34 @@ export default async function SeccionPage({
   return (
     <main className="min-h-screen bg-[#141210]">
       {/* Header */}
-      <div className="px-5 pt-6 pb-6 flex items-center gap-3">
+      <div className="px-5 pt-6 pb-7 flex items-center gap-3">
         <Link
           href="/"
           className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white shrink-0"
           aria-label="Volver al inicio"
         >
-          ←
+          <ArrowLeft size={18} />
         </Link>
-        <h1 className="text-white text-2xl font-bold">{seccion.nombre}</h1>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-white text-[26px] font-black leading-none">
+            {seccion.nombre}
+          </h1>
+          <p className="text-white/40 text-[13px] mt-1">
+            {productos.length}{" "}
+            {productos.length === 1 ? "producto" : "productos"}
+          </p>
+        </div>
+        <Link
+          href="/buscar"
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white shrink-0"
+          aria-label="Buscar"
+        >
+          <Search size={17} />
+        </Link>
       </div>
 
       {/* Panel claro con el listado */}
-      <div className="bg-[#f7f3ea] rounded-t-[28px] min-h-[calc(100vh-100px)] px-4 pt-6 pb-10">
+      <div className="bg-[#f7f3ea] rounded-t-[28px] min-h-[calc(100vh-140px)] px-4 pt-6 pb-10">
         {productos.length === 0 ? (
           <p className="text-black/50 text-sm px-2">
             Todavía no hay productos cargados en esta sección.
@@ -48,7 +64,7 @@ export default async function SeccionPage({
                   href={`/producto/${producto.id}`}
                   className="flex items-center gap-4 bg-white rounded-2xl p-3 active:scale-[0.98] transition-transform"
                 >
-                  <div className="w-[72px] h-[72px] rounded-xl bg-black/5 shrink-0 relative overflow-hidden">
+                  <div className="w-20 h-20 rounded-xl bg-black/5 shrink-0 relative overflow-hidden">
                     {producto.fotoUrl ? (
                       <Image
                         src={producto.fotoUrl}
@@ -64,7 +80,7 @@ export default async function SeccionPage({
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-black text-[15px] truncate">
+                    <p className="font-bold text-black text-[16px] truncate">
                       {producto.nombre}
                     </p>
                     {producto.descripcion && (
@@ -73,9 +89,9 @@ export default async function SeccionPage({
                       </p>
                     )}
                     {desde !== null && (
-                      <p className="text-[13px] font-semibold text-black/80 mt-1">
+                      <p className="text-[14px] font-bold text-black mt-1.5">
                         {producto.tieneTamanios && (
-                          <span className="text-black/40 font-normal">
+                          <span className="text-black/40 font-normal text-[12px]">
                             Desde{" "}
                           </span>
                         )}
@@ -83,6 +99,8 @@ export default async function SeccionPage({
                       </p>
                     )}
                   </div>
+
+                  <span className="text-black/20 text-2xl shrink-0">›</span>
                 </Link>
               );
             })}
