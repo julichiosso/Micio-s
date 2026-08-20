@@ -119,6 +119,14 @@ export default function CarritoPage() {
               ))}
             </div>
 
+            <Link
+              href="/buscar"
+              className="flex items-center justify-center gap-2 border border-dashed border-black/20 text-black/60 rounded-2xl py-3.5 font-semibold text-[14px] mb-6"
+            >
+              <Plus size={16} />
+              ¿Querés agregar algo más?
+            </Link>
+
             <div className="mb-4">
               <label className="block text-[11px] uppercase tracking-wider text-black/40 mb-2">
                 Tu nombre

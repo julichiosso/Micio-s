@@ -62,9 +62,7 @@ export default function HomePage() {
             <Image src="/logo.png" alt="Micio's" fill className="object-contain" />
           </div>
           <h1 className="text-white text-[30px] font-black leading-[0.95] tracking-tight">
-            Pizza a la piedra,
-            <br />
-            hecha como se debe.
+            Micio's
           </h1>
 
           {/* Horarios desplegables */}
