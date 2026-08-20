@@ -1,28 +1,46 @@
 import { getSeccionesAdmin } from "@/lib/queries/admin";
-import { crearSeccion, editarSeccion, eliminarSeccion } from "@/lib/actions";
+import {
+  crearSeccion,
+  editarSeccion,
+  eliminarSeccion,
+  reactivarSeccion,
+  borrarSeccionDefinitiva,
+} from "@/lib/actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { IconArrowLeft } from "@/app/icons";
+import { SeccionCard } from "./seccion-card";
 
 async function actionCrearSeccion(formData: FormData) {
   "use server";
   const nombre = formData.get("nombre") as string;
-  await crearSeccion(nombre);
+  if (nombre?.trim()) {
+    await crearSeccion(nombre.trim());
+  }
   redirect("/admin/secciones");
 }
 
-async function actionEditarSeccion(formData: FormData) {
+async function actionEditarSeccion(id: number, nombre: string) {
   "use server";
-  const id = Number(formData.get("id"));
-  const nombre = formData.get("nombre") as string;
   await editarSeccion(id, nombre);
   redirect("/admin/secciones");
 }
 
-async function actionEliminarSeccion(formData: FormData) {
+async function actionDesactivarSeccion(id: number) {
   "use server";
-  const id = Number(formData.get("id"));
   await eliminarSeccion(id);
+  redirect("/admin/secciones");
+}
+
+async function actionReactivarSeccion(id: number) {
+  "use server";
+  await reactivarSeccion(id);
+  redirect("/admin/secciones");
+}
+
+async function actionEliminarSeccionDefinitivo(id: number) {
+  "use server";
+  await borrarSeccionDefinitiva(id);
   redirect("/admin/secciones");
 }
 
@@ -60,7 +78,7 @@ export default async function SeccionesAdminPage() {
       </div>
 
       <div className="px-4 pt-5 max-w-lg mx-auto flex flex-col gap-6">
-
+        {/* Crear nueva sección */}
         <div className="border border-white/[0.1] rounded-2xl p-5 bg-[#1a1814]">
           <p className="text-white font-semibold text-[15px] mb-3">Nueva sección</p>
           <form action={actionCrearSeccion} className="flex gap-2">
@@ -87,54 +105,14 @@ export default async function SeccionesAdminPage() {
           </p>
 
           {seccionesList.map((s) => (
-            <div
+            <SeccionCard
               key={s.id}
-              className={`border rounded-2xl p-4 bg-[#1a1814] ${
-                s.activo ? "border-white/[0.1]" : "border-white/[0.05] opacity-50"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-white font-semibold text-[15px]">{s.nombre}</span>
-                <span
-                  className={`text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider font-medium ${
-                    s.activo
-                      ? "bg-white/[0.06] text-white/50"
-                      : "bg-red-950/40 text-red-400 border border-red-800/30"
-                  }`}
-                >
-                  {s.activo ? "Activa" : "Inactiva"}
-                </span>
-              </div>
-
-              <form action={actionEditarSeccion} className="flex gap-2 mb-2">
-                <input type="hidden" name="id" value={s.id} />
-                <input
-                  type="text"
-                  name="nombre"
-                  placeholder="Nuevo nombre"
-                  defaultValue={s.nombre}
-                  className="flex-1 bg-white/[0.05] rounded-xl px-3 py-2 text-white text-[13px] placeholder:text-white/25 outline-none border border-white/[0.06] focus:border-white/20"
-                />
-                <button
-                  type="submit"
-                  className="bg-white/[0.08] text-white/70 rounded-xl px-3 py-2 text-[12px] font-medium active:opacity-60 transition-opacity shrink-0"
-                >
-                  Renombrar
-                </button>
-              </form>
-
-              {s.activo && (
-                <form action={actionEliminarSeccion} className="text-right mt-1">
-                  <input type="hidden" name="id" value={s.id} />
-                  <button
-                    type="submit"
-                    className="text-white/35 text-[12px] hover:text-red-400 transition-colors"
-                  >
-                    Desactivar sección
-                  </button>
-                </form>
-              )}
-            </div>
+              seccion={s}
+              actionEditar={actionEditarSeccion}
+              actionDesactivar={actionDesactivarSeccion}
+              actionReactivar={actionReactivarSeccion}
+              actionEliminarDefinitivo={actionEliminarSeccionDefinitivo}
+            />
           ))}
         </div>
       </div>

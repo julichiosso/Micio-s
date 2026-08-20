@@ -36,7 +36,7 @@ const LABELS: Record<string, string> = {
   unico: "Único",
 };
 
-// -------- Modal de confirmación de borrado --------
+// -------- Modal de confirmación de borrado (Diseño Senior) --------
 function ModalConfirmacion({
   nombre,
   onConfirmar,
@@ -47,32 +47,32 @@ function ModalConfirmacion({
   onCancelar: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
         onClick={onCancelar}
       />
-      <div className="relative bg-[#1a1814] border border-white/[0.1] rounded-2xl p-6 w-full max-w-sm">
-        <h3 className="text-white font-bold text-[17px] mb-2">
+      <div className="relative w-full max-w-sm bg-[#1a1814] border border-white/[0.12] rounded-2xl p-6 shadow-2xl">
+        <h3 className="text-white font-bold text-[17px] tracking-tight mb-2">
           Eliminar producto
         </h3>
         <p className="text-white/60 text-[14px] leading-relaxed mb-6">
-          Vas a eliminar{" "}
-          <span className="text-white font-semibold">{nombre}</span> de forma
-          permanente. Esta acción no se puede deshacer.
+          Se eliminará <span className="text-white font-semibold">{nombre}</span> de la base de datos de forma permanente. Esta acción no se puede deshacer.
         </p>
-        <div className="flex gap-3">
+        <div className="flex items-center justify-end gap-3">
           <button
+            type="button"
             onClick={onCancelar}
-            className="flex-1 py-3 rounded-xl border border-white/[0.12] text-white/70 text-[14px] font-semibold active:opacity-70 transition-opacity"
+            className="px-4 py-2.5 rounded-xl border border-white/15 text-white/80 hover:text-white hover:bg-white/[0.06] text-[13px] font-medium transition-colors"
           >
             Cancelar
           </button>
           <button
+            type="button"
             onClick={onConfirmar}
-            className="flex-1 py-3 rounded-xl bg-red-900/60 border border-red-700/40 text-red-300 text-[14px] font-bold active:opacity-70 transition-opacity"
+            className="px-4 py-2.5 rounded-xl bg-[#c62828] hover:bg-[#b71c1c] text-white text-[13px] font-semibold transition-colors active:scale-[0.98]"
           >
-            Eliminar
+            Eliminar definitivamente
           </button>
         </div>
       </div>
@@ -129,10 +129,10 @@ export function ProductoCard({
       )}
 
       <div
-        className={`border rounded-2xl overflow-hidden transition-opacity ${
+        className={`border rounded-2xl overflow-hidden transition-colors ${
           producto.activo
             ? "border-white/[0.1] bg-[#1a1814]"
-            : "border-white/[0.06] bg-[#161410] opacity-50"
+            : "border-white/[0.07] bg-[#161410]"
         }`}
       >
         {/* Cabecera de la tarjeta */}

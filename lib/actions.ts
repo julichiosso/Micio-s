@@ -34,10 +34,33 @@ export async function editarSeccion(id: number, nombre: string) {
 
 export async function eliminarSeccion(id: number) {
   await requireAuth();
-  // Borrado lógico: la desactivamos en vez de borrarla, así no se pierden
-  // los productos que dependen de ella por accidente.
+  // Borrado lógico: la desactivamos en vez de borrarla
   await db.update(secciones).set({ activo: false }).where(eq(secciones.id, id));
   revalidatePath("/admin/secciones");
+  revalidatePath("/", "layout");
+}
+
+export async function reactivarSeccion(id: number) {
+  await requireAuth();
+  await db.update(secciones).set({ activo: true }).where(eq(secciones.id, id));
+  revalidatePath("/admin/secciones");
+  revalidatePath("/", "layout");
+}
+
+export async function borrarSeccionDefinitiva(id: number) {
+  await requireAuth();
+  // Traer productos de la sección para limpiar precios asociados
+  const prods = await db.query.productos.findMany({
+    where: eq(productos.seccionId, id),
+  });
+  for (const p of prods) {
+    await db.delete(precios).where(eq(precios.productoId, p.id));
+  }
+  await db.delete(productos).where(eq(productos.seccionId, id));
+  await db.delete(secciones).where(eq(secciones.id, id));
+  revalidatePath("/admin/secciones");
+  revalidatePath("/admin/productos");
+  revalidatePath("/", "layout");
 }
 
 // ---------- PRODUCTOS ----------
