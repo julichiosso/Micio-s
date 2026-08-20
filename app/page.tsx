@@ -63,7 +63,7 @@ export default async function HomePage() {
         >
           <Search size={18} className="text-white/40 shrink-0" />
           <span className="text-white/40 text-[14px]">
-            Buscar pizzas, postres, bebidas...
+            Buscar pizzas, bebidas y postres...
           </span>
         </Link>
 
