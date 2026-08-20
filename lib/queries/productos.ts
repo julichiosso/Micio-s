@@ -67,6 +67,38 @@ export async function getTodosLosProductos() {
   });
 }
 
+/**
+ * Productos para destacar en la home: prioriza los que ya tienen foto
+ * cargada (se ven mejor), y si no hay suficientes con foto, completa
+ * con el resto. Trae como mucho `limite` productos.
+ */
+export async function getProductosDestacados(limite = 4) {
+  const todos = await getTodosLosProductos();
+  const conFoto = todos.filter((p) => p.fotoUrl);
+  const sinFoto = todos.filter((p) => !p.fotoUrl);
+  return [...conFoto, ...sinFoto].slice(0, limite);
+}
+
+/**
+ * Trae, para cada sección activa, una foto representativa (la del primer
+ * producto de esa sección que tenga foto cargada). Se usa para ilustrar
+ * las tarjetas de sección en la home en vez de dejarlas vacías.
+ */
+export async function getSeccionesConFoto() {
+  const todasLasSecciones = await getSecciones();
+  const todosLosProductos = await getTodosLosProductos();
+
+  return todasLasSecciones.map((seccion) => {
+    const productoConFoto = todosLosProductos.find(
+      (p) => p.seccionId === seccion.id && p.fotoUrl
+    );
+    return {
+      ...seccion,
+      fotoUrl: productoConFoto?.fotoUrl ?? null,
+    };
+  });
+}
+
 function normalizar(texto: string) {
   return texto
     .toLowerCase()

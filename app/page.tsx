@@ -1,51 +1,33 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Pizza, CakeSlice, GlassWater, ChevronDown, Search, MapPin } from "lucide-react";
+import { Search, MapPin, Menu } from "lucide-react";
+import {
+  getSeccionesConFoto,
+  getProductosDestacados,
+} from "@/lib/queries/productos";
+import HorariosToggle from "./horarios-toggle";
+import HeaderCartBadge from "./header-cart-badge";
 
-const secciones = [
-  {
-    slug: "pizzas",
-    nombre: "Pizzas",
-    descripcion: "Clásicas y de autor, al molde",
-    Icono: Pizza,
-    destacado: true,
-  },
-  {
-    slug: "postres",
-    nombre: "Postres",
-    descripcion: "Para cerrar la noche",
-    Icono: CakeSlice,
-    destacado: false,
-  },
-  {
-    slug: "bebidas",
-    nombre: "Bebidas",
-    descripcion: "Bien frías",
-    Icono: GlassWater,
-    destacado: false,
-  },
-];
-
-const horarios = [
-  { dia: "Domingo", horario: "Cerrado", abierto: false },
-  { dia: "Lunes", horario: "Cerrado", abierto: false },
-  { dia: "Martes", horario: "Cerrado", abierto: false },
-  { dia: "Miércoles", horario: "Cerrado", abierto: false },
-  { dia: "Jueves", horario: "20:00 a 23:00", abierto: true },
-  { dia: "Viernes", horario: "20:00 a 23:00", abierto: true },
-  { dia: "Sábado", horario: "20:00 a 23:00", abierto: true },
-];
-
-export default function HomePage() {
-  const [horariosAbiertos, setHorariosAbiertos] = useState(false);
+export default async function HomePage() {
+  const secciones = await getSeccionesConFoto();
+  const destacados = await getProductosDestacados(4);
 
   return (
-    <main className="min-h-screen bg-[#141210]">
+    <main className="min-h-screen bg-[#141210] pb-24">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 pt-5 pb-1">
+        <Menu size={20} className="text-white/70" />
+        <span
+          className="text-white text-[17px] tracking-wide"
+          style={{ fontFamily: "var(--font-heading)" }}
+        >
+          MICIO&apos;S
+        </span>
+        <HeaderCartBadge />
+      </div>
+
       {/* Hero con video real del local */}
-      <div className="relative h-[46vh] min-h-[340px] w-full overflow-hidden">
+      <div className="relative h-[42vh] min-h-[300px] w-full overflow-hidden mt-3">
         <video
           autoPlay
           muted
@@ -55,116 +37,138 @@ export default function HomePage() {
         >
           <source src="/hero.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/50 to-[#141210]/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/45 to-[#141210]/10" />
 
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-6 flex flex-col items-start">
-          <div className="w-14 h-14 relative mb-3 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]">
-            <Image src="/logo.png" alt="Micio's" fill className="object-contain" />
-          </div>
-          <h1 className="text-white text-[34px] font-normal leading-[0.9] tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-6 flex flex-col items-start">
+          <span className="bg-[#c6f135] text-[#141210] text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full mb-3">
+            Take away
+          </span>
+          <h1
+            className="text-white text-[32px] leading-[0.92] tracking-tight"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
             Pizza a la piedra,
             <br />
             hecha como se debe.
           </h1>
-
-          {/* Horarios desplegables */}
-          <button
-            onClick={() => setHorariosAbiertos(!horariosAbiertos)}
-            className="flex items-center gap-2 mt-3"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c6f135]" />
-            <p className="text-white/70 text-[13px] font-medium">
-              Jueves a domingos · 20 a 23 hs
-            </p>
-            <ChevronDown
-              size={14}
-              className={`text-white/50 transition-transform ${
-                horariosAbiertos ? "rotate-180" : ""
-              }`}
-            />
-          </button>
+          <HorariosToggle />
         </div>
       </div>
 
-      {/* Desplegable de horarios completo */}
-      {horariosAbiertos && (
-        <div className="bg-[#1c1a17] px-6 py-4">
-          <div className="flex flex-col gap-1.5">
-            {horarios.map((h) => (
-              <div
-                key={h.dia}
-                className="flex items-center justify-between text-[13px]"
-              >
-                <span className="text-white/50">{h.dia}</span>
-                <span
-                  className={h.abierto ? "text-white font-medium" : "text-white/30"}
-                >
-                  {h.horario}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Panel con buscador + menú */}
-      <div className="bg-[#f7f3ea] rounded-t-[28px] -mt-6 relative px-5 pt-6 pb-10 min-h-[54vh]">
+      <div className="px-5 pt-5">
         {/* Buscador */}
         <Link
           href="/buscar"
-          className="flex items-center gap-3 bg-white rounded-full px-4 py-3 mb-6 border border-black/[0.06]"
+          className="flex items-center gap-3 bg-white/[0.07] rounded-full px-4 py-3.5 mb-7 border border-white/[0.06]"
         >
-          <Search size={18} className="text-black/35 shrink-0" />
-          <span className="text-black/35 text-[14px]">
+          <Search size={18} className="text-white/40 shrink-0" />
+          <span className="text-white/40 text-[14px]">
             Buscar pizzas, postres, bebidas...
           </span>
         </Link>
 
-        <p className="text-[13px] font-bold uppercase tracking-wider text-black/60 mb-4 px-1">
+        {/* Secciones con foto de fondo */}
+        <p className="text-white/50 text-[12px] font-bold uppercase tracking-wider mb-3">
           Elegí qué pedir
         </p>
-
-        <div className="flex flex-col gap-3 mb-8">
+        <div className="flex flex-col gap-3 mb-9">
           {secciones.map((s) => {
-            const Icono = s.Icono;
+            const slug = s.nombre.toLowerCase();
             return (
               <Link
-                key={s.slug}
-                href={`/${s.slug}`}
-                className="group flex items-center gap-4 bg-[#141210] rounded-2xl p-4 pr-5 active:scale-[0.98] transition-transform"
+                key={s.id}
+                href={`/${slug}`}
+                className="group relative h-24 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
               >
-                <div
-                  className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${
-                    s.destacado ? "bg-[#c6f135]" : "bg-white/[0.08]"
-                  }`}
-                >
-                  <Icono
-                    size={26}
-                    strokeWidth={1.75}
-                    className={s.destacado ? "text-[#141210]" : "text-white"}
+                {s.fotoUrl ? (
+                  <Image
+                    src={s.fotoUrl}
+                    alt={s.nombre}
+                    fill
+                    className="object-cover"
                   />
+                ) : (
+                  <div className="absolute inset-0 bg-[#1c1a17]" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#141210]/90 via-[#141210]/60 to-transparent" />
+                <div className="absolute inset-0 flex items-center px-5">
+                  <div>
+                    <p className="text-white font-black text-[19px] leading-none">
+                      {s.nombre}
+                    </p>
+                    <p className="text-white/55 text-[12.5px] mt-1">
+                      Ver el menú
+                    </p>
+                  </div>
                 </div>
-
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-[18px] leading-tight">
-                    {s.nombre}
-                  </p>
-                  <p className="text-white/45 text-[13px] mt-0.5">
-                    {s.descripcion}
-                  </p>
-                </div>
-
-                <span className="text-white/30 text-xl shrink-0 group-active:text-white/60">
-                  ›
-                </span>
               </Link>
             );
           })}
         </div>
 
-        <div className="flex items-center gap-3 rounded-2xl border border-black/[0.08] px-4 py-3.5">
-          <MapPin size={18} className="text-black/40 shrink-0" />
-          <p className="text-[12.5px] text-black/55 leading-snug">
+        {/* Destacadas */}
+        {destacados.length > 0 && (
+          <>
+            <p className="text-white/50 text-[12px] font-bold uppercase tracking-wider mb-3">
+              Destacadas
+            </p>
+            <div className="flex flex-col gap-4 mb-8">
+              {destacados.map((producto) => {
+                const desde = producto.precios.length
+                  ? Math.min(...producto.precios.map((p) => p.precio))
+                  : null;
+                return (
+                  <Link
+                    key={producto.id}
+                    href={`/producto/${producto.id}`}
+                    className="block bg-white/[0.05] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
+                  >
+                    <div className="relative h-44 w-full">
+                      {producto.fotoUrl ? (
+                        <Image
+                          src={producto.fotoUrl}
+                          alt={producto.nombre}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-[#1c1a17] flex items-center justify-center text-white/20 text-xs">
+                          Sin foto
+                        </div>
+                      )}
+                      <span className="absolute top-3 left-3 bg-[#141210]/70 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full">
+                        {producto.seccion.nombre}
+                      </span>
+                      {desde !== null && (
+                        <span className="absolute top-3 right-3 bg-[#c6f135] text-[#141210] text-[13px] font-black px-2.5 py-1 rounded-full">
+                          {producto.tieneTamanios ? "Desde " : ""}$
+                          {desde.toLocaleString("es-AR")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <p className="text-white font-black text-[17px] leading-none mb-1.5">
+                        {producto.nombre}
+                      </p>
+                      {producto.descripcion && (
+                        <p className="text-white/45 text-[13px] line-clamp-2 mb-3">
+                          {producto.descripcion}
+                        </p>
+                      )}
+                      <span className="inline-block bg-white/[0.08] text-white text-[13px] font-semibold px-4 py-2.5 rounded-full">
+                        Ver producto
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] px-4 py-3.5">
+          <MapPin size={18} className="text-white/40 shrink-0" />
+          <p className="text-[12.5px] text-white/50 leading-snug">
             Pedís acá, confirmás por WhatsApp y retirás en el local. Pago en
             el local.
           </p>
