@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "tsx db/seed.ts"
+    "seed": "tsx db/seed.ts",
+    "subir-fotos": "tsx db/subir-fotos.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
