@@ -68,7 +68,7 @@ export default async function HomePage() {
         </Link>
 
         {/* Secciones con foto de fondo */}
-        <p className="text-white/50 text-[12px] font-bold uppercase tracking-wider mb-3">
+        <p className="text-white/50 text-[12px] font-semibold  tracking-wider mb-3">
           Elegí qué pedir
         </p>
         <div className="flex flex-col gap-3 mb-9">
@@ -109,7 +109,7 @@ export default async function HomePage() {
         {/* Destacadas */}
         {destacados.length > 0 && (
           <>
-            <p className="text-white/50 text-[12px] font-bold uppercase tracking-wider mb-3">
+            <p className="text-white/50 text-[12px] font-semibold uppercase tracking-wider mb-3">
               Destacadas
             </p>
             <div className="flex flex-col gap-4 mb-8">
