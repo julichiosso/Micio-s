@@ -31,7 +31,8 @@ export default function BuscadorCliente({
   secciones: SeccionInfo[];
 }) {
   const [query, setQuery] = useState("");
-  const [seccionSeleccionada, setSeccionSeleccionada] = useState<string>("todas");
+  const [seccionSeleccionada, setSeccionSeleccionada] =
+    useState<string>("todas");
 
   // Filtrado reactivo por texto y sección
   const resultados = useMemo(() => {
@@ -47,6 +48,7 @@ export default function BuscadorCliente({
     // Filtro por término de búsqueda
     if (query.trim()) {
       const q = normalizar(query);
+
       lista = lista.filter(
         (item) =>
           normalizar(item.nombre).includes(q) ||
@@ -92,15 +94,18 @@ export default function BuscadorCliente({
           >
             <IconArrowLeft size={19} />
           </Link>
+
           <div className="flex-1 flex items-center gap-3 bg-white/[0.09] rounded-full px-4 py-2.5 border border-white/[0.08] focus-within:border-white/25 focus-within:bg-white/[0.12] transition-colors">
             <IconSearch size={18} className="text-white/40 shrink-0" />
+
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="¿Qué buscabas?"
+              placeholder="¿Qué se te antoja?"
               className="flex-1 bg-transparent text-white placeholder:text-white/35 text-[16px] outline-none"
             />
+
             {query && (
               <button
                 type="button"
@@ -127,8 +132,11 @@ export default function BuscadorCliente({
           >
             Todas ({items.length})
           </button>
+
           {secciones.map((sec) => {
-            const activa = normalizar(seccionSeleccionada) === normalizar(sec.nombre);
+            const activa =
+              normalizar(seccionSeleccionada) === normalizar(sec.nombre);
+
             return (
               <button
                 key={sec.id}
@@ -141,9 +149,12 @@ export default function BuscadorCliente({
                 }`}
               >
                 <span>{sec.nombre}</span>
+
                 <span
                   className={`text-[11px] px-1.5 py-0.2 rounded-full font-medium ${
-                    activa ? "bg-[#141210]/15 text-[#141210]" : "bg-white/10 text-white/40"
+                    activa
+                      ? "bg-[#141210]/15 text-[#141210]"
+                      : "bg-white/10 text-white/40"
                   }`}
                 >
                   {sec.cantidad}
@@ -163,6 +174,7 @@ export default function BuscadorCliente({
               <p className="text-black/40 text-[11px] font-bold uppercase tracking-[0.14em]">
                 Categorías del menú
               </p>
+
               <Link
                 href="/"
                 className="text-[12px] font-semibold text-black/60 hover:text-black transition-colors"
@@ -170,6 +182,7 @@ export default function BuscadorCliente({
                 Ver menú completo →
               </Link>
             </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {secciones.map((sec) => {
                 return (
@@ -189,14 +202,18 @@ export default function BuscadorCliente({
                     ) : (
                       <div className="absolute inset-0 bg-[#1c1a17]" />
                     )}
+
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+
                     <div className="absolute inset-x-3 bottom-2.5 z-10 flex items-end justify-between">
                       <div>
                         <p className="text-white font-bold text-[14px] leading-tight drop-shadow-sm">
                           {sec.nombre}
                         </p>
+
                         <p className="text-white/60 text-[11px] font-medium">
-                          {sec.cantidad} {sec.cantidad === 1 ? "opción" : "opciones"}
+                          {sec.cantidad}{" "}
+                          {sec.cantidad === 1 ? "opción" : "opciones"}
                         </p>
                       </div>
                     </div>
@@ -234,12 +251,16 @@ export default function BuscadorCliente({
             <div className="w-14 h-14 rounded-full bg-black/5 flex items-center justify-center mx-auto mb-3">
               <IconSearch size={24} className="text-black/30" />
             </div>
+
             <p className="font-bold text-black text-[16px] mb-1">
               No encontramos resultados
             </p>
+
             <p className="text-black/50 text-[13px] max-w-xs mx-auto mb-5">
-              Probá buscando con otras palabras o explorá las categorías disponibles.
+              Probá buscando con otras palabras o explorá las categorías
+              disponibles.
             </p>
+
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button
                 type="button"
@@ -251,6 +272,7 @@ export default function BuscadorCliente({
               >
                 Limpiar filtros
               </button>
+
               <Link
                 href="/"
                 className="bg-black/5 text-black rounded-full px-5 py-2.5 text-[13px] font-semibold active:scale-95 transition-transform"
@@ -274,8 +296,10 @@ export default function BuscadorCliente({
                     >
                       {grupo.nombre}
                     </h2>
+
                     <span className="text-black/35 text-[12px] font-medium">
-                      {grupo.items.length} {grupo.items.length === 1 ? "producto" : "productos"}
+                      {grupo.items.length}{" "}
+                      {grupo.items.length === 1 ? "producto" : "productos"}
                     </span>
                   </div>
                 )}
@@ -298,7 +322,10 @@ export default function BuscadorCliente({
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-black/[0.03]">
-                            <IconImage size={22} className="text-black/15" />
+                            <IconImage
+                              size={22}
+                              className="text-black/15"
+                            />
                           </div>
                         )}
                       </div>
@@ -308,14 +335,17 @@ export default function BuscadorCliente({
                         <span className="inline-block text-[10px] uppercase font-bold tracking-wider text-black/40 bg-black/[0.04] px-2 py-0.5 rounded-md mb-1">
                           {item.seccion}
                         </span>
+
                         <p className="font-bold text-black text-[15px] leading-tight truncate">
                           {item.nombre}
                         </p>
+
                         {item.descripcion && (
                           <p className="text-[12px] text-black/45 line-clamp-1 mt-0.5 font-normal">
                             {item.descripcion}
                           </p>
                         )}
+
                         {item.desde !== null && (
                           <p className="text-[13.5px] font-black text-black mt-1">
                             {item.tieneTamanios && (
@@ -330,7 +360,9 @@ export default function BuscadorCliente({
 
                       {/* Botón agregar / flecha */}
                       <div className="shrink-0 w-8 h-8 rounded-full bg-[#141210]/5 flex items-center justify-center text-black/40">
-                        <span className="text-lg leading-none select-none font-light">›</span>
+                        <span className="text-lg leading-none select-none font-light">
+                          ›
+                        </span>
                       </div>
                     </Link>
                   ))}
