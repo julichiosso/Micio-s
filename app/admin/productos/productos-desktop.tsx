@@ -417,17 +417,25 @@ export function ProductosDesktopView({
   actionActualizarPreciosPizza: (id: number, map: Record<string, number>) => Promise<void>;
 }) {
   const [query, setQuery] = useState("");
+  const [seccionFiltro, setSeccionFiltro] = useState<string>("todas");
   const [mostrarNuevo, setMostrarNuevo] = useState(false);
   const [mostrarAumento, setMostrarAumento] = useState(false);
 
   const productosFiltrados = useMemo(() => {
-    if (!query.trim()) return productosList;
+    let lista = productosList;
+
+    if (seccionFiltro !== "todas") {
+      const secId = Number(seccionFiltro);
+      lista = lista.filter((p) => p.seccion.id === secId);
+    }
+
+    if (!query.trim()) return lista;
     const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    return productosList.filter((p) =>
+    return lista.filter((p) =>
       p.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q) ||
-      p.seccion.nombre.toLowerCase().includes(q)
+      p.seccion.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q)
     );
-  }, [query, productosList]);
+  }, [query, seccionFiltro, productosList]);
 
   return (
     <div className="p-6 max-w-[1200px]">
@@ -463,6 +471,25 @@ export function ProductosDesktopView({
             onChange={(e) => setQuery(e.target.value)}
             className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] focus:ring-1 focus:ring-[#c6f135]/30 transition-colors placeholder:text-gray-400"
           />
+        </div>
+
+        {/* Filtro por Sección */}
+        <div className="relative">
+          <select
+            value={seccionFiltro}
+            onChange={(e) => setSeccionFiltro(e.target.value)}
+            className="border border-gray-200 rounded-lg px-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] focus:ring-1 focus:ring-[#c6f135]/30 transition-colors cursor-pointer font-medium"
+          >
+            <option value="todas">Todas las secciones ({seccionesList.length})</option>
+            {seccionesList.map((s) => {
+              const cant = productosList.filter((p) => p.seccion.id === s.id).length;
+              return (
+                <option key={s.id} value={s.id}>
+                  {s.nombre} ({cant})
+                </option>
+              );
+            })}
+          </select>
         </div>
 
         <div className="flex items-center gap-2 ml-auto">

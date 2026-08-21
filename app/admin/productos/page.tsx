@@ -13,6 +13,7 @@ import { subirFotoProducto } from "@/lib/actions-storage";
 import { redirect } from "next/navigation";
 import { ProductoCard } from "./producto-card";
 import { ProductosDesktopView } from "./productos-desktop";
+import { SeccionAcordeon } from "./seccion-acordeon";
 
 // -------- Server Actions (firmas sin cambios) --------
 
@@ -220,30 +221,26 @@ export default async function ProductosAdminPage() {
             </div>
           </details>
 
-          {/* Listado por sección */}
+          {/* Listado por sección colapsable */}
           {porSeccion.map((seccion) => (
-            <div key={seccion.id}>
-              <p className="text-white/35 text-[11px] font-medium uppercase tracking-[0.12em] mb-3 px-1">
-                {seccion.nombre}
-                <span className="ml-2 text-white/20 normal-case tracking-normal">
-                  ({seccion.productos.length})
-                </span>
-              </p>
-              <div className="flex flex-col gap-3">
-                {seccion.productos.length === 0 ? (
-                  <p className="text-white/25 text-[13px] px-1">Sin productos en esta sección.</p>
-                ) : (
-                  seccion.productos.map((p) => (
-                    <ProductoCard
-                      key={p.id}
-                      producto={p}
-                      secciones={seccionesList}
-                      {...sharedActions}
-                    />
-                  ))
-                )}
-              </div>
-            </div>
+            <SeccionAcordeon
+              key={seccion.id}
+              nombre={seccion.nombre}
+              cantidad={seccion.productos.length}
+            >
+              {seccion.productos.length === 0 ? (
+                <p className="text-white/25 text-[13px] px-1 py-2">Sin productos en esta sección.</p>
+              ) : (
+                seccion.productos.map((p) => (
+                  <ProductoCard
+                    key={p.id}
+                    producto={p}
+                    secciones={seccionesList}
+                    {...sharedActions}
+                  />
+                ))
+              )}
+            </SeccionAcordeon>
           ))}
         </div>
 
