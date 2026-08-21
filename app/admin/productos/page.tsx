@@ -54,19 +54,17 @@ async function actionEliminarDefinitivo(id: number) {
 async function actionEditarProducto(id: number, nombre: string, descripcion: string) {
   "use server";
   await editarProducto(id, { nombre, descripcion: descripcion || undefined });
-  redirect("/admin/productos");
 }
 
 async function actionSubirFoto(productoId: number, formData: FormData) {
   "use server";
-  await subirFotoProducto(productoId, formData);
-  redirect("/admin/productos");
+  const res = await subirFotoProducto(productoId, formData);
+  return res;
 }
 
 async function actionActualizarPrecioUnico(productoId: number, precio: number) {
   "use server";
   await actualizarPrecios(productoId, [{ tamanio: "unico", precio }]);
-  redirect("/admin/productos");
 }
 
 async function actionActualizarPreciosPizza(
@@ -76,7 +74,6 @@ async function actionActualizarPreciosPizza(
   "use server";
   const lista = Object.entries(preciosMap).map(([tamanio, precio]) => ({ tamanio, precio }));
   await actualizarPrecios(productoId, lista);
-  redirect("/admin/productos");
 }
 
 async function actionAumentoMasivo(formData: FormData) {

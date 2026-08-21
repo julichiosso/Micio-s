@@ -177,7 +177,7 @@ export function SeccionesDesktopView({
           { label: "Activas", value: activas, color: "text-green-700" },
           { label: "Inactivas", value: inactivas, color: inactivas > 0 ? "text-gray-500" : "text-gray-400" },
         ].map((s) => (
-          <div key={s.label} className="bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-sm">
+          <div key={s.label} className="bg-white border border-gray-200 rounded-2xl px-5 py-4">
             <p className="text-[11.5px] text-gray-400 uppercase tracking-wider font-semibold mb-1">{s.label}</p>
             <p className={`text-[28px] font-black leading-none ${s.color}`}>{s.value}</p>
           </div>
@@ -185,7 +185,7 @@ export function SeccionesDesktopView({
       </div>
 
       {/* Formulario nueva categoría */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-5 shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-5">
         <p className="text-[14px] font-bold text-gray-900 mb-2">Crear nueva categoría</p>
         <form action={actionCrearSeccion} className="flex gap-2.5">
           <input
@@ -193,11 +193,11 @@ export function SeccionesDesktopView({
             name="nombre"
             placeholder="Ej: Empanadas, Bebidas, Postres..."
             required
-            className="flex-1 border border-gray-200 rounded-xl px-3.5 py-2.5 text-[13.5px] text-gray-800 bg-white outline-none focus:border-[#c6f135] focus:ring-2 focus:ring-[#c6f135]/25 transition-all placeholder:text-gray-400 shadow-sm"
+            className="flex-1 border border-gray-200 rounded-xl px-3.5 py-2.5 text-[13.5px] text-gray-800 bg-white outline-none focus:border-[#c6f135] focus:ring-2 focus:ring-[#c6f135]/25 transition-all placeholder:text-gray-400"
           />
           <button
             type="submit"
-            className="shrink-0 bg-[#c6f135] text-[#141210] rounded-xl px-5 py-2.5 text-[13.5px] font-bold hover:bg-[#d4ff3d] transition-colors cursor-pointer shadow-sm shadow-[#c6f135]/30"
+            className="shrink-0 bg-[#c6f135] text-[#141210] rounded-xl px-5 py-2.5 text-[13.5px] font-bold hover:bg-[#d4ff3d] transition-colors cursor-pointer"
           >
             Crear categoría
           </button>
@@ -205,7 +205,7 @@ export function SeccionesDesktopView({
       </div>
 
       {/* Tabla */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/70">

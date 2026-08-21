@@ -40,7 +40,7 @@ export function ModalEditarProducto({
   categorias: Categoria[];
   onClose: () => void;
   actionEditarProducto: (id: number, nombre: string, descripcion: string) => Promise<void>;
-  actionSubirFoto: (id: number, fd: FormData) => Promise<void>;
+  actionSubirFoto: (id: number, fd: FormData) => Promise<unknown>;
   actionActualizarPrecioUnico: (id: number, precio: number) => Promise<void>;
   actionActualizarPreciosPizza: (id: number, map: Record<string, number>) => Promise<void>;
 }) {
@@ -74,12 +74,21 @@ export function ModalEditarProducto({
     try {
       const fd = new FormData();
       fd.append("foto", archivoSeleccionado);
-      await actionSubirFoto(producto.id, fd);
-      setFotoMensaje("✓ Foto actualizada con éxito");
+      const res = await actionSubirFoto(producto.id, fd);
+      if (res && typeof res === "object" && "publicUrl" in res && typeof res.publicUrl === "string") {
+        setPreviewUrl(res.publicUrl);
+      }
+      setFotoMensaje("✓ ¡Foto actualizada con éxito!");
       setArchivoSeleccionado(null);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Error al subir la foto";
-      setFotoMensaje(`❌ ${errorMsg}`);
+      // Si el error era el NEXT_REDIRECT interno de Next.js, tratarlo como éxito
+      if (errorMsg.includes("NEXT_REDIRECT")) {
+        setFotoMensaje("✓ ¡Foto actualizada con éxito!");
+        setArchivoSeleccionado(null);
+      } else {
+        setFotoMensaje(`❌ ${errorMsg}`);
+      }
     } finally {
       setSubiendoFoto(false);
     }
@@ -98,7 +107,11 @@ export function ModalEditarProducto({
       setDatosMensaje("✓ Datos guardados con éxito");
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Error al guardar datos";
-      setDatosMensaje(`❌ ${errorMsg}`);
+      if (errorMsg.includes("NEXT_REDIRECT")) {
+        setDatosMensaje("✓ Datos guardados con éxito");
+      } else {
+        setDatosMensaje(`❌ ${errorMsg}`);
+      }
     } finally {
       setGuardandoDatos(false);
     }
@@ -120,7 +133,11 @@ export function ModalEditarProducto({
       setPreciosMensaje("✓ Precios actualizados");
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Error al guardar precios";
-      setPreciosMensaje(`❌ ${errorMsg}`);
+      if (errorMsg.includes("NEXT_REDIRECT")) {
+        setPreciosMensaje("✓ Precios actualizados");
+      } else {
+        setPreciosMensaje(`❌ ${errorMsg}`);
+      }
     } finally {
       setGuardandoPrecios(false);
     }
@@ -140,7 +157,11 @@ export function ModalEditarProducto({
       }
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Error al guardar precio";
-      setPreciosMensaje(`❌ ${errorMsg}`);
+      if (errorMsg.includes("NEXT_REDIRECT")) {
+        setPreciosMensaje("✓ Precio actualizado");
+      } else {
+        setPreciosMensaje(`❌ ${errorMsg}`);
+      }
     } finally {
       setGuardandoPrecios(false);
     }
@@ -150,26 +171,26 @@ export function ModalEditarProducto({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/65 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
-      <div className="relative bg-[#1a1814] text-white border border-white/[0.12] rounded-3xl shadow-2xl w-full max-w-xl my-8 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150">
+      {/* Modal Container: Blanco en Desktop, Oscuro en Mobile */}
+      <div className="relative bg-[#1a1814] md:bg-white text-white md:text-gray-900 border border-white/[0.12] md:border-gray-200 rounded-3xl w-full max-w-2xl my-8 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-150">
         {/* Cabecera */}
-        <div className="px-6 py-4.5 border-b border-white/[0.08] flex items-center justify-between bg-[#141210]">
+        <div className="px-6 py-4 border-b border-white/[0.08] md:border-gray-100 flex items-center justify-between bg-[#141210] md:bg-gray-50/80">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider bg-[#c6f135]/15 text-[#c6f135] px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] font-bold uppercase tracking-wider bg-[#c6f135]/20 md:bg-[#c6f135]/30 text-[#c6f135] md:text-[#3e4d00] px-2.5 py-0.5 rounded-full">
                 {producto.seccion.nombre}
               </span>
               {!producto.activo && (
-                <span className="text-[10.5px] uppercase font-semibold bg-white/10 text-white/50 px-2 py-0.5 rounded-full">
+                <span className="text-[10.5px] uppercase font-semibold bg-white/10 md:bg-gray-200 text-white/50 md:text-gray-600 px-2 py-0.5 rounded-full">
                   Inactivo
                 </span>
               )}
             </div>
-            <h2 className="text-[18px] font-bold text-white leading-tight">
+            <h2 className="text-[18px] font-bold text-white md:text-gray-900 leading-tight">
               Editar: {producto.nombre}
             </h2>
           </div>
@@ -177,7 +198,7 @@ export function ModalEditarProducto({
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/[0.06] hover:bg-white/10 text-white/60 hover:text-white transition-colors cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/[0.06] md:bg-gray-100 hover:bg-white/10 md:hover:bg-gray-200 text-white/60 md:text-gray-500 hover:text-white md:hover:text-gray-900 transition-colors cursor-pointer"
             aria-label="Cerrar"
           >
             <IconClose size={18} />
@@ -185,16 +206,16 @@ export function ModalEditarProducto({
         </div>
 
         {/* Cuerpo del Modal */}
-        <div className="p-6 flex flex-col gap-6 max-h-[75vh] overflow-y-auto">
+        <div className="p-6 flex flex-col gap-5 max-h-[75vh] overflow-y-auto">
           {/* 1. SECCIÓN FOTO */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4.5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40 mb-3">
+          <div className="bg-white/[0.03] md:bg-gray-50/70 border border-white/[0.06] md:border-gray-200 rounded-2xl p-4.5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40 md:text-gray-400 mb-3">
               Foto del producto
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4">
               {/* Preview de la foto */}
-              <div className="w-24 h-24 rounded-2xl bg-white/[0.05] border border-white/[0.1] relative overflow-hidden shrink-0 shadow-inner flex items-center justify-center">
+              <div className="w-24 h-24 rounded-2xl bg-white/[0.05] md:bg-white border border-white/[0.1] md:border-gray-200 relative overflow-hidden shrink-0 flex items-center justify-center">
                 {previewUrl ? (
                   <Image
                     src={previewUrl}
@@ -203,7 +224,7 @@ export function ModalEditarProducto({
                     className="object-cover"
                   />
                 ) : (
-                  <div className="flex flex-col items-center justify-center text-white/20">
+                  <div className="flex flex-col items-center justify-center text-white/20 md:text-gray-300">
                     <IconImage size={28} />
                     <span className="text-[10px] mt-1">Sin foto</span>
                   </div>
@@ -224,7 +245,7 @@ export function ModalEditarProducto({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white text-[13px] font-semibold rounded-xl transition-colors cursor-pointer active:scale-95"
+                    className="px-4 py-2.5 bg-white/10 md:bg-white md:border md:border-gray-200 hover:bg-white/15 md:hover:bg-gray-50 text-white md:text-gray-800 text-[13px] font-semibold rounded-xl transition-colors cursor-pointer active:scale-95"
                   >
                     {archivoSeleccionado ? "Cambiar archivo" : "Seleccionar foto"}
                   </button>
@@ -234,7 +255,7 @@ export function ModalEditarProducto({
                       type="button"
                       onClick={handleSubirFoto}
                       disabled={subiendoFoto}
-                      className="px-4 py-2.5 bg-[#c6f135] hover:bg-[#d6ff47] text-[#141210] text-[13px] font-bold rounded-xl transition-all disabled:opacity-50 cursor-pointer active:scale-95 shadow-md shadow-[#c6f135]/20"
+                      className="px-4 py-2.5 bg-[#c6f135] hover:bg-[#d6ff47] text-[#141210] text-[13px] font-bold rounded-xl transition-all disabled:opacity-50 cursor-pointer active:scale-95"
                     >
                       {subiendoFoto ? "Subiendo archivo..." : "Subir y Guardar Foto"}
                     </button>
@@ -242,15 +263,15 @@ export function ModalEditarProducto({
                 </div>
 
                 {archivoSeleccionado && (
-                  <p className="text-[12px] text-white/50 truncate">
-                    Archivo listo: <span className="text-white font-medium">{archivoSeleccionado.name}</span>
+                  <p className="text-[12px] text-white/50 md:text-gray-500 truncate">
+                    Archivo listo: <span className="text-white md:text-gray-900 font-medium">{archivoSeleccionado.name}</span>
                   </p>
                 )}
 
                 {fotoMensaje && (
                   <p
-                    className={`text-[12.5px] font-medium mt-1 ${
-                      fotoMensaje.startsWith("✓") ? "text-[#c6f135]" : "text-red-400"
+                    className={`text-[12.5px] font-semibold mt-1 ${
+                      fotoMensaje.startsWith("✓") ? "text-[#c6f135] md:text-green-700" : "text-red-400 md:text-red-600"
                     }`}
                   >
                     {fotoMensaje}
@@ -261,14 +282,14 @@ export function ModalEditarProducto({
           </div>
 
           {/* 2. SECCIÓN DATOS (Nombre y Descripción) */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4.5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40 mb-3">
+          <div className="bg-white/[0.03] md:bg-gray-50/70 border border-white/[0.06] md:border-gray-200 rounded-2xl p-4.5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40 md:text-gray-400 mb-3">
               Información general
             </p>
 
             <form onSubmit={handleGuardarDatos} className="flex flex-col gap-3">
               <div>
-                <label className="block text-white/40 text-[11px] uppercase tracking-wider mb-1.5 font-medium">
+                <label className="block text-white/40 md:text-gray-500 text-[11px] uppercase tracking-wider mb-1.5 font-bold">
                   Nombre del producto
                 </label>
                 <input
@@ -276,27 +297,27 @@ export function ModalEditarProducto({
                   defaultValue={producto.nombre}
                   required
                   placeholder="Ej: Pizza Napolitana Especial"
-                  className="w-full bg-white/[0.06] rounded-xl px-3.5 py-2.5 text-white text-[15px] outline-none border border-white/[0.08] focus:border-[#c6f135]/60 focus:bg-white/[0.08] transition-colors"
+                  className="w-full bg-white/[0.06] md:bg-white rounded-xl px-3.5 py-2.5 text-white md:text-gray-900 text-[15px] font-medium outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] md:focus:ring-2 md:focus:ring-[#c6f135]/25 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-white/40 text-[11px] uppercase tracking-wider mb-1.5 font-medium">
+                <label className="block text-white/40 md:text-gray-500 text-[11px] uppercase tracking-wider mb-1.5 font-bold">
                   Descripción
                 </label>
                 <input
                   name="descripcion"
                   defaultValue={producto.descripcion ?? ""}
                   placeholder="Ingredientes o detalle del producto (opcional)"
-                  className="w-full bg-white/[0.06] rounded-xl px-3.5 py-2.5 text-white text-[15px] outline-none border border-white/[0.08] focus:border-[#c6f135]/60 focus:bg-white/[0.08] transition-colors placeholder:text-white/20"
+                  className="w-full bg-white/[0.06] md:bg-white rounded-xl px-3.5 py-2.5 text-white md:text-gray-900 text-[15px] outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] md:focus:ring-2 md:focus:ring-[#c6f135]/25 transition-all placeholder:text-white/20 md:placeholder:text-gray-400"
                 />
               </div>
 
               <div className="flex items-center justify-between pt-1">
                 {datosMensaje ? (
                   <p
-                    className={`text-[12.5px] font-medium ${
-                      datosMensaje.startsWith("✓") ? "text-[#c6f135]" : "text-red-400"
+                    className={`text-[12.5px] font-semibold ${
+                      datosMensaje.startsWith("✓") ? "text-[#c6f135] md:text-green-700" : "text-red-400 md:text-red-600"
                     }`}
                   >
                     {datosMensaje}
@@ -308,7 +329,7 @@ export function ModalEditarProducto({
                 <button
                   type="submit"
                   disabled={guardandoDatos}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-[13px] font-semibold rounded-xl transition-colors disabled:opacity-50 cursor-pointer active:scale-95"
+                  className="px-4 py-2 bg-white/10 md:bg-gray-900 hover:bg-white/15 md:hover:bg-gray-800 text-white text-[13px] font-bold rounded-xl transition-colors disabled:opacity-50 cursor-pointer active:scale-95"
                 >
                   {guardandoDatos ? "Guardando..." : "Guardar datos"}
                 </button>
@@ -317,8 +338,8 @@ export function ModalEditarProducto({
           </div>
 
           {/* 3. SECCIÓN PRECIOS */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4.5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40 mb-3">
+          <div className="bg-white/[0.03] md:bg-gray-50/70 border border-white/[0.06] md:border-gray-200 rounded-2xl p-4.5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40 md:text-gray-400 mb-3">
               Precios y Tamaños
             </p>
 
@@ -331,13 +352,13 @@ export function ModalEditarProducto({
                     return (
                       <div
                         key={tam}
-                        className="flex items-center gap-2 bg-white/[0.04] p-2 rounded-xl border border-white/[0.05]"
+                        className="flex items-center gap-2 bg-white/[0.04] md:bg-white p-2 rounded-xl border border-white/[0.05] md:border-gray-200"
                       >
-                        <span className="text-[12.5px] text-white/60 font-medium w-28 shrink-0">
+                        <span className="text-[12.5px] text-white/60 md:text-gray-600 font-semibold w-28 shrink-0">
                           {LABELS[tam]}
                         </span>
                         <div className="relative flex-1">
-                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 text-[13px]">
+                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 md:text-gray-400 text-[13px]">
                             $
                           </span>
                           <input
@@ -345,7 +366,7 @@ export function ModalEditarProducto({
                             name={`precio_${tam}`}
                             defaultValue={precioActual}
                             placeholder="0"
-                            className="w-full bg-white/[0.06] rounded-lg pl-6 pr-2.5 py-1.5 text-white text-[15px] font-semibold outline-none border border-white/[0.08] focus:border-[#c6f135]/60 transition-colors"
+                            className="w-full bg-white/[0.06] md:bg-gray-50 rounded-lg pl-6 pr-2.5 py-1.5 text-white md:text-gray-900 text-[15px] font-bold outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] transition-colors"
                           />
                         </div>
                       </div>
@@ -356,8 +377,8 @@ export function ModalEditarProducto({
                 <div className="flex items-center justify-between pt-2">
                   {preciosMensaje ? (
                     <p
-                      className={`text-[12.5px] font-medium ${
-                        preciosMensaje.startsWith("✓") ? "text-[#c6f135]" : "text-red-400"
+                      className={`text-[12.5px] font-semibold ${
+                        preciosMensaje.startsWith("✓") ? "text-[#c6f135] md:text-green-700" : "text-red-400 md:text-red-600"
                       }`}
                     >
                       {preciosMensaje}
@@ -369,7 +390,7 @@ export function ModalEditarProducto({
                   <button
                     type="submit"
                     disabled={guardandoPrecios}
-                    className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-[13px] font-semibold rounded-xl transition-colors disabled:opacity-50 cursor-pointer active:scale-95"
+                    className="px-4 py-2 bg-white/10 md:bg-gray-900 hover:bg-white/15 md:hover:bg-gray-800 text-white text-[13px] font-bold rounded-xl transition-colors disabled:opacity-50 cursor-pointer active:scale-95"
                   >
                     {guardandoPrecios ? "Guardando..." : "Guardar precios"}
                   </button>
@@ -379,7 +400,7 @@ export function ModalEditarProducto({
               <form onSubmit={handleGuardarPrecioUnico} className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   <div className="relative flex-1">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30 text-[15px]">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30 md:text-gray-400 text-[15px]">
                       $
                     </span>
                     <input
@@ -388,14 +409,14 @@ export function ModalEditarProducto({
                       defaultValue={producto.precios[0]?.precio ?? ""}
                       placeholder="Precio en pesos"
                       required
-                      className="w-full bg-white/[0.06] rounded-xl pl-8 pr-3.5 py-2.5 text-white text-[16px] font-semibold outline-none border border-white/[0.08] focus:border-[#c6f135]/60 transition-colors"
+                      className="w-full bg-white/[0.06] md:bg-white rounded-xl pl-8 pr-3.5 py-2.5 text-white md:text-gray-900 text-[16px] font-bold outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] transition-colors"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={guardandoPrecios}
-                    className="px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white text-[13px] font-semibold rounded-xl transition-colors disabled:opacity-50 shrink-0 cursor-pointer active:scale-95"
+                    className="px-4 py-2.5 bg-white/10 md:bg-gray-900 hover:bg-white/15 md:hover:bg-gray-800 text-white text-[13px] font-bold rounded-xl transition-colors disabled:opacity-50 shrink-0 cursor-pointer active:scale-95"
                   >
                     {guardandoPrecios ? "Guardando..." : "Guardar precio"}
                   </button>
@@ -403,8 +424,8 @@ export function ModalEditarProducto({
 
                 {preciosMensaje && (
                   <p
-                    className={`text-[12.5px] font-medium ${
-                      preciosMensaje.startsWith("✓") ? "text-[#c6f135]" : "text-red-400"
+                    className={`text-[12.5px] font-semibold ${
+                      preciosMensaje.startsWith("✓") ? "text-[#c6f135] md:text-green-700" : "text-red-400 md:text-red-600"
                     }`}
                   >
                     {preciosMensaje}
@@ -416,11 +437,11 @@ export function ModalEditarProducto({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-white/[0.08] flex items-center justify-end bg-[#141210]">
+        <div className="px-6 py-4 border-t border-white/[0.08] md:border-gray-100 flex items-center justify-end bg-[#141210] md:bg-gray-50">
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2.5 bg-white/15 hover:bg-white/20 text-white rounded-xl text-[14px] font-bold transition-colors cursor-pointer"
+            className="px-6 py-2.5 bg-white/15 md:bg-gray-900 hover:bg-white/20 md:hover:bg-gray-800 text-white rounded-xl text-[14px] font-bold transition-colors cursor-pointer"
           >
             Listo / Cerrar
           </button>

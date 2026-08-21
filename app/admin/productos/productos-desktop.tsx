@@ -92,7 +92,7 @@ export function ProductosDesktopView({
   actionReactivar: (id: number) => Promise<void>;
   actionEliminarDefinitivo: (id: number) => Promise<void>;
   actionEditarProducto: (id: number, nombre: string, descripcion: string) => Promise<void>;
-  actionSubirFoto: (id: number, fd: FormData) => Promise<void>;
+  actionSubirFoto: (id: number, fd: FormData) => Promise<unknown>;
   actionActualizarPrecioUnico: (id: number, precio: number) => Promise<void>;
   actionActualizarPreciosPizza: (id: number, map: Record<string, number>) => Promise<void>;
 }) {
@@ -176,7 +176,7 @@ export function ProductosDesktopView({
           { label: "Sin foto cargada", value: stats.sinFoto, color: stats.sinFoto > 0 ? "text-amber-600" : "text-gray-400" },
           { label: "Productos inactivos", value: stats.inactivos, color: stats.inactivos > 0 ? "text-gray-500" : "text-gray-400" },
         ].map((s) => (
-          <div key={s.label} className="bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-sm">
+          <div key={s.label} className="bg-white border border-gray-200 rounded-2xl px-5 py-4">
             <p className="text-[11.5px] text-gray-400 uppercase tracking-wider font-semibold mb-1">{s.label}</p>
             <p className={`text-[28px] font-black leading-none ${s.color}`}>{s.value}</p>
           </div>
@@ -203,7 +203,7 @@ export function ProductosDesktopView({
                 setQuery(e.target.value);
                 setPaginaActual(1);
               }}
-              className="w-full border border-gray-200 rounded-xl pl-9 pr-3.5 py-2.5 text-[13.5px] text-gray-800 bg-white outline-none focus:border-[#c6f135] focus:ring-2 focus:ring-[#c6f135]/25 transition-all placeholder:text-gray-400 shadow-sm"
+              className="w-full border border-gray-200 rounded-xl pl-9 pr-3.5 py-2.5 text-[13.5px] text-gray-800 bg-white outline-none focus:border-[#c6f135] focus:ring-2 focus:ring-[#c6f135]/25 transition-all placeholder:text-gray-400"
             />
           </div>
 
@@ -215,7 +215,7 @@ export function ProductosDesktopView({
                 setCategoriaFiltro(e.target.value);
                 setPaginaActual(1);
               }}
-              className="border border-gray-200 rounded-xl px-3.5 py-2.5 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] focus:ring-2 focus:ring-[#c6f135]/25 transition-all cursor-pointer font-semibold shadow-sm"
+              className="border border-gray-200 rounded-xl px-3.5 py-2.5 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] focus:ring-2 focus:ring-[#c6f135]/25 transition-all cursor-pointer font-semibold"
             >
               <option value="todas">Todas las categorías ({seccionesList.length})</option>
               {seccionesList.map((s) => {
@@ -237,12 +237,12 @@ export function ProductosDesktopView({
             <button
               type="button"
               onClick={() => { setMostrarAumento(!mostrarAumento); setMostrarNuevo(false); }}
-              className="text-[13px] px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors font-semibold shadow-sm cursor-pointer"
+              className="text-[13px] px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors font-semibold cursor-pointer"
             >
               Aumento masivo %
             </button>
             {mostrarAumento && (
-              <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4.5 z-20 animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-2xl p-4.5 z-20 animate-in fade-in zoom-in-95 duration-100">
                 <p className="text-[13px] font-bold text-gray-800 mb-1">Ajustar precios masivos</p>
                 <p className="text-[11.5px] text-gray-500 mb-3">Aumenta o disminuye el % de una categoría entera.</p>
                 <form action={actionAumentoMasivo} className="flex flex-col gap-2.5">
@@ -280,7 +280,7 @@ export function ProductosDesktopView({
             <button
               type="button"
               onClick={() => { setMostrarNuevo(!mostrarNuevo); setMostrarAumento(false); }}
-              className="text-[13px] px-4.5 py-2.5 rounded-xl bg-[#c6f135] text-[#141210] font-black hover:bg-[#d4ff3d] transition-all flex items-center gap-1.5 shadow-sm shadow-[#c6f135]/30 cursor-pointer active:scale-95"
+              className="text-[13px] px-4.5 py-2.5 rounded-xl bg-[#c6f135] text-[#141210] font-black hover:bg-[#d4ff3d] transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -288,7 +288,7 @@ export function ProductosDesktopView({
               Nuevo producto
             </button>
             {mostrarNuevo && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl p-5 z-20 animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-2xl p-5 z-20 animate-in fade-in zoom-in-95 duration-100">
                 <p className="text-[14px] font-bold text-gray-900 mb-3">Agregar producto</p>
                 <form action={actionCrearProducto} className="flex flex-col gap-3">
                   <div>
@@ -340,7 +340,7 @@ export function ProductosDesktopView({
       </div>
 
       {/* ─── Tabla de Productos ─── */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/70">
@@ -372,7 +372,7 @@ export function ProductosDesktopView({
                     <td className="pl-5 py-3.5">
                       <div
                         onClick={() => setProductoParaEditar(p)}
-                        className="w-16 h-16 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden relative shrink-0 shadow-sm cursor-pointer group"
+                        className="w-16 h-16 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden relative shrink-0 cursor-pointer group"
                         title="Tocar para editar foto"
                       >
                         {p.fotoUrl ? (

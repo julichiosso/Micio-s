@@ -75,4 +75,6 @@ export async function subirFotoProducto(productoId: number, formData: FormData) 
 
   revalidatePath("/admin/productos");
   revalidatePath("/", "layout");
+
+  return { publicUrl: urlPublica.publicUrl };
 }

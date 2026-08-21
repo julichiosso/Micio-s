@@ -43,22 +43,13 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="hidden md:flex flex-col w-60 shrink-0 border-r border-gray-200 bg-white min-h-screen sticky top-0 shadow-sm">
+    <aside className="hidden md:flex flex-col w-60 shrink-0 border-r border-gray-200 bg-white min-h-screen sticky top-0">
       {/* Brand Header */}
       <div className="px-5 pt-6 pb-5 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[10.5px] font-bold uppercase tracking-widest bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">
-            Panel Admin
-          </span>
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            Online
-          </span>
-        </div>
         <p className="text-[20px] font-black text-gray-900 leading-none tracking-tight">
           Micio&apos;s
         </p>
-        <p className="text-[12px] text-gray-400 mt-1 font-medium">Pizzería · San Jorge</p>
+        <p className="text-[12px] text-gray-400 mt-1 font-medium">Panel de administración</p>
       </div>
 
       {/* Navegación Principal */}

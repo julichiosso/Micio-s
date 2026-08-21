@@ -101,7 +101,7 @@ export function ProductoCard({
   actionReactivar: (id: number) => Promise<void>;
   actionEliminarDefinitivo: (id: number) => Promise<void>;
   actionEditarProducto: (id: number, nombre: string, descripcion: string) => Promise<void>;
-  actionSubirFoto: (productoId: number, formData: FormData) => Promise<void>;
+  actionSubirFoto: (productoId: number, formData: FormData) => Promise<unknown>;
   actionActualizarPrecioUnico: (productoId: number, precio: number) => Promise<void>;
   actionActualizarPreciosPizza: (productoId: number, precios: Record<string, number>) => Promise<void>;
 }) {
