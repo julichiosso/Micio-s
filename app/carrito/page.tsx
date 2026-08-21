@@ -16,6 +16,7 @@ import {
   ItemCarrito,
 } from "@/lib/carrito";
 import { armarLinkWhatsapp } from "@/lib/whatsapp";
+import FooterInfo from "@/app/footer-info";
 
 export default function CarritoPage() {
   const [items, setItems] = useState<ItemCarrito[]>([]);
@@ -43,7 +44,7 @@ export default function CarritoPage() {
   if (cargando) return null;
 
   return (
-    <main className="min-h-screen bg-[#f7f3ea]">
+    <main className="min-h-screen bg-[#141210]">
       {/* Header */}
       <div className="bg-[#141210] px-5 pt-6 pb-6 flex items-center gap-3">
         <Link
@@ -61,7 +62,7 @@ export default function CarritoPage() {
         </h1>
       </div>
 
-      <div className="px-4 pt-6 pb-32">
+      <div className="bg-[#f7f3ea] rounded-t-[28px] px-4 pt-6 pb-12 min-h-[60vh]">
         {items.length === 0 ? (
           <div className="text-center pt-16">
             <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center mx-auto mb-4">
@@ -169,6 +170,10 @@ export default function CarritoPage() {
             </div>
           </>
         )}
+      </div>
+
+      <div className="pb-28">
+        <FooterInfo />
       </div>
     </main>
   );

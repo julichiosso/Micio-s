@@ -3,7 +3,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getSeccionConProductos, getSecciones } from "@/lib/queries/productos";
 import { IconArrowLeft, IconSearch, IconImage } from "@/app/icons";
-import Footer from "@/app/footer";
 import FooterInfo from "../footer-info";
 
 // Mapeo de sección → video de fondo (puede expandirse con más secciones)

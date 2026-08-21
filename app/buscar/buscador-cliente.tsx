@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { IconSearch, IconArrowLeft, IconClose, IconImage } from "@/app/icons";
+import FooterInfo from "@/app/footer-info";
 
 type Item = {
   id: number;
@@ -372,6 +373,8 @@ export default function BuscadorCliente({
           </div>
         )}
       </div>
+
+      <FooterInfo />
     </main>
   );
 }

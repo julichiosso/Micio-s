@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getProductoPorId } from "@/lib/queries/productos";
 import AgregarAlCarrito from "./agregar-al-carrito";
 import { IconArrowLeft, IconImage } from "@/app/icons";
+import FooterInfo from "@/app/footer-info";
 
 const LABELS_TAMANIO: Record<string, string> = {
   xl: "XL",
@@ -36,60 +37,67 @@ export default async function ProductoPage({
   );
 
   return (
-    <main className="min-h-screen bg-[#f7f3ea] pb-28">
-      {/* Foto grande — contenedor portrait = llena sin barras */}
-      <div className="relative w-full" style={{ aspectRatio: "3/4" }}>
-        {producto.fotoUrl ? (
-          <Image
-            src={producto.fotoUrl}
-            alt={producto.nombre}
-            fill
-            className="object-cover"
-            priority
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[#f0ebe0]">
-            <IconImage size={48} className="text-black/15" />
-          </div>
-        )}
+    <main className="min-h-screen bg-[#141210]">
+      <div className="bg-[#f7f3ea] pb-10">
+        {/* Foto grande — contenedor portrait = llena sin barras */}
+        <div className="relative w-full" style={{ aspectRatio: "3/4" }}>
+          {producto.fotoUrl ? (
+            <Image
+              src={producto.fotoUrl}
+              alt={producto.nombre}
+              fill
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-[#f0ebe0]">
+              <IconImage size={48} className="text-black/15" />
+            </div>
+          )}
 
-        <div className="absolute top-0 inset-x-0 pt-6 px-5">
-          <Link
-            href={`/${producto.seccion.nombre.toLowerCase()}`}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-[#141210]/70 text-white backdrop-blur-sm"
-            aria-label="Volver"
+          <div className="absolute top-0 inset-x-0 pt-6 px-5">
+            <Link
+              href={`/${producto.seccion.nombre.toLowerCase()}`}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-[#141210]/70 text-white backdrop-blur-sm"
+              aria-label="Volver"
+            >
+              <IconArrowLeft size={18} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="px-5 pt-5">
+          <p className="text-[11px] uppercase tracking-wider text-black/35 mb-1">
+            {producto.seccion.nombre}
+          </p>
+          <h1
+            className="text-[26px] leading-[0.95] text-black mb-1.5"
+            style={{ fontFamily: "var(--font-heading)" }}
           >
-            <IconArrowLeft size={18} />
-          </Link>
+            {producto.nombre}
+          </h1>
+          {producto.descripcion && (
+            <p className="text-black/55 text-[14px] leading-snug mb-6">
+              {producto.descripcion}
+            </p>
+          )}
+          {!producto.descripcion && <div className="mb-6" />}
+
+          <AgregarAlCarrito
+            producto={{ id: producto.id, nombre: producto.nombre }}
+            opciones={preciosOrdenados.map((p) => ({
+              tamanio: p.tamanio,
+              label: LABELS_TAMANIO[p.tamanio] ?? p.tamanio,
+              precio: p.precio,
+            }))}
+          />
         </div>
       </div>
 
-      {/* Info */}
-      <div className="px-5 pt-5">
-        <p className="text-[11px] uppercase tracking-wider text-black/35 mb-1">
-          {producto.seccion.nombre}
-        </p>
-        <h1
-          className="text-[26px] leading-[0.95] text-black mb-1.5"
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          {producto.nombre}
-        </h1>
-        {producto.descripcion && (
-          <p className="text-black/55 text-[14px] leading-snug mb-6">
-            {producto.descripcion}
-          </p>
-        )}
-        {!producto.descripcion && <div className="mb-6" />}
-
-        <AgregarAlCarrito
-          producto={{ id: producto.id, nombre: producto.nombre }}
-          opciones={preciosOrdenados.map((p) => ({
-            tamanio: p.tamanio,
-            label: LABELS_TAMANIO[p.tamanio] ?? p.tamanio,
-            precio: p.precio,
-          }))}
-        />
+      {/* Footer al pie en fondo oscuro */}
+      <div className="pb-24">
+        <FooterInfo />
       </div>
     </main>
   );

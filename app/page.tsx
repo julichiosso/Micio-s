@@ -8,6 +8,7 @@ import {
 import HorariosToggle from "./horarios-toggle";
 import Header from "./header";
 import { IconSearch, IconPin } from "./icons";
+import FooterInfo from "./footer-info";
 
 export default async function HomePage() {
   const secciones = await getSeccionesConFoto();
@@ -168,12 +169,12 @@ export default async function HomePage() {
           </p>
         </div>
 
-        {/* ── Encontranos ── */}
-        <section id="encontranos" className="mb-10">
-          <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
+        {/* ── Encontranos (Panel Blanquito) ── */}
+        <section id="encontranos" className="bg-[#f7f3ea] rounded-3xl p-5 mb-6 text-black">
+          <p className="text-black/40 text-[11px] font-bold uppercase tracking-[0.12em] mb-3">
             Encontranos
           </p>
-          <div className="rounded-2xl overflow-hidden border border-white/[0.08]" style={{ height: "220px" }}>
+          <div className="rounded-2xl overflow-hidden border border-black/[0.08]" style={{ height: "200px" }}>
             <iframe
               src="https://maps.google.com/maps?q=Mendoza+1480,+San+Jorge,+Santa+Fe,+Argentina&output=embed&z=16"
               width="100%"
@@ -185,40 +186,13 @@ export default async function HomePage() {
               title="Ubicación Micio's Pizzería"
             />
           </div>
-          <p className="text-white/30 text-[12px] mt-2 text-center">
+          <p className="text-black/60 text-[12.5px] font-medium mt-3 text-center">
             📍 Mendoza 1480, San Jorge, Santa Fe
           </p>
         </section>
 
-        {/* ── Footer Premium ── */}
-        <footer className="relative pb-10 pt-8 overflow-hidden">
-          {/* MICIO'S watermark de fondo — no interfiere con el texto */}
-          <div
-            className="absolute inset-0 flex items-end justify-center pb-8 pointer-events-none select-none"
-            aria-hidden="true"
-          >
-            <span
-              className="text-[80px] font-black text-white/[0.03] tracking-tighter whitespace-nowrap leading-none"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              MICIO&apos;S
-            </span>
-          </div>
-
-          <div className="relative z-10 flex flex-col items-center gap-2">
-            <a
-              href="https://instagram.com/webya.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/25 text-[11px] tracking-wide hover:text-white/40 transition-colors"
-            >
-              Impulsado por <span className="font-semibold">Webya</span>
-            </a>
-            <p className="text-white/15 text-[10px] mt-1">
-              Micio&apos;s Pizzería &middot; San Jorge, Santa Fe
-            </p>
-          </div>
-        </footer>
+        {/* ── Footer Compartido ── */}
+        <FooterInfo />
       </div>
     </main>
   );
