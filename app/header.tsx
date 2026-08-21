@@ -6,6 +6,7 @@ import { IconMenu, IconCarrito } from "./icons";
 import Sidebar from "./sidebar";
 import { useEffect } from "react";
 import { getCarrito } from "@/lib/carrito";
+import Image from "next/image";
 
 type HeaderProps = {
   /** Variante oscura (sobre video/fondo oscuro) o clara (sobre fondo claro) */
