@@ -221,7 +221,7 @@ export default async function ProductosAdminPage() {
             </div>
           </details>
 
-          {/* Listado por sección colapsable */}
+          {/* Listado por categoría colapsable */}
           {porSeccion.map((seccion) => (
             <SeccionAcordeon
               key={seccion.id}
@@ -229,7 +229,7 @@ export default async function ProductosAdminPage() {
               cantidad={seccion.productos.length}
             >
               {seccion.productos.length === 0 ? (
-                <p className="text-white/25 text-[13px] px-1 py-2">Sin productos en esta sección.</p>
+                <p className="text-white/25 text-[13px] px-1 py-2">Sin productos en esta categoría.</p>
               ) : (
                 seccion.productos.map((p) => (
                   <ProductoCard
@@ -245,7 +245,7 @@ export default async function ProductosAdminPage() {
         </div>
 
         <div className="px-5 pt-10 pb-4 text-center">
-          <p className="text-white/15 text-[11px]">Panel de administración — Micio&apos;s Pizzería</p>
+          <p className="text-white/20 text-[12px] font-medium">Panel de administración — Micio&apos;s Pizzería</p>
         </div>
       </div>
     </>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { IconStar, IconTrash } from "@/app/icons";
+import { IconStar, IconTrash, IconImage } from "@/app/icons";
+import { ModalEditarProducto } from "./modal-editar-producto";
 
 // -------- Tipos --------
 type Precio = {
@@ -19,7 +20,7 @@ type Producto = {
   tieneTamanios: boolean;
   activo: boolean;
   destacado: boolean;
-  seccion: { nombre: string };
+  seccion: { id: number; nombre: string };
   precios: Precio[];
 };
 
@@ -36,7 +37,7 @@ const LABELS: Record<string, string> = {
   unico: "Único",
 };
 
-// -------- Modal de confirmación de borrado (Diseño Senior) --------
+// -------- Modal de confirmación de borrado --------
 function ModalConfirmacion({
   nombre,
   onConfirmar,
@@ -52,7 +53,7 @@ function ModalConfirmacion({
         className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
         onClick={onCancelar}
       />
-      <div className="relative w-full max-w-sm bg-[#1a1814] border border-white/[0.12] rounded-2xl p-6 shadow-2xl">
+      <div className="relative w-full max-w-sm bg-[#1a1814] border border-white/[0.12] rounded-2xl p-6 shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-150">
         <h3 className="text-white font-bold text-[17px] tracking-tight mb-2">
           Eliminar producto
         </h3>
@@ -80,7 +81,7 @@ function ModalConfirmacion({
   );
 }
 
-// -------- Tarjeta de producto --------
+// -------- Tarjeta de producto (Mobile) --------
 export function ProductoCard({
   producto,
   secciones,
@@ -104,41 +105,55 @@ export function ProductoCard({
   actionActualizarPrecioUnico: (productoId: number, precio: number) => Promise<void>;
   actionActualizarPreciosPizza: (productoId: number, precios: Record<string, number>) => Promise<void>;
 }) {
-  const [mostrarModal, setMostrarModal] = useState(false);
-  const [expandido, setExpandido] = useState(false);
-  const [subiendo, setSubiendo] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
+  const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
 
   const precioTexto = producto.precios.length
     ? producto.precios
         .map((pr) => `${LABELS[pr.tamanio] ?? pr.tamanio}: $${pr.precio.toLocaleString("es-AR")}`)
         .join(" · ")
-    : "Sin precios";
+    : "Sin precios cargados";
 
   return (
     <>
-      {mostrarModal && (
+      {mostrarModalEliminar && (
         <ModalConfirmacion
           nombre={producto.nombre}
-          onCancelar={() => setMostrarModal(false)}
+          onCancelar={() => setMostrarModalEliminar(false)}
           onConfirmar={async () => {
-            setMostrarModal(false);
+            setMostrarModalEliminar(false);
             await actionEliminarDefinitivo(producto.id);
           }}
         />
       )}
 
+      {mostrarModalEditar && (
+        <ModalEditarProducto
+          producto={producto}
+          categorias={secciones}
+          onClose={() => setMostrarModalEditar(false)}
+          actionEditarProducto={actionEditarProducto}
+          actionSubirFoto={actionSubirFoto}
+          actionActualizarPrecioUnico={actionActualizarPrecioUnico}
+          actionActualizarPreciosPizza={actionActualizarPreciosPizza}
+        />
+      )}
+
       <div
-        className={`border rounded-2xl overflow-hidden transition-colors ${
+        className={`border rounded-2xl overflow-hidden transition-all shadow-sm ${
           producto.activo
             ? "border-white/[0.1] bg-[#1a1814]"
-            : "border-white/[0.07] bg-[#161410]"
+            : "border-white/[0.07] bg-[#161410] opacity-75"
         }`}
       >
         {/* Cabecera de la tarjeta */}
-        <div className="p-4 flex items-start gap-3">
-          {/* Thumbnail */}
-          <div className="w-14 h-14 rounded-xl bg-white/[0.06] shrink-0 relative overflow-hidden">
+        <div className="p-4 flex items-start gap-3.5">
+          {/* Thumbnail grande y nítido (w-18 h-18 = 72px) */}
+          <div
+            onClick={() => setMostrarModalEditar(true)}
+            className="w-[72px] h-[72px] rounded-2xl bg-white/[0.05] border border-white/[0.08] shrink-0 relative overflow-hidden shadow-inner cursor-pointer"
+            title="Tocar para editar"
+          >
             {producto.fotoUrl ? (
               <Image
                 src={producto.fotoUrl}
@@ -147,8 +162,9 @@ export function ProductoCard({
                 className="object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="text-white/20 text-[10px]">Sin foto</span>
+              <div className="w-full h-full flex flex-col items-center justify-center text-white/20">
+                <IconImage size={22} />
+                <span className="text-[9px] mt-0.5">Sin foto</span>
               </div>
             )}
           </div>
@@ -157,43 +173,56 @@ export function ProductoCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-white font-semibold text-[15px] leading-tight truncate">
+                <p
+                  onClick={() => setMostrarModalEditar(true)}
+                  className="text-white font-bold text-[16px] leading-tight truncate cursor-pointer hover:text-[#c6f135] transition-colors"
+                >
                   {producto.nombre}
                 </p>
-                <p className="text-white/35 text-[12px] mt-0.5">
-                  {producto.seccion.nombre}
+                <p className="text-white/40 text-[12px] mt-0.5 flex items-center gap-1.5 flex-wrap">
+                  <span className="bg-white/[0.06] text-white/60 px-2 py-0.5 rounded-md font-medium">
+                    {producto.seccion.nombre}
+                  </span>
                   {!producto.activo && (
-                    <span className="ml-2 bg-white/[0.08] text-white/40 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide">
+                    <span className="bg-red-500/10 text-red-400 border border-red-500/20 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide font-bold">
                       Inactivo
                     </span>
                   )}
                 </p>
               </div>
-              {/* Botón estrella */}
+
+              {/* Botón estrella destacado */}
               <button
                 onClick={() => actionToggleDestacado(producto.id, !producto.destacado)}
-                className={`shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
+                className={`shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
                   producto.destacado
-                    ? "text-[#c6f135] bg-[#c6f135]/10"
-                    : "text-white/25 hover:text-white/50 bg-transparent"
+                    ? "text-[#c6f135] bg-[#c6f135]/15"
+                    : "text-white/20 hover:text-white/50 bg-transparent"
                 }`}
                 aria-label={producto.destacado ? "Quitar de destacados" : "Marcar como destacado"}
-                title={producto.destacado ? "Destacado" : "Marcar como destacado"}
+                title={producto.destacado ? "Destacado en portada" : "Marcar como destacado"}
               >
                 <IconStar size={16} filled={producto.destacado} />
               </button>
             </div>
-            <p className="text-white/40 text-[12px] mt-1.5 leading-snug">{precioTexto}</p>
+
+            <p className="text-[#c6f135]/90 text-[12.5px] font-semibold mt-1.5 leading-snug">
+              {precioTexto}
+            </p>
           </div>
         </div>
 
-        {/* Expandir/colapsar edición */}
-        <div className="border-t border-white/[0.06] px-4 py-2 flex items-center justify-between">
+        {/* Barra de acciones inferiores */}
+        <div className="border-t border-white/[0.06] px-4 py-2.5 flex items-center justify-between bg-black/20">
           <button
-            onClick={() => setExpandido(!expandido)}
-            className="text-white/50 text-[12.5px] font-medium active:opacity-60 transition-opacity"
+            type="button"
+            onClick={() => setMostrarModalEditar(true)}
+            className="flex items-center gap-1.5 bg-[#c6f135]/15 hover:bg-[#c6f135]/25 text-[#c6f135] text-[13px] font-bold px-3.5 py-1.5 rounded-xl active:scale-95 transition-all cursor-pointer"
           >
-            {expandido ? "Cerrar edición" : "Editar"}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+            Editar producto
           </button>
 
           <div className="flex items-center gap-2">
@@ -201,14 +230,14 @@ export function ProductoCard({
             {producto.activo ? (
               <button
                 onClick={() => actionDesactivar(producto.id)}
-                className="text-white/40 text-[12px] px-3 py-1.5 rounded-lg border border-white/[0.08] active:opacity-60 transition-opacity"
+                className="text-white/45 hover:text-white text-[12px] px-3 py-1.5 rounded-xl border border-white/[0.08] active:opacity-60 transition-colors font-medium cursor-pointer"
               >
                 Desactivar
               </button>
             ) : (
               <button
                 onClick={() => actionReactivar(producto.id)}
-                className="text-[#c6f135]/80 text-[12px] px-3 py-1.5 rounded-lg border border-[#c6f135]/20 active:opacity-60 transition-opacity"
+                className="text-[#c6f135] bg-[#c6f135]/10 text-[12px] px-3 py-1.5 rounded-xl border border-[#c6f135]/25 active:opacity-60 transition-colors font-bold cursor-pointer"
               >
                 Reactivar
               </button>
@@ -216,8 +245,8 @@ export function ProductoCard({
 
             {/* Eliminar definitivo */}
             <button
-              onClick={() => setMostrarModal(true)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-red-900/40 text-red-500/60 active:opacity-60 transition-opacity"
+              onClick={() => setMostrarModalEliminar(true)}
+              className="w-8 h-8 flex items-center justify-center rounded-xl border border-red-900/30 text-red-400/60 hover:text-red-400 hover:bg-red-500/10 active:opacity-60 transition-colors cursor-pointer"
               aria-label="Eliminar definitivamente"
               title="Eliminar definitivamente"
             >
@@ -225,147 +254,6 @@ export function ProductoCard({
             </button>
           </div>
         </div>
-
-        {/* Panel de edición expandible */}
-        {expandido && (
-          <div className="border-t border-white/[0.06] p-4 flex flex-col gap-4">
-            {/* Subir foto */}
-            <div>
-              <p className="text-white/40 text-[11px] uppercase tracking-wide mb-2">
-                Foto del producto
-              </p>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const file = fileRef.current?.files?.[0];
-                  if (!file) return;
-                  setSubiendo(true);
-                  const fd = new FormData();
-                  fd.append("foto", file);
-                  await actionSubirFoto(producto.id, fd);
-                  setSubiendo(false);
-                  if (fileRef.current) fileRef.current.value = "";
-                }}
-                className="flex items-center gap-2"
-              >
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  className="flex-1 text-white/50 text-[13px] bg-white/[0.05] rounded-xl px-3 py-2 file:mr-3 file:bg-white/10 file:border-0 file:text-white/60 file:text-[12px] file:rounded-lg file:px-2 file:py-1"
-                />
-                <button
-                  type="submit"
-                  disabled={subiendo}
-                  className="shrink-0 bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl disabled:opacity-40 active:opacity-60 transition-opacity"
-                >
-                  {subiendo ? "Subiendo..." : "Subir"}
-                </button>
-              </form>
-            </div>
-
-            {/* Editar nombre y descripción */}
-            <div>
-              <p className="text-white/40 text-[11px] uppercase tracking-wide mb-2">
-                Datos del producto
-              </p>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const fd = new FormData(e.currentTarget);
-                  const nombre = fd.get("nombre") as string;
-                  const descripcion = fd.get("descripcion") as string;
-                  await actionEditarProducto(producto.id, nombre, descripcion);
-                }}
-                className="flex flex-col gap-2"
-              >
-                <input
-                  name="nombre"
-                  defaultValue={producto.nombre}
-                  placeholder="Nombre"
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
-                />
-                <input
-                  name="descripcion"
-                  defaultValue={producto.descripcion ?? ""}
-                  placeholder="Descripción (opcional)"
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="self-end bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity cursor-pointer"
-                >
-                  Guardar
-                </button>
-              </form>
-            </div>
-
-            {/* Editar precios */}
-            <div>
-              <p className="text-white/40 text-[11px] uppercase tracking-wide mb-2">
-                Precios
-              </p>
-              {producto.tieneTamanios ? (
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const fd = new FormData(e.currentTarget);
-                    const preciosMap: Record<string, number> = {};
-                    for (const tam of ["xl", "media_xl", "clasica", "media_clasica"]) {
-                      const val = Number(fd.get(`precio_${tam}`));
-                      if (val > 0) preciosMap[tam] = val;
-                    }
-                    await actionActualizarPreciosPizza(producto.id, preciosMap);
-                  }}
-                  className="flex flex-col gap-2"
-                >
-                  {["xl", "media_xl", "clasica", "media_clasica"].map((tam) => (
-                    <div key={tam} className="flex items-center gap-2">
-                      <span className="text-white/40 text-[13px] w-24 shrink-0">{LABELS[tam]}</span>
-                      <input
-                        type="number"
-                        name={`precio_${tam}`}
-                        placeholder="$ precio"
-                        defaultValue={producto.precios.find((p) => p.tamanio === tam)?.precio ?? ""}
-                        className="flex-1 bg-white/[0.06] rounded-xl px-3 py-2 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
-                      />
-                    </div>
-                  ))}
-                  <button
-                    type="submit"
-                    className="self-end bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity mt-1 cursor-pointer"
-                  >
-                    Guardar precios
-                  </button>
-                </form>
-              ) : (
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const fd = new FormData(e.currentTarget);
-                    const precio = Number(fd.get("precio"));
-                    if (precio > 0) await actionActualizarPrecioUnico(producto.id, precio);
-                  }}
-                  className="flex items-center gap-2"
-                >
-                  <input
-                    type="number"
-                    name="precio"
-                    placeholder="$ precio"
-                    defaultValue={producto.precios[0]?.precio ?? ""}
-                    className="flex-1 bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
-                  />
-                  <button
-                    type="submit"
-                    className="shrink-0 bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity cursor-pointer"
-                  >
-                    Guardar
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </>
   );

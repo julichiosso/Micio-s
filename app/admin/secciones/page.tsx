@@ -68,14 +68,14 @@ export default async function SeccionesAdminPage() {
       {/* ─── MOBILE VIEW (diseño original dark, sin cambios) ─── */}
       <div className="md:hidden min-h-screen bg-[#141210] pb-16">
         <div className="px-4 pt-5 max-w-lg mx-auto flex flex-col gap-6">
-          {/* Crear nueva sección */}
+          {/* Crear nueva categoría */}
           <div className="border border-white/[0.1] rounded-2xl p-5 bg-[#1a1814]">
-            <p className="text-white font-semibold text-[15px] mb-3">Nueva sección</p>
+            <p className="text-white font-semibold text-[15px] mb-3">Nueva categoría</p>
             <form action={actionCrearSeccion} className="flex gap-2">
               <input
                 type="text"
                 name="nombre"
-                placeholder="Ej: Empanadas, Postres..."
+                placeholder="Ej: Empanadas, Bebidas, Postres..."
                 required
                 className="flex-1 bg-white/[0.06] rounded-xl px-3.5 py-2.5 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
               />
@@ -91,7 +91,7 @@ export default async function SeccionesAdminPage() {
           {/* Listado */}
           <div className="flex flex-col gap-3">
             <p className="text-white/35 text-[11px] font-medium uppercase tracking-[0.12em] px-1">
-              Secciones existentes ({seccionesList.length})
+              Categorías existentes ({seccionesList.length})
             </p>
             {seccionesList.map((s) => (
               <SeccionCard key={s.id} seccion={s} {...sharedActions} />

@@ -6,8 +6,27 @@ import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 
 const NAV = [
-  { href: "/admin/productos", label: "Productos" },
-  { href: "/admin/secciones", label: "Secciones" },
+  {
+    href: "/admin/productos",
+    label: "Productos",
+    icon: (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+      </svg>
+    ),
+  },
+  {
+    href: "/admin/secciones",
+    label: "Categorías",
+    icon: (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      </svg>
+    ),
+  },
 ];
 
 export function AdminSidebar() {
@@ -24,69 +43,89 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="hidden md:flex flex-col w-56 shrink-0 border-r border-gray-200 bg-white min-h-screen sticky top-0">
-      {/* Logo */}
+    <aside className="hidden md:flex flex-col w-60 shrink-0 border-r border-gray-200 bg-white min-h-screen sticky top-0 shadow-sm">
+      {/* Brand Header */}
       <div className="px-5 pt-6 pb-5 border-b border-gray-100">
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-0.5">
-          Admin
-        </p>
-        <p className="text-[17px] font-black text-gray-900 leading-none tracking-tight">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10.5px] font-bold uppercase tracking-widest bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">
+            Panel Admin
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            Online
+          </span>
+        </div>
+        <p className="text-[20px] font-black text-gray-900 leading-none tracking-tight">
           Micio&apos;s
         </p>
-        <p className="text-[11px] text-gray-400 mt-0.5">Pizzería · San Jorge</p>
+        <p className="text-[12px] text-gray-400 mt-1 font-medium">Pizzería · San Jorge</p>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
-        {NAV.map(({ href, label }) => {
+      {/* Navegación Principal */}
+      <nav className="flex-1 px-3.5 py-4 flex flex-col gap-1">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-3 mb-1">
+          Gestión del Catálogo
+        </p>
+
+        {NAV.map(({ href, label, icon }) => {
           const activo = pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13.5px] font-medium transition-colors ${
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13.5px] font-semibold transition-all ${
                 activo
-                  ? "bg-[#c6f135]/15 text-[#4a5c00] font-semibold"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                  ? "bg-[#c6f135]/20 text-[#3e4d00] shadow-sm font-bold"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  activo ? "bg-[#7fa800]" : "bg-gray-300"
-                }`}
-              />
-              {label}
+              <span className={activo ? "text-[#5e7700]" : "text-gray-400"}>
+                {icon}
+              </span>
+              <span>{label}</span>
+              {activo && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#7fa800]" />
+              )}
             </Link>
           );
         })}
 
+        {/* Acceso Rápido al Menú de Clientes */}
         <div className="mt-4 pt-4 border-t border-gray-100">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-3 mb-1">
+            Accesos directos
+          </p>
           <Link
             href="/"
             target="_blank"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors font-medium"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-gray-200" />
-            Ver sitio público
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            <span>Ver menú público</span>
+            <span className="ml-auto text-gray-400 text-[11px]">↗</span>
           </Link>
         </div>
       </nav>
 
-      {/* Logout */}
-      <div className="px-3 pb-5 pt-2 border-t border-gray-100">
+      {/* Botón Logout */}
+      <div className="px-3.5 pb-5 pt-2 border-t border-gray-100">
         <button
           type="button"
           onClick={handleLogout}
           disabled={saliendo}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+          className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50 cursor-pointer"
         >
           <svg
-            width="14"
-            height="14"
+            width="15"
+            height="15"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.75"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
@@ -94,14 +133,14 @@ export function AdminSidebar() {
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          {saliendo ? "Cerrando..." : "Cerrar sesión"}
+          <span>{saliendo ? "Cerrando..." : "Cerrar sesión"}</span>
         </button>
       </div>
     </aside>
   );
 }
 
-// Header mobile standalone (sin sidebar)
+// Header mobile para celulares
 export function AdminMobileHeader() {
   const pathname = usePathname();
   const router = useRouter();
@@ -109,7 +148,7 @@ export function AdminMobileHeader() {
 
   const titulo =
     pathname.startsWith("/admin/secciones")
-      ? "Secciones"
+      ? "Categorías"
       : pathname.startsWith("/admin/productos")
       ? "Productos"
       : "Admin";
@@ -123,35 +162,39 @@ export function AdminMobileHeader() {
   }
 
   return (
-    <div className="md:hidden sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+    <div className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 leading-none">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none">
           Admin · Micio&apos;s
         </p>
-        <p className="text-[16px] font-bold text-gray-900 leading-tight">{titulo}</p>
+        <p className="text-[17px] font-black text-gray-900 leading-tight mt-0.5">{titulo}</p>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <Link
           href="/admin/productos"
-          className={`text-[12px] px-2.5 py-1 rounded-md border text-gray-500 border-gray-200 ${
-            pathname.startsWith("/admin/productos") ? "bg-[#c6f135]/15 border-[#c6f135]/40 text-[#4a5c00] font-semibold" : ""
+          className={`text-[12.5px] px-3 py-1.5 rounded-lg border font-bold transition-all ${
+            pathname.startsWith("/admin/productos")
+              ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
+              : "border-gray-200 text-gray-600 bg-white"
           }`}
         >
           Productos
         </Link>
         <Link
           href="/admin/secciones"
-          className={`text-[12px] px-2.5 py-1 rounded-md border text-gray-500 border-gray-200 ${
-            pathname.startsWith("/admin/secciones") ? "bg-[#c6f135]/15 border-[#c6f135]/40 text-[#4a5c00] font-semibold" : ""
+          className={`text-[12.5px] px-3 py-1.5 rounded-lg border font-bold transition-all ${
+            pathname.startsWith("/admin/secciones")
+              ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
+              : "border-gray-200 text-gray-600 bg-white"
           }`}
         >
-          Secciones
+          Categorías
         </Link>
         <button
           type="button"
           onClick={handleLogout}
           disabled={saliendo}
-          className="text-[12px] px-2.5 py-1 rounded-md border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors disabled:opacity-50"
+          className="text-[12px] px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-red-600 hover:border-red-200 transition-colors disabled:opacity-50 font-medium"
         >
           Salir
         </button>

@@ -98,7 +98,7 @@ export default function BuscadorCliente({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar pizza, empanada, bebida..."
+              placeholder="¿Qué buscabas?"
               className="flex-1 bg-transparent text-white placeholder:text-white/35 text-[16px] outline-none"
             />
             {query && (
@@ -121,7 +121,7 @@ export default function BuscadorCliente({
             onClick={() => setSeccionSeleccionada("todas")}
             className={`shrink-0 px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all cursor-pointer select-none active:scale-95 ${
               seccionSeleccionada === "todas"
-                ? "bg-[#c6f135] text-[#141210] shadow-sm shadow-[#c6f135]/20"
+                ? "bg-[#c6f135] text-[#141210]"
                 : "bg-white/[0.08] text-white/70 hover:bg-white/[0.12] hover:text-white"
             }`}
           >
