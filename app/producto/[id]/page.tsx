@@ -37,8 +37,8 @@ export default async function ProductoPage({
 
   return (
     <main className="min-h-screen bg-[#f7f3ea] pb-28">
-      {/* Foto grande con header flotante encima */}
-      <div className="relative w-full bg-[#1c1a17]" style={{ aspectRatio: "4/3" }}>
+      {/* Foto grande — fondo crema = sin barras visibles */}
+      <div className="relative w-full bg-[#f7f3ea]" style={{ aspectRatio: "4/3" }}>
         {producto.fotoUrl ? (
           <Image
             src={producto.fotoUrl}
@@ -49,7 +49,7 @@ export default async function ProductoPage({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <IconImage size={48} className="text-white/15" />
+            <IconImage size={48} className="text-black/15" />
           </div>
         )}
 

@@ -191,42 +191,31 @@ export default async function HomePage() {
         </section>
 
         {/* ── Footer Premium ── */}
-        <footer className="relative pb-10 pt-6 overflow-hidden">
-          {/* Texto de marca gigante de fondo */}
+        <footer className="relative pb-10 pt-8 overflow-hidden">
+          {/* MICIO'S watermark de fondo — no interfiere con el texto */}
           <div
-            className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+            className="absolute inset-0 flex items-end justify-center pb-8 pointer-events-none select-none"
             aria-hidden="true"
           >
             <span
-              className="text-[72px] font-black text-white/[0.04] tracking-tighter whitespace-nowrap"
+              className="text-[80px] font-black text-white/[0.03] tracking-tighter whitespace-nowrap leading-none"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               MICIO&apos;S
             </span>
           </div>
 
-          <div className="relative z-10 flex flex-col items-center gap-3">
-            {/* Decoración: pizzas SVG minimalistas */}
-            <div className="flex items-center gap-2 opacity-20">
-              {[...Array(3)].map((_, i) => (
-                <svg key={i} width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-[#c6f135]">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" opacity=".5"/>
-                  <circle cx="12" cy="12" r="4"/>
-                </svg>
-              ))}
-            </div>
-
+          <div className="relative z-10 flex flex-col items-center gap-2">
             <a
               href="https://instagram.com/webya.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/25 text-[11px] tracking-wider hover:text-white/50 transition-colors font-medium uppercase"
+              className="text-white/25 text-[11px] tracking-wide hover:text-white/40 transition-colors"
             >
-              Impulsado por <span className="text-white/40 font-bold">Webya</span>
+              Impulsado por <span className="font-semibold">Webya</span>
             </a>
-
-            <p className="text-white/15 text-[10px]">
-              Micio&apos;s Pizzería · San Jorge, Santa Fe
+            <p className="text-white/15 text-[10px] mt-1">
+              Micio&apos;s Pizzería &middot; San Jorge, Santa Fe
             </p>
           </div>
         </footer>
