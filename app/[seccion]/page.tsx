@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getSeccionConProductos, getSecciones } from "@/lib/queries/productos";
 import { IconArrowLeft, IconSearch, IconImage } from "@/app/icons";
 import Footer from "@/app/footer";
+import FooterInfo from "../footer-info";
 
 // Mapeo de sección → video de fondo (puede expandirse con más secciones)
 const SECCION_VIDEO: Record<string, string> = {
@@ -184,8 +185,8 @@ export default async function SeccionPage({
           )}
         </div>
 
-        <Footer />
       </div>
+      <FooterInfo />
     </main>
   );
 }
