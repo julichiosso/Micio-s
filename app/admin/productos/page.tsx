@@ -143,7 +143,7 @@ export default async function ProductosAdminPage() {
                 <select
                   name="seccionId"
                   required
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
                 >
                   {seccionesList.map((s) => (
                     <option key={s.id} value={s.id} className="bg-[#1a1814]">
@@ -156,13 +156,13 @@ export default async function ProductosAdminPage() {
                   name="nombre"
                   placeholder="Nombre del producto"
                   required
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
                 />
                 <input
                   type="text"
                   name="descripcion"
                   placeholder="Descripción (opcional)"
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
                 />
                 <label className="flex items-center gap-2.5 px-1 text-white/60 text-[14px] cursor-pointer">
                   <input
@@ -174,7 +174,7 @@ export default async function ProductosAdminPage() {
                 </label>
                 <button
                   type="submit"
-                  className="w-full bg-[#c6f135] text-[#141210] rounded-xl py-3 font-bold text-[15px] active:opacity-80 transition-opacity mt-1"
+                  className="w-full bg-[#c6f135] text-[#141210] rounded-xl py-3 font-bold text-[15px] active:opacity-80 transition-opacity mt-1 cursor-pointer"
                 >
                   Crear producto
                 </button>
@@ -193,7 +193,7 @@ export default async function ProductosAdminPage() {
                 <select
                   name="seccionId"
                   required
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] outline-none border border-white/[0.08]"
+                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] outline-none border border-white/[0.08]"
                 >
                   {seccionesList.map((s) => (
                     <option key={s.id} value={s.id} className="bg-[#1a1814]">
@@ -207,11 +207,11 @@ export default async function ProductosAdminPage() {
                     name="porcentaje"
                     placeholder="% (ej: 10 o -5)"
                     required
-                    className="flex-1 bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08]"
+                    className="flex-1 bg-white/[0.06] rounded-xl px-3.5 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
                   />
                   <button
                     type="submit"
-                    className="shrink-0 bg-white/[0.08] text-white/70 rounded-xl px-5 py-3 font-semibold text-[14px] active:opacity-60 transition-opacity"
+                    className="shrink-0 bg-white/[0.08] text-white/70 rounded-xl px-5 py-3 font-semibold text-[14px] active:opacity-60 transition-opacity cursor-pointer"
                   >
                     Aplicar
                   </button>

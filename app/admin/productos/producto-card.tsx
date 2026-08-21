@@ -283,17 +283,17 @@ export function ProductoCard({
                   name="nombre"
                   defaultValue={producto.nombre}
                   placeholder="Nombre"
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                  className="w-full bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
                 />
                 <input
                   name="descripcion"
                   defaultValue={producto.descripcion ?? ""}
                   placeholder="Descripción (opcional)"
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                  className="w-full bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
                 />
                 <button
                   type="submit"
-                  className="self-end bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity"
+                  className="self-end bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity cursor-pointer"
                 >
                   Guardar
                 </button>
@@ -327,13 +327,13 @@ export function ProductoCard({
                         name={`precio_${tam}`}
                         placeholder="$ precio"
                         defaultValue={producto.precios.find((p) => p.tamanio === tam)?.precio ?? ""}
-                        className="flex-1 bg-white/[0.06] rounded-xl px-3 py-2 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                        className="flex-1 bg-white/[0.06] rounded-xl px-3 py-2 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
                       />
                     </div>
                   ))}
                   <button
                     type="submit"
-                    className="self-end bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity mt-1"
+                    className="self-end bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity mt-1 cursor-pointer"
                   >
                     Guardar precios
                   </button>
@@ -353,11 +353,11 @@ export function ProductoCard({
                     name="precio"
                     placeholder="$ precio"
                     defaultValue={producto.precios[0]?.precio ?? ""}
-                    className="flex-1 bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[14px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                    className="flex-1 bg-white/[0.06] rounded-xl px-3 py-2.5 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
                   />
                   <button
                     type="submit"
-                    className="shrink-0 bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity"
+                    className="shrink-0 bg-white/[0.08] text-white/70 text-[13px] font-medium px-4 py-2 rounded-xl active:opacity-60 transition-opacity cursor-pointer"
                   >
                     Guardar
                   </button>

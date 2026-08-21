@@ -49,7 +49,7 @@ export default function BuscadorCliente({ items }: { items: Item[] }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Pizza, postre, bebida..."
-              className="flex-1 bg-transparent text-white placeholder:text-white/35 text-[15px] outline-none"
+              className="flex-1 bg-transparent text-white placeholder:text-white/35 text-[16px] outline-none"
             />
           </div>
         </div>

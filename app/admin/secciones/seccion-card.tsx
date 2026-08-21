@@ -117,7 +117,7 @@ export function SeccionCard({
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             placeholder="Nombre de la sección"
-            className="flex-1 bg-white/[0.05] rounded-xl px-3.5 py-2 text-white text-[13px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+            className="flex-1 bg-white/[0.05] rounded-xl px-3.5 py-2 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
           />
           <button
             type="submit"

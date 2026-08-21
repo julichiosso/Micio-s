@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Anton, Inter } from "next/font/google";
 import "./globals.css";
 import CarritoFlotante from "./carrito-flotante";
@@ -17,6 +17,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Micio's Pizzería",
   description: "Pizza a la piedra en San Jorge, Santa Fe",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

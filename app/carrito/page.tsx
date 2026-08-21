@@ -146,7 +146,7 @@ export default function CarritoPage() {
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="¿Cómo te llamamos?"
-                className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[15px] border border-black/[0.06]"
+                className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[16px] border border-black/[0.06]"
               />
             </div>
 
