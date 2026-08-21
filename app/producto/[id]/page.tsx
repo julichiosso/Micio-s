@@ -38,19 +38,18 @@ export default async function ProductoPage({
   return (
     <main className="min-h-screen bg-[#f7f3ea] pb-28">
       {/* Foto grande con header flotante encima */}
-      <div className="relative w-full aspect-square bg-[#e8e2d5]">
+      <div className="relative w-full bg-[#1c1a17]" style={{ aspectRatio: "4/3" }}>
         {producto.fotoUrl ? (
           <Image
             src={producto.fotoUrl}
             alt={producto.nombre}
             fill
-            className="object-cover"
+            className="object-contain"
             priority
           />
         ) : (
-          // Fallback visual coherente: fondo neutro + ícono tenue
           <div className="w-full h-full flex items-center justify-center">
-            <IconImage size={48} className="text-black/15" />
+            <IconImage size={48} className="text-white/15" />
           </div>
         )}
 

@@ -46,9 +46,11 @@ export default function LoginPage() {
           Ingresá para administrar el catálogo
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3" autoComplete="on">
           <input
             type="email"
+            name="email"
+            autoComplete="username email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -57,6 +59,8 @@ export default function LoginPage() {
           />
           <input
             type="password"
+            name="password"
+            autoComplete="current-password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}

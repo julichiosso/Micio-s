@@ -11,19 +11,11 @@ type SidebarProps = {
 };
 
 export default function Sidebar({ abierto, onCerrar, secciones }: SidebarProps) {
-  // Bloquear scroll del body cuando el sidebar está abierto
   useEffect(() => {
-    if (abierto) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = abierto ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [abierto]);
 
-  // Cerrar con Escape
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === "Escape") onCerrar();
@@ -34,7 +26,7 @@ export default function Sidebar({ abierto, onCerrar, secciones }: SidebarProps) 
 
   return (
     <>
-      {/* Overlay — tap para cerrar */}
+      {/* Overlay */}
       <div
         className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ${
           abierto ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -51,7 +43,7 @@ export default function Sidebar({ abierto, onCerrar, secciones }: SidebarProps) 
         role="dialog"
         aria-label="Menú de navegación"
       >
-        {/* Header del sidebar */}
+        {/* Header */}
         <div className="flex items-center justify-between px-6 pt-8 pb-6 border-b border-white/[0.07]">
           <span
             className="text-white text-[18px] tracking-wide"
@@ -69,7 +61,7 @@ export default function Sidebar({ abierto, onCerrar, secciones }: SidebarProps) 
         </div>
 
         {/* Navegación */}
-        <nav className="flex flex-col px-4 pt-4 gap-1">
+        <nav className="flex flex-col px-4 pt-4 gap-1 flex-1">
           <Link
             href="/"
             onClick={onCerrar}
@@ -87,15 +79,35 @@ export default function Sidebar({ abierto, onCerrar, secciones }: SidebarProps) 
               {nombre}
             </Link>
           ))}
+
+          {/* Encontranos */}
+          <Link
+            href="/#encontranos"
+            onClick={onCerrar}
+            className="px-4 py-3.5 rounded-xl text-white/70 text-[15px] font-medium active:bg-white/[0.06] transition-colors hover:text-white flex items-center gap-2"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+              <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Encontranos
+          </Link>
         </nav>
 
-        {/* Footer del sidebar */}
-        <div className="mt-auto px-6 pb-8 border-t border-white/[0.07] pt-5">
+        {/* Footer del sidebar: info + acceso admin */}
+        <div className="px-6 pb-8 border-t border-white/[0.07] pt-5 flex flex-col gap-3">
           <p className="text-white/25 text-[11px] leading-snug">
             Pedís acá, retirás en el local.
             <br />
             Pago en el local.
           </p>
+          <Link
+            href="/admin/login"
+            onClick={onCerrar}
+            className="text-white/20 text-[11px] hover:text-white/40 transition-colors font-medium tracking-wide"
+          >
+            Acceso admin →
+          </Link>
         </div>
       </div>
     </>
