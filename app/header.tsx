@@ -51,12 +51,12 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
         </button>
 
         <Image
-          src="/logo.png"
+          src="/micios_logo_white.svg"
           alt="Micio's"
-          width={100}
-          height={28}
+          width={140}
+          height={40}
           priority
-          className={`h-7 w-auto object-contain ${esOscura ? "" : "invert"}`}
+          className="h-6 w-auto"
         />
 
         <Link href="/carrito" className={`relative ${colorTexto}`} aria-label="Ver carrito">
