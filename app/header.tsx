@@ -50,12 +50,14 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
           <IconMenu size={20} />
         </button>
 
-        <span
-          className={`${colorMarca} text-[17px] tracking-wide`}
-          style={{ fontFamily: "var(--font-heading)" }}
-        >
-          MICIO&apos;S
-        </span>
+        <Image
+          src="/logo.png"
+          alt="Micio's"
+          width={100}
+          height={28}
+          priority
+          className={`h-7 w-auto object-contain ${esOscura ? "" : "invert"}`}
+        />
 
         <Link href="/carrito" className={`relative ${colorTexto}`} aria-label="Ver carrito">
           <IconCarrito size={20} />
