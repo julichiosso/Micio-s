@@ -26,6 +26,16 @@ async function actionCrearProducto(datos: {
   return await crearProducto(datos);
 }
 
+async function actionCrearProductoConFoto(datos: {
+  seccionId: number;
+  nombre: string;
+  descripcion?: string;
+  tieneTamanios: boolean;
+}) {
+  "use server";
+  return await crearProducto(datos);
+}
+
 async function actionToggleDestacado(id: number, valor: boolean) {
   "use server";
   await toggleDestacado(id, valor);
@@ -136,10 +146,10 @@ export default async function ProductosAdminPage() {
             </summary>
             <div className="border-t border-white/[0.07] p-5">
               <NuevoProductoForm
-                seccionesList={seccionesList}
-                actionCrearProducto={actionCrearProducto}
-                actionSubirFoto={actionSubirFoto}
-              />
+            seccionesList={seccionesList}
+            actionCrearProducto={actionCrearProductoConFoto}
+            actionSubirFoto={actionSubirFoto}
+          />
             </div>
           </details>
 
