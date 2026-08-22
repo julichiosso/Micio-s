@@ -9,6 +9,7 @@ import HorariosToggle from "./horarios-toggle";
 import Header from "./header";
 import { IconSearch, IconPin } from "./icons";
 import FooterInfo from "./footer-info";
+import BuscarFlotante from "./buscar-flotante";
 
 export default async function HomePage() {
   const secciones = await getSeccionesConFoto();
