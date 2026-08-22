@@ -49,16 +49,16 @@ export default function StickyTopbar({ nombreSeccion }: { nombreSeccion: string 
       </span>
 
       <Link
-        href="/buscar"
-        className={`w-9 h-9 flex items-center justify-center rounded-full text-white shrink-0 transition-all duration-300 active:scale-90 ${
-          scrolled
-            ? "bg-[#c6f135] text-[#141210] shadow-[0_0_0_4px_rgba(198,241,53,0.15)]"
-            : "bg-white/15 backdrop-blur-sm"
-        }`}
-        aria-label="Buscar"
-      >
-        <IconSearch size={17} />
-      </Link>
+  href="/buscar"
+  className={`w-9 h-9 flex items-center justify-center rounded-full shrink-0 transition-all duration-300 ease-out active:scale-90 ${
+    scrolled
+      ? "bg-white text-[#141210] shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+      : "bg-white/15 backdrop-blur-sm text-white"
+  }`}
+  aria-label="Buscar"
+>
+  <IconSearch size={17} />
+</Link>
     </div>
   );
 }
