@@ -135,7 +135,11 @@ export default async function ProductosAdminPage() {
               <span className="text-white/30 text-[22px] font-light group-open:rotate-45 transition-transform">+</span>
             </summary>
             <div className="border-t border-white/[0.07] p-5">
-              
+              <NuevoProductoForm
+                seccionesList={seccionesList}
+                actionCrearProducto={actionCrearProducto}
+                actionSubirFoto={actionSubirFoto}
+              />
             </div>
           </details>
 
