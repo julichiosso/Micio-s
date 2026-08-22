@@ -53,7 +53,6 @@ export default async function SeccionPage({
         {/* Gradiente encima del video para legibilidad */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/60 to-[#141210]/20" />
 
-    
 
         {/* Nombre de la sección centrado-abajo */}
         <div className="absolute inset-x-0 bottom-0 px-5 pb-5 z-10">
@@ -71,7 +70,7 @@ export default async function SeccionPage({
       </div>
 
       {/* Tabs de navegación entre secciones */}
-      <div className="flex gap-2 px-5 py-4 overflow-x-auto scrollbar-none">
+      <div className="flex gap-2 px-5 py-4 overflow-x-auto scrollbar-none relative z-10">
         {todasLasSecciones.map((s) => {
           const slugSeccion = s.nombre.toLowerCase();
           const activa = slugSeccion === slug.toLowerCase();
