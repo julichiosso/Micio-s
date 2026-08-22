@@ -69,7 +69,7 @@ export default async function SeccionPage({
         </div>
       </div>
 
-      {/* Tabs de navegación entre secciones */}
+ 
       <div className="flex gap-2 px-5 py-4 overflow-x-auto scrollbar-none relative z-10">
         {todasLasSecciones.map((s) => {
           const slugSeccion = s.nombre.toLowerCase();
