@@ -40,13 +40,12 @@ export default function StickyTopbar({ nombreSeccion }: { nombreSeccion: string 
 
       {/* Título aparece centrado solo cuando está scrolleado */}
       <span
-        className={`absolute left-1/2 -translate-x-1/2 text-white font-black text-[15px] tracking-tight transition-all duration-300 ease-out pointer-events-none ${
-          scrolled ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
-        }`}
-        style={{ fontFamily: "var(--font-heading)" }}
-      >
-        {nombreSeccion}
-      </span>
+  className={`absolute left-1/2 -translate-x-1/2 text-white/90 text-[13px] font-semibold uppercase tracking-[0.16em] transition-all duration-300 ease-out pointer-events-none ${
+    scrolled ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
+  }`}
+>
+  {nombreSeccion}
+</span>
 
       <Link
   href="/buscar"
