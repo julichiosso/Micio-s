@@ -195,7 +195,7 @@ export default async function HomePage() {
         {/* ── Footer Compartido ── */}
         <FooterInfo />
       </div>
-       <BuscarFlotante />
+      <BuscarFlotante />
     </main>
   );
 }
