@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getSeccionConProductos, getSecciones } from "@/lib/queries/productos";
 import { IconArrowLeft, IconSearch, IconImage } from "@/app/icons";
 import FooterInfo from "../footer-info";
+import StickyTopbar from "./sticky-topbar";
 
 // Mapeo de sección → video de fondo (puede expandirse con más secciones)
 const SECCION_VIDEO: Record<string, string> = {
