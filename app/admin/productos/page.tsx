@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
 import { ProductoCard } from "./producto-card";
 import { ProductosDesktopView } from "./productos-desktop";
 import { NuevoProductoForm } from "./nuevo-producto-form";
-// -------- Server Actions (firmas sin cambios) --------
+import { SeccionAcordeon } from "./seccion-acordeon";
 
 async function actionCrearProducto(datos: {
   seccionId: number;
