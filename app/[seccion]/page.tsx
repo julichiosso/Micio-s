@@ -28,8 +28,12 @@ export default async function SeccionPage({
 
   return (
     <main className="min-h-screen bg-[#141210] pb-36">
+      <StickyTopbar nombreSeccion={seccion.nombre} />
       {/* ── Hero / Header con video de fondo ── */}
-      <div className="relative w-full overflow-hidden" style={{ minHeight: "220px", height: "36vh" }}>
+      <div
+        className="relative w-full overflow-hidden"
+        style={{ minHeight: "220px", height: "36vh" }}
+      >
         {/* Video de fondo (si existe para esta sección) */}
         {videoSrc ? (
           <video
