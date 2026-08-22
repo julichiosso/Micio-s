@@ -13,19 +13,17 @@ import { subirFotoProducto } from "@/lib/actions-storage";
 import { redirect } from "next/navigation";
 import { ProductoCard } from "./producto-card";
 import { ProductosDesktopView } from "./productos-desktop";
-import { SeccionAcordeon } from "./seccion-acordeon";
-
+import { NuevoProductoForm } from "./nuevo-producto-form";
 // -------- Server Actions (firmas sin cambios) --------
 
-async function actionCrearProducto(formData: FormData) {
+async function actionCrearProducto(datos: {
+  seccionId: number;
+  nombre: string;
+  descripcion?: string;
+  tieneTamanios: boolean;
+}) {
   "use server";
-  await crearProducto({
-    seccionId: Number(formData.get("seccionId")),
-    nombre: formData.get("nombre") as string,
-    descripcion: (formData.get("descripcion") as string) || undefined,
-    tieneTamanios: formData.get("tieneTamanios") === "on",
-  });
-  redirect("/admin/productos");
+  return await crearProducto(datos);
 }
 
 async function actionToggleDestacado(id: number, valor: boolean) {
@@ -137,46 +135,7 @@ export default async function ProductosAdminPage() {
               <span className="text-white/30 text-[22px] font-light group-open:rotate-45 transition-transform">+</span>
             </summary>
             <div className="border-t border-white/[0.07] p-5">
-              <form action={actionCrearProducto} className="flex flex-col gap-3">
-                <select
-                  name="seccionId"
-                  required
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
-                >
-                  {seccionesList.map((s) => (
-                    <option key={s.id} value={s.id} className="bg-[#1a1814]">
-                      {s.nombre}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  name="nombre"
-                  placeholder="Nombre del producto"
-                  required
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
-                />
-                <input
-                  type="text"
-                  name="descripcion"
-                  placeholder="Descripción (opcional)"
-                  className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
-                />
-                <label className="flex items-center gap-2.5 px-1 text-white/60 text-[14px] cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="tieneTamanios"
-                    className="w-4 h-4 rounded accent-[#c6f135]"
-                  />
-                  Tiene varios tamaños (pizzas)
-                </label>
-                <button
-                  type="submit"
-                  className="w-full bg-[#c6f135] text-[#141210] rounded-xl py-3 font-bold text-[15px] active:opacity-80 transition-opacity mt-1 cursor-pointer"
-                >
-                  Crear producto
-                </button>
-              </form>
+              
             </div>
           </details>
 
