@@ -34,7 +34,7 @@ export default function BuscarFlotante() {
         aria-label="Buscar"
       >
         <IconSearch size={16} />
-        <span className="text-[13.5px] font-bold">Buscar</span>
+        <span className="text-[13.5px] font-bold">¿Qué pedís hoy?</span>
       </Link>
     </div>
   );
