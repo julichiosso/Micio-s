@@ -56,7 +56,10 @@ export default async function SeccionPage({
 
         {/* Nombre de la sección centrado-abajo */}
         <div className="absolute inset-x-0 bottom-0 px-5 pb-5 z-10">
-          <h1 className="text-white text-[28px] font-semibold tracking-tight leading-none drop-shadow-lg">
+          <h1
+  className="text-white text-[30px] leading-none drop-shadow-lg"
+  style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+>
   {seccion.nombre}
 </h1>
           <p className="text-white/55 text-[13px] mt-1 font-medium">
