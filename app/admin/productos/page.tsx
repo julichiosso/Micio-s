@@ -16,14 +16,15 @@ import { ProductosDesktopView } from "./productos-desktop";
 import { NuevoProductoForm } from "./nuevo-producto-form";
 import { SeccionAcordeon } from "./seccion-acordeon";
 
-async function actionCrearProducto(datos: {
-  seccionId: number;
-  nombre: string;
-  descripcion?: string;
-  tieneTamanios: boolean;
-}) {
+async function actionCrearProducto(formData: FormData) {
   "use server";
-  return await crearProducto(datos);
+  await crearProducto({
+    seccionId: Number(formData.get("seccionId")),
+    nombre: formData.get("nombre") as string,
+    descripcion: (formData.get("descripcion") as string) || undefined,
+    tieneTamanios: formData.get("tieneTamanios") === "on",
+  });
+  redirect("/admin/productos");
 }
 
 async function actionCrearProductoConFoto(datos: {
