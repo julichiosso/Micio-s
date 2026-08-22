@@ -134,7 +134,7 @@ export default async function SeccionPage({
                           src={producto.fotoUrl}
                           alt={producto.nombre}
                           fill
-                          className="object-contain"
+                          className="object-cover"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
