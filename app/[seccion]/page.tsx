@@ -53,23 +53,7 @@ export default async function SeccionPage({
         {/* Gradiente encima del video para legibilidad */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/60 to-[#141210]/20" />
 
-        {/* Capa top: flechita + lupa */}
-        <div className="absolute top-0 inset-x-0 px-5 pt-6 flex items-center justify-between z-10">
-          <Link
-            href="/"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-white shrink-0"
-            aria-label="Volver al inicio"
-          >
-            <IconArrowLeft size={18} />
-          </Link>
-          <Link
-            href="/buscar"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-white shrink-0"
-            aria-label="Buscar"
-          >
-            <IconSearch size={17} />
-          </Link>
-        </div>
+    
 
         {/* Nombre de la sección centrado-abajo */}
         <div className="absolute inset-x-0 bottom-0 px-5 pb-5 z-10">
