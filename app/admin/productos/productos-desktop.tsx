@@ -31,13 +31,34 @@ function normalizar(t: string) {
 }
 
 // Sugerencias de nombre según la categoría elegida en "Nuevo producto"
+// Catálogo real de pizzas de Micio's, para autocompletar nombre + descripción
+const MENU_PIZZAS: { nombre: string; descripcion: string }[] = [
+  { nombre: "Ananá y Jamón Crudo", descripcion: "Muzzarella, ananá, jamón crudo, reducción de aceto" },
+  { nombre: "Anchoas", descripcion: "Muzzarella, anchoas, aceite de oliva" },
+  { nombre: "Champiñón", descripcion: "Muzzarella, champiñones, cebolla de verdeo, panceta ahumada" },
+  { nombre: "Especial", descripcion: "Muzzarella, jamón cocido, pimientos asados, aceitunas, orégano" },
+  { nombre: "Fugazza", descripcion: "Muzzarella, cebolla, orégano" },
+  { nombre: "Mediterránea", descripcion: "Muzzarella, berenjenas asadas, tomates cherry, pesto de albahaca" },
+  { nombre: "Muzzarella", descripcion: "Muzzarella, aceitunas, orégano, aceite de oliva" },
+  { nombre: "Napolitana", descripcion: "Muzzarella, tomates, ajo, albahaca" },
+  { nombre: "Palmitos", descripcion: "Muzzarella, palmitos, salsa golf y orégano" },
+  { nombre: "Pepperoni", descripcion: "Muzzarella, salami pepperoni" },
+  { nombre: "Roquefort", descripcion: "Muzzarella, roquefort, orégano" },
+  { nombre: "Rúcula y Jamón Crudo", descripcion: "Muzzarella, rúcula, jamón crudo, reducción de aceto" },
+  { nombre: "BBQ Pulled Pork", descripcion: "Muzzarella, bondiola de cerdo braseada, salsa barbacoa, romero" },
+  { nombre: "Onion, Cheddar y Bacon", descripcion: "Muzzarella, cebollas caramelizadas, cheddar, panceta ahumada" },
+  { nombre: "Chicken Ranch", descripcion: "Muzzarella, pollo, cebolla morada, salsa ranch" },
+  { nombre: "Provoleta", descripcion: "Muzzarella, provoleta parrillera, pimentón, tomate fresco, chimichurri" },
+];
+
 const SUGERENCIAS_POR_CATEGORIA: Record<
   string,
   { placeholder: string; placeholderDescripcion: string; opciones?: string[] }
 > = {
   pizzas: {
-    placeholder: "Ej: Pizza Napolitana",
-    placeholderDescripcion: "Ej: Muzzarella, tomate, jamón, orégano...",
+    placeholder: "Elegí una pizza del menú o escribí una nueva",
+    placeholderDescripcion: "Se completa sola al elegir una pizza del menú",
+    opciones: MENU_PIZZAS.map((p) => p.nombre),
   },
   bebidas: {
     placeholder: "Ej: Coca-Cola 500ml",
@@ -138,6 +159,8 @@ export function ProductosDesktopView({
   const [tieneTamaniosNuevo, setTieneTamaniosNuevo] = useState(false);
   const [creandoProducto, setCreandoProducto] = useState(false);
   const [mensajeCrear, setMensajeCrear] = useState<string | null>(null);
+  const [nombreNuevo, setNombreNuevo] = useState("");
+  const [descripcionNueva, setDescripcionNueva] = useState("");
 
   const seccionSeleccionadaNombre = normalizar(
     seccionesList.find((s) => s.id === seccionNuevoProducto)?.nombre ?? ""
@@ -363,6 +386,8 @@ export function ProductosDesktopView({
                       });
                       setMostrarNuevo(false);
                       setTieneTamaniosNuevo(false);
+                      setNombreNuevo("");
+                      setDescripcionNueva("");
                       router.refresh();
                     } catch (err: unknown) {
                       const msg = err instanceof Error ? err.message : "Error al crear el producto";
@@ -397,6 +422,15 @@ export function ProductosDesktopView({
                     <input
                       type="text"
                       name="nombre"
+                      value={nombreNuevo}
+                      onChange={(e) => {
+                        const valor = e.target.value;
+                        setNombreNuevo(valor);
+                        const match = MENU_PIZZAS.find(
+                          (p) => normalizar(p.nombre) === normalizar(valor)
+                        );
+                        if (match) setDescripcionNueva(match.descripcion);
+                      }}
                       placeholder={sugerencia.placeholder}
                       list={sugerencia.opciones ? "sugerencias-nombre-desktop" : undefined}
                       required
@@ -415,6 +449,8 @@ export function ProductosDesktopView({
                     <input
                       type="text"
                       name="descripcion"
+                      value={descripcionNueva}
+                      onChange={(e) => setDescripcionNueva(e.target.value)}
                       placeholder={sugerencia.placeholderDescripcion}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] transition-colors placeholder:text-gray-400"
                     />

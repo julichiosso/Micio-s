@@ -15,13 +15,34 @@ function normalizar(t: string) {
 }
 
 // Sugerencias de nombre según la categoría elegida
+// Catálogo real de pizzas de Micio's, para autocompletar nombre + descripción
+const MENU_PIZZAS: { nombre: string; descripcion: string }[] = [
+  { nombre: "Ananá y Jamón Crudo", descripcion: "Muzzarella, ananá, jamón crudo, reducción de aceto" },
+  { nombre: "Anchoas", descripcion: "Muzzarella, anchoas, aceite de oliva" },
+  { nombre: "Champiñón", descripcion: "Muzzarella, champiñones, cebolla de verdeo, panceta ahumada" },
+  { nombre: "Especial", descripcion: "Muzzarella, jamón cocido, pimientos asados, aceitunas, orégano" },
+  { nombre: "Fugazza", descripcion: "Muzzarella, cebolla, orégano" },
+  { nombre: "Mediterránea", descripcion: "Muzzarella, berenjenas asadas, tomates cherry, pesto de albahaca" },
+  { nombre: "Muzzarella", descripcion: "Muzzarella, aceitunas, orégano, aceite de oliva" },
+  { nombre: "Napolitana", descripcion: "Muzzarella, tomates, ajo, albahaca" },
+  { nombre: "Palmitos", descripcion: "Muzzarella, palmitos, salsa golf y orégano" },
+  { nombre: "Pepperoni", descripcion: "Muzzarella, salami pepperoni" },
+  { nombre: "Roquefort", descripcion: "Muzzarella, roquefort, orégano" },
+  { nombre: "Rúcula y Jamón Crudo", descripcion: "Muzzarella, rúcula, jamón crudo, reducción de aceto" },
+  { nombre: "BBQ Pulled Pork", descripcion: "Muzzarella, bondiola de cerdo braseada, salsa barbacoa, romero" },
+  { nombre: "Onion, Cheddar y Bacon", descripcion: "Muzzarella, cebollas caramelizadas, cheddar, panceta ahumada" },
+  { nombre: "Chicken Ranch", descripcion: "Muzzarella, pollo, cebolla morada, salsa ranch" },
+  { nombre: "Provoleta", descripcion: "Muzzarella, provoleta parrillera, pimentón, tomate fresco, chimichurri" },
+];
+
 const SUGERENCIAS_POR_CATEGORIA: Record<
     string,
     { placeholder: string; placeholderDescripcion: string; opciones?: string[] }
 > = {
     pizzas: {
-        placeholder: "Nombre del producto (ej: Pizza Napolitana)",
-        placeholderDescripcion: "Ej: Muzzarella, tomate, jamón, orégano...",
+        placeholder: "Elegí una pizza del menú o escribí una nueva",
+        placeholderDescripcion: "Se completa sola al elegir una pizza del menú",
+        opciones: MENU_PIZZAS.map((p) => p.nombre),
     },
     bebidas: {
         placeholder: "Nombre del producto (ej: Coca-Cola 500ml)",
@@ -57,6 +78,8 @@ export function NuevoProductoForm({
         seccionesList[0]?.id ?? null
     );
     const [tieneTamanios, setTieneTamanios] = useState(false);
+    const [nombreValor, setNombreValor] = useState("");
+    const [descripcionValor, setDescripcionValor] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -113,6 +136,8 @@ export function NuevoProductoForm({
             setArchivo(null);
             setPreviewUrl(null);
             setTieneTamanios(false);
+            setNombreValor("");
+            setDescripcionValor("");
             window.location.reload();
         } catch (err: unknown) {
             const errorMsg = err instanceof Error ? err.message : "Error al crear el producto";
@@ -145,6 +170,15 @@ export function NuevoProductoForm({
             <input
                 type="text"
                 name="nombre"
+                value={nombreValor}
+                onChange={(e) => {
+                    const valor = e.target.value;
+                    setNombreValor(valor);
+                    const match = MENU_PIZZAS.find(
+                        (p) => normalizar(p.nombre) === normalizar(valor)
+                    );
+                    if (match) setDescripcionValor(match.descripcion);
+                }}
                 placeholder={sugerencia.placeholder}
                 list={sugerencia.opciones ? "sugerencias-nombre-mobile" : undefined}
                 required
@@ -161,6 +195,8 @@ export function NuevoProductoForm({
             <input
                 type="text"
                 name="descripcion"
+                value={descripcionValor}
+                onChange={(e) => setDescripcionValor(e.target.value)}
                 placeholder={sugerencia.placeholderDescripcion}
                 className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
             />
