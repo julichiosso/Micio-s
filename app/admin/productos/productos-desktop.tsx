@@ -25,6 +25,23 @@ function precioMin(precios: Precio[]) {
   return Math.min(...precios.map((p) => p.precio));
 }
 
+function normalizar(t: string) {
+  return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Sugerencias de nombre según la categoría elegida en "Nuevo producto"
+const SUGERENCIAS_POR_CATEGORIA: Record<
+  string,
+  { placeholder: string; opciones?: string[] }
+> = {
+  pizzas: { placeholder: "Ej: Pizza Napolitana" },
+  bebidas: { placeholder: "Ej: Coca-Cola 500ml" },
+  postres: {
+    placeholder: "Ej: Tiramisú",
+    opciones: ["Tiramisú", "Chocolina", "Mousse de chocolate", "Cheese cake"],
+  },
+};
+
 // ─── Modal de confirmación de borrado ────────────────────────────────
 function ConfirmDialog({
   titulo,
@@ -100,6 +117,16 @@ export function ProductosDesktopView({
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>("todas");
   const [mostrarNuevo, setMostrarNuevo] = useState(false);
   const [mostrarAumento, setMostrarAumento] = useState(false);
+  const [seccionNuevoProducto, setSeccionNuevoProducto] = useState<number | null>(
+    seccionesList[0]?.id ?? null
+  );
+
+  const seccionSeleccionadaNombre = normalizar(
+    seccionesList.find((s) => s.id === seccionNuevoProducto)?.nombre ?? ""
+  );
+  const sugerencia =
+    SUGERENCIAS_POR_CATEGORIA[seccionSeleccionadaNombre] ??
+    { placeholder: "Ej: nombre del producto" };
 
   // Modal de edición y modal de borrado
   const [productoParaEditar, setProductoParaEditar] = useState<Producto | null>(null);
@@ -296,6 +323,8 @@ export function ProductosDesktopView({
                     <select
                       name="seccionId"
                       required
+                      value={seccionNuevoProducto ?? ""}
+                      onChange={(e) => setSeccionNuevoProducto(Number(e.target.value))}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] transition-colors"
                     >
                       {seccionesList.map((s) => (
@@ -308,10 +337,18 @@ export function ProductosDesktopView({
                     <input
                       type="text"
                       name="nombre"
-                      placeholder="Ej: Pizza Napolitana"
+                      placeholder={sugerencia.placeholder}
+                      list={sugerencia.opciones ? "sugerencias-nombre-desktop" : undefined}
                       required
                       className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] transition-colors placeholder:text-gray-400"
                     />
+                    {sugerencia.opciones && (
+                      <datalist id="sugerencias-nombre-desktop">
+                        {sugerencia.opciones.map((op) => (
+                          <option key={op} value={op} />
+                        ))}
+                      </datalist>
+                    )}
                   </div>
                   <div>
                     <label className="block text-gray-400 text-[11px] uppercase font-semibold mb-1">Descripción (opcional)</label>

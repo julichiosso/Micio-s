@@ -10,6 +10,23 @@ type ProductoCreado = {
     [key: string]: unknown;
 };
 
+function normalizar(t: string) {
+    return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Sugerencias de nombre según la categoría elegida
+const SUGERENCIAS_POR_CATEGORIA: Record<
+    string,
+    { placeholder: string; opciones?: string[] }
+> = {
+    pizzas: { placeholder: "Nombre del producto (ej: Pizza Napolitana)" },
+    bebidas: { placeholder: "Nombre del producto (ej: Coca-Cola 500ml)" },
+    postres: {
+        placeholder: "Nombre del producto (ej: Tiramisú)",
+        opciones: ["Tiramisú", "Chocolina", "Mousse de chocolate", "Cheese cake"],
+    },
+};
+
 export function NuevoProductoForm({
     seccionesList,
     actionCrearProducto,
@@ -28,8 +45,18 @@ export function NuevoProductoForm({
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [enviando, setEnviando] = useState(false);
     const [mensaje, setMensaje] = useState<string | null>(null);
+    const [seccionId, setSeccionId] = useState<number | null>(
+        seccionesList[0]?.id ?? null
+    );
     const fileInputRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
+
+    const seccionNombre = normalizar(
+        seccionesList.find((s) => s.id === seccionId)?.nombre ?? ""
+    );
+    const sugerencia =
+        SUGERENCIAS_POR_CATEGORIA[seccionNombre] ??
+        { placeholder: "Nombre del producto" };
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -81,6 +108,8 @@ export function NuevoProductoForm({
             <select
                 name="seccionId"
                 required
+                value={seccionId ?? ""}
+                onChange={(e) => setSeccionId(Number(e.target.value))}
                 className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
             >
                 {seccionesList.map((s) => (
@@ -93,10 +122,18 @@ export function NuevoProductoForm({
             <input
                 type="text"
                 name="nombre"
-                placeholder="Nombre del producto"
+                placeholder={sugerencia.placeholder}
+                list={sugerencia.opciones ? "sugerencias-nombre-mobile" : undefined}
                 required
                 className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
             />
+            {sugerencia.opciones && (
+                <datalist id="sugerencias-nombre-mobile">
+                    {sugerencia.opciones.map((op) => (
+                        <option key={op} value={op} />
+                    ))}
+                </datalist>
+            )}
 
             <input
                 type="text"
