@@ -47,6 +47,18 @@ const SUGERENCIAS_POR_CATEGORIA: Record<
     bebidas: {
         placeholder: "Nombre del producto (ej: Coca-Cola 500ml)",
         placeholderDescripcion: "Ej: Bien fría, botella descartable",
+        opciones: [
+            "Coca/Fanta/Sprite",
+            "Santa Fe",
+            "Santa Fe Pilsen",
+            "Imperial",
+            "Grolsch",
+            "Guinness",
+            "Heineken/Stella",
+            "Heineken/Stella Latón",
+            "Corona",
+            "Miller Latón",
+        ],
     },
     postres: {
         placeholder: "Nombre del producto (ej: Tiramisú)",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState,useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { IconStar, IconTrash, IconImage } from "@/app/icons";
@@ -63,6 +63,18 @@ const SUGERENCIAS_POR_CATEGORIA: Record<
   bebidas: {
     placeholder: "Ej: Coca-Cola 500ml",
     placeholderDescripcion: "Ej: Bien fría, botella descartable",
+    opciones: [
+      "Coca/Fanta/Sprite",
+      "Santa Fe",
+      "Santa Fe Pilsen",
+      "Imperial",
+      "Grolsch",
+      "Guinness",
+      "Heineken/Stella",
+      "Heineken/Stella Latón",
+      "Corona",
+      "Miller Latón",
+    ],
   },
   postres: {
     placeholder: "Ej: Tiramisú",
@@ -161,6 +173,9 @@ export function ProductosDesktopView({
   const [mensajeCrear, setMensajeCrear] = useState<string | null>(null);
   const [nombreNuevo, setNombreNuevo] = useState("");
   const [descripcionNueva, setDescripcionNueva] = useState("");
+  const [archivoNuevo, setArchivoNuevo] = useState<File | null>(null);
+  const [previewNuevo, setPreviewNuevo] = useState<string | null>(null);
+  const fileInputNuevoRef = useRef<HTMLInputElement>(null);
 
   const seccionSeleccionadaNombre = normalizar(
     seccionesList.find((s) => s.id === seccionNuevoProducto)?.nombre ?? ""
