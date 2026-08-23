@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import { IconPlus, IconMinus } from "@/app/icons";
 import { agregarItemAlCarrito } from "@/lib/carrito";
 
 type Opcion = {
@@ -19,6 +20,7 @@ export default function AgregarAlCarrito({
   opciones: Opcion[];
 }) {
   const [seleccion, setSeleccion] = useState<Opcion>(opciones[0]);
+  const [cantidad, setCantidad] = useState(1);
   const [agregado, setAgregado] = useState(false);
   const router = useRouter();
 
@@ -29,13 +31,15 @@ export default function AgregarAlCarrito({
       tamanio: seleccion.tamanio,
       label: seleccion.label,
       precio: seleccion.precio,
-      cantidad: 1,
+      cantidad,
     });
     setAgregado(true);
+    setCantidad(1);
     setTimeout(() => setAgregado(false), 900);
   }
 
   const soloUnTamanio = opciones.length === 1;
+  const subtotal = seleccion.precio * cantidad;
 
   return (
     <div>
@@ -89,11 +93,49 @@ export default function AgregarAlCarrito({
         </p>
       )}
 
+      {/* Stepper de cantidad */}
+      <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3 mb-24 border border-black/[0.06]">
+        <span className="text-[13px] font-semibold text-black/60">Cantidad</span>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setCantidad((c) => Math.max(1, c - 1))}
+            disabled={cantidad <= 1}
+            className="w-8 h-8 rounded-full bg-black/[0.06] flex items-center justify-center text-black disabled:opacity-30 active:scale-90 transition-transform"
+            aria-label="Restar"
+          >
+            <IconMinus size={14} />
+          </button>
+
+          <div className="w-6 overflow-hidden h-6 relative">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={cantidad}
+                initial={{ y: 14, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -14, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 34 }}
+                className="absolute inset-0 flex items-center justify-center font-bold text-[15px] text-black"
+              >
+                {cantidad}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+
+          <button
+            onClick={() => setCantidad((c) => Math.min(20, c + 1))}
+            className="w-8 h-8 rounded-full bg-[#141210] flex items-center justify-center text-white active:scale-90 transition-transform"
+            aria-label="Sumar"
+          >
+            <IconPlus size={14} />
+          </button>
+        </div>
+      </div>
+
       {/* Barra fija inferior */}
       <div
-  className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] px-4 pt-4 flex gap-3 z-20"
-  style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
->
+        className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] px-4 pt-4 flex gap-3 z-20"
+        style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+      >
         <motion.button
           onClick={handleAgregar}
           whileTap={{ scale: 0.97 }}
@@ -102,7 +144,7 @@ export default function AgregarAlCarrito({
           className="flex-1 rounded-full py-3.5 font-bold text-[15px]"
           style={{ color: agregado ? "#141210" : "#ffffff" }}
         >
-          {agregado ? "Agregado" : "Agregar al pedido"}
+          {agregado ? "Agregado" : `Agregar · $${subtotal.toLocaleString("es-AR")}`}
         </motion.button>
 
         <motion.button
