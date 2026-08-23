@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { IconCarrito } from "@/app/icons";
 import { agregarItemAlCarrito } from "@/lib/carrito";
-import { useRef } from "react"; // sumalo al import existente de "react"
 
 type Opcion = {
   tamanio: string;
@@ -23,28 +22,19 @@ export default function AgregarAlCarrito({
   const [seleccion, setSeleccion] = useState<Opcion>(opciones[0]);
   const [agregado, setAgregado] = useState(false);
   const router = useRouter();
-  const iconoAgregarRef = useRef<HTMLSpanElement>(null);
-  function handleAgregar() {
-  const rect = iconoAgregarRef.current?.getBoundingClientRect();
-  if (rect) {
-    window.dispatchEvent(
-      new CustomEvent("fly-to-cart", {
-        detail: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
-      })
-    );
-  }
 
-  agregarItemAlCarrito({
-    productoId: producto.id,
-    nombre: producto.nombre,
-    tamanio: seleccion.tamanio,
-    label: seleccion.label,
-    precio: seleccion.precio,
-    cantidad: 1,
-  });
-  setAgregado(true);
-  setTimeout(() => setAgregado(false), 1500);
-}
+  function handleAgregar() {
+    agregarItemAlCarrito({
+      productoId: producto.id,
+      nombre: producto.nombre,
+      tamanio: seleccion.tamanio,
+      label: seleccion.label,
+      precio: seleccion.precio,
+      cantidad: 1,
+    });
+    setAgregado(true);
+    setTimeout(() => setAgregado(false), 1500);
+  }
 
   const soloUnTamanio = opciones.length === 1;
 
@@ -133,10 +123,8 @@ export default function AgregarAlCarrito({
                 transition={{ type: "spring", stiffness: 500, damping: 32 }}
                 className="flex items-center gap-2"
               >
-                <span ref={iconoAgregarRef}>
-  <IconCarrito size={17} />
-</span>
-Agregar al pedido
+                <IconCarrito size={17} />
+                Agregar al pedido
               </motion.span>
             )}
           </AnimatePresence>
@@ -146,10 +134,11 @@ Agregar al pedido
           onClick={() => router.push("/carrito")}
           whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          className="px-5 rounded-full border border-black/15 text-black font-semibold text-[14px]"
-        >
-          Ver pedido
-        </motion.button>
+          className="px-5 flex items-center gap-2 rounded-full border border-black/15 text-black font-semibold text-[14px]"
+>
+  <IconCarrito size={16} />
+  Ver pedido
+</motion.button>
       </div>
     </div>
   );

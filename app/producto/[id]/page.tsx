@@ -58,12 +58,12 @@ export default async function ProductoPage({
 
           <div className="fixed top-0 inset-x-0 pt-6 px-5 flex items-center justify-between z-30">
   <Link
-    href={`/${producto.seccion.nombre.toLowerCase()}`}
-    className="w-9 h-9 flex items-center justify-center rounded-full bg-[#141210]/70 text-white backdrop-blur-sm"
-    aria-label="Volver"
-  >
-    <IconArrowLeft size={18} />
-  </Link>
+  href={`/${producto.seccion.nombre.toLowerCase()}`}
+  className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-[#141210] shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+  aria-label="Volver"
+>
+  <IconArrowLeft size={18} />
+</Link>
   <CarritoIconoFlotante />
 </div>
         </div>
