@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "motion/react";
-import { IconCarrito } from "@/app/icons";
+import { motion } from "motion/react";
 import { agregarItemAlCarrito } from "@/lib/carrito";
 
 type Opcion = {
@@ -22,18 +21,8 @@ export default function AgregarAlCarrito({
   const [seleccion, setSeleccion] = useState<Opcion>(opciones[0]);
   const [agregado, setAgregado] = useState(false);
   const router = useRouter();
-  const iconoAgregarRef = useRef<HTMLSpanElement>(null);
 
   function handleAgregar() {
-    const rect = iconoAgregarRef.current?.getBoundingClientRect();
-    if (rect) {
-      window.dispatchEvent(
-        new CustomEvent("fly-to-cart", {
-          detail: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
-        })
-      );
-    }
-
     agregarItemAlCarrito({
       productoId: producto.id,
       nombre: producto.nombre,
@@ -43,7 +32,7 @@ export default function AgregarAlCarrito({
       cantidad: 1,
     });
     setAgregado(true);
-    setTimeout(() => setAgregado(false), 1500);
+    setTimeout(() => setAgregado(false), 900);
   }
 
   const soloUnTamanio = opciones.length === 1;
@@ -100,50 +89,24 @@ export default function AgregarAlCarrito({
         </p>
       )}
 
+      {/* Barra fija inferior */}
       <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4 flex gap-3 z-20">
         <motion.button
           onClick={handleAgregar}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          className="flex-1 flex items-center justify-center gap-2 bg-[#141210] text-white rounded-full py-3.5 font-bold text-[15px] overflow-hidden"
+          whileTap={{ scale: 0.97 }}
+          animate={{ backgroundColor: agregado ? "#c6f135" : "#141210" }}
+          transition={{ duration: 0.25 }}
+          className="flex-1 rounded-full py-3.5 font-bold text-[15px]"
+          style={{ color: agregado ? "#141210" : "#ffffff" }}
         >
-          <AnimatePresence mode="wait" initial={false}>
-            {agregado ? (
-              <motion.span
-                key="agregado"
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -10, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                className="flex items-center gap-2"
-              >
-                Agregado ✓
-              </motion.span>
-            ) : (
-              <motion.span
-                key="agregar"
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -10, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                className="flex items-center gap-2"
-              >
-                <span ref={iconoAgregarRef}>
-                  <IconCarrito size={17} />
-                </span>
-                Agregar al pedido
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {agregado ? "Agregado" : "Agregar al pedido"}
         </motion.button>
 
         <motion.button
           onClick={() => router.push("/carrito")}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          className="px-5 flex items-center gap-2 rounded-full border border-black/15 text-black font-semibold text-[14px]"
+          whileTap={{ scale: 0.97 }}
+          className="px-5 rounded-full border border-black/15 text-black font-semibold text-[14px]"
         >
-          <IconCarrito size={16} />
           Ver pedido
         </motion.button>
       </div>
