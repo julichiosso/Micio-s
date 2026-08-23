@@ -5,6 +5,7 @@ import { getProductoPorId } from "@/lib/queries/productos";
 import AgregarAlCarrito from "./agregar-al-carrito";
 import { IconArrowLeft, IconImage } from "@/app/icons";
 import FooterInfo from "@/app/footer-info";
+import CarritoIconoFlotante from "./carrito-icono-flotante";
 
 const LABELS_TAMANIO: Record<string, string> = {
   xl: "XL",
@@ -55,15 +56,16 @@ export default async function ProductoPage({
             </div>
           )}
 
-          <div className="absolute top-0 inset-x-0 pt-6 px-5">
-            <Link
-              href={`/${producto.seccion.nombre.toLowerCase()}`}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-[#141210]/70 text-white backdrop-blur-sm"
-              aria-label="Volver"
-            >
-              <IconArrowLeft size={18} />
-            </Link>
-          </div>
+          <div className="absolute top-0 inset-x-0 pt-6 px-5 flex items-center justify-between">
+  <Link
+    href={`/${producto.seccion.nombre.toLowerCase()}`}
+    className="w-9 h-9 flex items-center justify-center rounded-full bg-[#141210]/70 text-white backdrop-blur-sm"
+    aria-label="Volver"
+  >
+    <IconArrowLeft size={18} />
+  </Link>
+  <CarritoIconoFlotante />
+</div>
         </div>
 
         {/* Info */}
