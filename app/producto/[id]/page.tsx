@@ -56,7 +56,7 @@ export default async function ProductoPage({
             </div>
           )}
 
-          <div className="absolute top-0 inset-x-0 pt-6 px-5 flex items-center justify-between">
+          <div className="fixed top-0 inset-x-0 pt-6 px-5 flex items-center justify-between z-30">
   <Link
     href={`/${producto.seccion.nombre.toLowerCase()}`}
     className="w-9 h-9 flex items-center justify-center rounded-full bg-[#141210]/70 text-white backdrop-blur-sm"
