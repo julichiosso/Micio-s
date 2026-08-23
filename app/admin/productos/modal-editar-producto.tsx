@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { IconClose, IconImage } from "@/app/icons";
+import imageCompression from "browser-image-compression";
 
 type Precio = { id: number; tamanio: string; precio: number };
 type Categoria = { id: number; nombre: string };
@@ -134,14 +135,26 @@ export function ModalEditarProducto({
     }
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      setArchivoSeleccionado(file);
-      setPreviewUrl(URL.createObjectURL(file));
-      setFotoMensaje(null);
-    }
+async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setFotoMensaje(null);
+
+  try {
+    const comprimido = await imageCompression(file, {
+      maxSizeMB: 0.8,
+      maxWidthOrHeight: 1600,
+      useWebWorker: true,
+    });
+    setArchivoSeleccionado(comprimido);
+    setPreviewUrl(URL.createObjectURL(comprimido));
+  } catch (err) {
+    console.error("Error comprimiendo imagen", err);
+    setArchivoSeleccionado(file);
+    setPreviewUrl(URL.createObjectURL(file));
   }
+}
 
   async function handleSubirFoto(e: React.FormEvent) {
     e.preventDefault();
