@@ -6,6 +6,9 @@ import Image from "next/image";
 import { IconStar, IconTrash, IconImage } from "@/app/icons";
 import { ModalEditarProducto } from "./modal-editar-producto";
 import { subirFotoProducto } from "@/lib/actions-storage";
+import imageCompression from "browser-image-compression";
+
+
 // ─── Tipos ───────────────────────────────────────────────────────────
 type Precio = { id: number; tamanio: string; precio: number };
 type Seccion = { id: number; nombre: string };
@@ -487,11 +490,28 @@ export function ProductosDesktopView({
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0] ?? null;
-                        setArchivoNuevo(file);
-                        setPreviewNuevo(file ? URL.createObjectURL(file) : null);
-                      }}
+                      onChange={async (e) => {
+  const file = e.target.files?.[0] ?? null;
+  if (!file) {
+    setArchivoNuevo(null);
+    setPreviewNuevo(null);
+    return;
+  }
+
+  try {
+    const comprimido = await imageCompression(file, {
+      maxSizeMB: 0.8,
+      maxWidthOrHeight: 1600,
+      useWebWorker: true,
+    });
+    setArchivoNuevo(comprimido);
+    setPreviewNuevo(URL.createObjectURL(comprimido));
+  } catch (err) {
+    console.error("Error comprimiendo imagen", err);
+    setArchivoNuevo(file);
+    setPreviewNuevo(URL.createObjectURL(file));
+  }
+}}
                     />
                     <div className="flex items-center gap-3">
                       <div className="w-14 h-14 rounded-xl bg-gray-100 border border-gray-200 relative overflow-hidden shrink-0 flex items-center justify-center">
