@@ -27,6 +27,49 @@ const LABELS: Record<string, string> = {
   unico: "Precio Único",
 };
 
+// Mini-diálogo de "¿salir sin guardar?"
+function ConfirmSalirSinGuardar({
+  onDescartar,
+  onSeguirEditando,
+}: {
+  onDescartar: () => void;
+  onSeguirEditando: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onSeguirEditando}
+      />
+      <div className="relative bg-[#1a1814] border border-white/[0.15] rounded-2xl p-6 max-w-sm w-full z-10 animate-in fade-in zoom-in-95 duration-150">
+        <h3 className="text-white font-bold text-[16px] mb-2">
+          Tenés cambios sin guardar
+        </h3>
+        <p className="text-white/60 text-[13.5px] leading-relaxed mb-6">
+          Si salís ahora vas a perder los datos que modificaste y todavía no
+          guardaste. ¿Qué querés hacer?
+        </p>
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={onSeguirEditando}
+            className="w-full px-4 py-2.5 rounded-xl bg-[#c6f135] text-[#141210] text-[13.5px] font-bold hover:bg-[#d6ff47] transition-colors cursor-pointer"
+          >
+            Seguir editando
+          </button>
+          <button
+            type="button"
+            onClick={onDescartar}
+            className="w-full px-4 py-2.5 rounded-xl border border-white/15 text-white/70 hover:text-white hover:bg-white/[0.06] text-[13px] font-medium transition-colors cursor-pointer"
+          >
+            Descartar cambios y salir
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ModalEditarProducto({
   producto,
   categorias,
@@ -50,10 +93,46 @@ export function ModalEditarProducto({
   const [datosMensaje, setDatosMensaje] = useState<string | null>(null);
   const [guardandoPrecios, setGuardandoPrecios] = useState(false);
   const [preciosMensaje, setPreciosMensaje] = useState<string | null>(null);
+  const [mostrarConfirmSalir, setMostrarConfirmSalir] = useState(false);
 
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(producto.fotoUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ── Tracking de cambios sin guardar por sección ──
+  const [nombreValor, setNombreValor] = useState(producto.nombre);
+  const [descripcionValor, setDescripcionValor] = useState(producto.descripcion ?? "");
+  const [nombreGuardado, setNombreGuardado] = useState(producto.nombre);
+  const [descripcionGuardada, setDescripcionGuardada] = useState(producto.descripcion ?? "");
+
+  const precioUnicoInicial = producto.precios[0]?.precio ?? "";
+  const [precioUnicoValor, setPrecioUnicoValor] = useState<string | number>(precioUnicoInicial);
+  const [precioUnicoGuardado, setPrecioUnicoGuardado] = useState<string | number>(precioUnicoInicial);
+
+  const preciosPizzaIniciales: Record<string, string | number> = {};
+  for (const tam of ["xl", "media_xl", "clasica", "media_clasica"]) {
+    preciosPizzaIniciales[tam] = producto.precios.find((p) => p.tamanio === tam)?.precio ?? "";
+  }
+  const [preciosPizzaValor, setPreciosPizzaValor] = useState(preciosPizzaIniciales);
+  const [preciosPizzaGuardado, setPreciosPizzaGuardado] = useState(preciosPizzaIniciales);
+
+  const datosPendientes = nombreValor !== nombreGuardado || descripcionValor !== descripcionGuardada;
+  const fotoPendiente = archivoSeleccionado !== null;
+  const precioUnicoPendiente = !producto.tieneTamanios && precioUnicoValor !== precioUnicoGuardado;
+  const preciosPizzaPendientes =
+    producto.tieneTamanios &&
+    JSON.stringify(preciosPizzaValor) !== JSON.stringify(preciosPizzaGuardado);
+
+  const hayCambiosSinGuardar =
+    datosPendientes || fotoPendiente || precioUnicoPendiente || preciosPizzaPendientes;
+
+  function pedirCierre() {
+    if (hayCambiosSinGuardar) {
+      setMostrarConfirmSalir(true);
+    } else {
+      onClose();
+    }
+  }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -82,7 +161,6 @@ export function ModalEditarProducto({
       setArchivoSeleccionado(null);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Error al subir la foto";
-      // Si el error era el NEXT_REDIRECT interno de Next.js, tratarlo como éxito
       if (errorMsg.includes("NEXT_REDIRECT")) {
         setFotoMensaje("✓ ¡Foto actualizada con éxito!");
         setArchivoSeleccionado(null);
@@ -100,15 +178,16 @@ export function ModalEditarProducto({
     setDatosMensaje(null);
 
     try {
-      const fd = new FormData(e.currentTarget);
-      const nombre = fd.get("nombre") as string;
-      const descripcion = fd.get("descripcion") as string;
-      await actionEditarProducto(producto.id, nombre, descripcion);
+      await actionEditarProducto(producto.id, nombreValor, descripcionValor);
       setDatosMensaje("✓ Datos guardados con éxito");
+      setNombreGuardado(nombreValor);
+      setDescripcionGuardada(descripcionValor);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Error al guardar datos";
       if (errorMsg.includes("NEXT_REDIRECT")) {
         setDatosMensaje("✓ Datos guardados con éxito");
+        setNombreGuardado(nombreValor);
+        setDescripcionGuardada(descripcionValor);
       } else {
         setDatosMensaje(`❌ ${errorMsg}`);
       }
@@ -123,18 +202,19 @@ export function ModalEditarProducto({
     setPreciosMensaje(null);
 
     try {
-      const fd = new FormData(e.currentTarget);
       const map: Record<string, number> = {};
       for (const tam of ["xl", "media_xl", "clasica", "media_clasica"]) {
-        const val = Number(fd.get(`precio_${tam}`));
+        const val = Number(preciosPizzaValor[tam]);
         if (val > 0) map[tam] = val;
       }
       await actionActualizarPreciosPizza(producto.id, map);
       setPreciosMensaje("✓ Precios actualizados");
+      setPreciosPizzaGuardado(preciosPizzaValor);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Error al guardar precios";
       if (errorMsg.includes("NEXT_REDIRECT")) {
         setPreciosMensaje("✓ Precios actualizados");
+        setPreciosPizzaGuardado(preciosPizzaValor);
       } else {
         setPreciosMensaje(`❌ ${errorMsg}`);
       }
@@ -149,16 +229,17 @@ export function ModalEditarProducto({
     setPreciosMensaje(null);
 
     try {
-      const fd = new FormData(e.currentTarget);
-      const precio = Number(fd.get("precio"));
+      const precio = Number(precioUnicoValor);
       if (precio > 0) {
         await actionActualizarPrecioUnico(producto.id, precio);
         setPreciosMensaje("✓ Precio actualizado");
+        setPrecioUnicoGuardado(precioUnicoValor);
       }
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Error al guardar precio";
       if (errorMsg.includes("NEXT_REDIRECT")) {
         setPreciosMensaje("✓ Precio actualizado");
+        setPrecioUnicoGuardado(precioUnicoValor);
       } else {
         setPreciosMensaje(`❌ ${errorMsg}`);
       }
@@ -169,10 +250,17 @@ export function ModalEditarProducto({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      {mostrarConfirmSalir && (
+        <ConfirmSalirSinGuardar
+          onSeguirEditando={() => setMostrarConfirmSalir(false)}
+          onDescartar={onClose}
+        />
+      )}
+
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
+        onClick={pedirCierre}
       />
 
       {/* Modal Container: Blanco en Desktop, Oscuro en Mobile */}
@@ -189,6 +277,11 @@ export function ModalEditarProducto({
                   Inactivo
                 </span>
               )}
+              {hayCambiosSinGuardar && (
+                <span className="text-[10.5px] uppercase font-semibold bg-amber-500/15 text-amber-400 md:text-amber-700 md:bg-amber-100 px-2 py-0.5 rounded-full">
+                  Cambios sin guardar
+                </span>
+              )}
             </div>
             <h2 className="text-[18px] font-bold text-white md:text-gray-900 leading-tight">
               Editar: {producto.nombre}
@@ -197,7 +290,7 @@ export function ModalEditarProducto({
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={pedirCierre}
             className="w-9 h-9 flex items-center justify-center rounded-full bg-white/[0.06] md:bg-gray-100 hover:bg-white/10 md:hover:bg-gray-200 text-white/60 md:text-gray-500 hover:text-white md:hover:text-gray-900 transition-colors cursor-pointer"
             aria-label="Cerrar"
           >
@@ -294,7 +387,8 @@ export function ModalEditarProducto({
                 </label>
                 <input
                   name="nombre"
-                  defaultValue={producto.nombre}
+                  value={nombreValor}
+                  onChange={(e) => setNombreValor(e.target.value)}
                   required
                   placeholder="Ej: Pizza Napolitana Especial"
                   className="w-full bg-white/[0.06] md:bg-white rounded-xl px-3.5 py-2.5 text-white md:text-gray-900 text-[15px] font-medium outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] md:focus:ring-2 md:focus:ring-[#c6f135]/25 transition-all"
@@ -307,7 +401,8 @@ export function ModalEditarProducto({
                 </label>
                 <input
                   name="descripcion"
-                  defaultValue={producto.descripcion ?? ""}
+                  value={descripcionValor}
+                  onChange={(e) => setDescripcionValor(e.target.value)}
                   placeholder="Ingredientes o detalle del producto (opcional)"
                   className="w-full bg-white/[0.06] md:bg-white rounded-xl px-3.5 py-2.5 text-white md:text-gray-900 text-[15px] outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] md:focus:ring-2 md:focus:ring-[#c6f135]/25 transition-all placeholder:text-white/20 md:placeholder:text-gray-400"
                 />
@@ -346,32 +441,31 @@ export function ModalEditarProducto({
             {producto.tieneTamanios ? (
               <form onSubmit={handleGuardarPreciosPizza} className="flex flex-col gap-2.5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {["xl", "media_xl", "clasica", "media_clasica"].map((tam) => {
-                    const precioActual =
-                      producto.precios.find((p) => p.tamanio === tam)?.precio ?? "";
-                    return (
-                      <div
-                        key={tam}
-                        className="flex items-center gap-2 bg-white/[0.04] md:bg-white p-2 rounded-xl border border-white/[0.05] md:border-gray-200"
-                      >
-                        <span className="text-[12.5px] text-white/60 md:text-gray-600 font-semibold w-28 shrink-0">
-                          {LABELS[tam]}
+                  {["xl", "media_xl", "clasica", "media_clasica"].map((tam) => (
+                    <div
+                      key={tam}
+                      className="flex items-center gap-2 bg-white/[0.04] md:bg-white p-2 rounded-xl border border-white/[0.05] md:border-gray-200"
+                    >
+                      <span className="text-[12.5px] text-white/60 md:text-gray-600 font-semibold w-28 shrink-0">
+                        {LABELS[tam]}
+                      </span>
+                      <div className="relative flex-1">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 md:text-gray-400 text-[13px]">
+                          $
                         </span>
-                        <div className="relative flex-1">
-                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 md:text-gray-400 text-[13px]">
-                            $
-                          </span>
-                          <input
-                            type="number"
-                            name={`precio_${tam}`}
-                            defaultValue={precioActual}
-                            placeholder="0"
-                            className="w-full bg-white/[0.06] md:bg-gray-50 rounded-lg pl-6 pr-2.5 py-1.5 text-white md:text-gray-900 text-[15px] font-bold outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] transition-colors"
-                          />
-                        </div>
+                        <input
+                          type="number"
+                          name={`precio_${tam}`}
+                          value={preciosPizzaValor[tam]}
+                          onChange={(e) =>
+                            setPreciosPizzaValor((prev) => ({ ...prev, [tam]: e.target.value }))
+                          }
+                          placeholder="0"
+                          className="w-full bg-white/[0.06] md:bg-gray-50 rounded-lg pl-6 pr-2.5 py-1.5 text-white md:text-gray-900 text-[15px] font-bold outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] transition-colors"
+                        />
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
@@ -406,7 +500,8 @@ export function ModalEditarProducto({
                     <input
                       type="number"
                       name="precio"
-                      defaultValue={producto.precios[0]?.precio ?? ""}
+                      value={precioUnicoValor}
+                      onChange={(e) => setPrecioUnicoValor(e.target.value)}
                       placeholder="Precio en pesos"
                       required
                       className="w-full bg-white/[0.06] md:bg-white rounded-xl pl-8 pr-3.5 py-2.5 text-white md:text-gray-900 text-[16px] font-bold outline-none border border-white/[0.08] md:border-gray-200 focus:border-[#c6f135] transition-colors"
@@ -440,7 +535,7 @@ export function ModalEditarProducto({
         <div className="px-6 py-4 border-t border-white/[0.08] md:border-gray-100 flex items-center justify-end bg-[#141210] md:bg-gray-50">
           <button
             type="button"
-            onClick={onClose}
+            onClick={pedirCierre}
             className="px-6 py-2.5 bg-white/15 md:bg-gray-900 hover:bg-white/20 md:hover:bg-gray-800 text-white rounded-xl text-[14px] font-bold transition-colors cursor-pointer"
           >
             Listo / Cerrar
