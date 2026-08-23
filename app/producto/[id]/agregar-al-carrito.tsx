@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { IconCarrito } from "@/app/icons";
@@ -22,8 +22,18 @@ export default function AgregarAlCarrito({
   const [seleccion, setSeleccion] = useState<Opcion>(opciones[0]);
   const [agregado, setAgregado] = useState(false);
   const router = useRouter();
+  const iconoAgregarRef = useRef<HTMLSpanElement>(null);
 
   function handleAgregar() {
+    const rect = iconoAgregarRef.current?.getBoundingClientRect();
+    if (rect) {
+      window.dispatchEvent(
+        new CustomEvent("fly-to-cart", {
+          detail: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
+        })
+      );
+    }
+
     agregarItemAlCarrito({
       productoId: producto.id,
       nombre: producto.nombre,
@@ -54,7 +64,6 @@ export default function AgregarAlCarrito({
                   onClick={() => setSeleccion(op)}
                   className="relative flex items-center justify-between rounded-xl px-4 py-3.5 text-left overflow-hidden"
                 >
-                  {/* Fondo animado: se desliza de un botón a otro en vez de "saltar" */}
                   {activo && (
                     <motion.div
                       layoutId="fondo-tamanio-seleccionado"
@@ -62,10 +71,7 @@ export default function AgregarAlCarrito({
                       transition={{ type: "spring", stiffness: 500, damping: 38 }}
                     />
                   )}
-                  {/* Fondo estático de fallback cuando no está activo */}
-                  {!activo && (
-                    <div className="absolute inset-0 bg-white" />
-                  )}
+                  {!activo && <div className="absolute inset-0 bg-white" />}
 
                   <span
                     className={`relative z-10 font-semibold text-[14px] transition-colors duration-150 ${
@@ -94,7 +100,6 @@ export default function AgregarAlCarrito({
         </p>
       )}
 
-      {/* Barra fija inferior */}
       <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4 flex gap-3 z-20">
         <motion.button
           onClick={handleAgregar}
@@ -123,7 +128,9 @@ export default function AgregarAlCarrito({
                 transition={{ type: "spring", stiffness: 500, damping: 32 }}
                 className="flex items-center gap-2"
               >
-                <IconCarrito size={17} />
+                <span ref={iconoAgregarRef}>
+                  <IconCarrito size={17} />
+                </span>
                 Agregar al pedido
               </motion.span>
             )}
@@ -135,10 +142,10 @@ export default function AgregarAlCarrito({
           whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
           className="px-5 flex items-center gap-2 rounded-full border border-black/15 text-black font-semibold text-[14px]"
->
-  <IconCarrito size={16} />
-  Ver pedido
-</motion.button>
+        >
+          <IconCarrito size={16} />
+          Ver pedido
+        </motion.button>
       </div>
     </div>
   );
