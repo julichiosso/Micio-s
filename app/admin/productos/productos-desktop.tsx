@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { IconStar, IconTrash, IconImage } from "@/app/icons";
 import { ModalEditarProducto } from "./modal-editar-producto";
-
+import { subirFotoProducto } from "@/db/actions-storage";
 // ─── Tipos ───────────────────────────────────────────────────────────
 type Precio = { id: number; tamanio: string; precio: number };
 type Seccion = { id: number; nombre: string };
@@ -391,18 +391,27 @@ export function ProductosDesktopView({
                       if (val > 0) listaPrecios.push({ tamanio: "unico", precio: val });
                     }
 
-                    try {
-                      await actionCrearProducto({
+                                        try {
+                      const nuevoProducto = await actionCrearProducto({
                         seccionId: Number(fd.get("seccionId")),
                         nombre: fd.get("nombre") as string,
                         descripcion: (fd.get("descripcion") as string) || undefined,
                         tieneTamanios: tieneTamaniosNuevo,
                         precios: listaPrecios,
                       });
+
+                      if (archivoNuevo && nuevoProducto?.id) {
+                        const fdFoto = new FormData();
+                        fdFoto.append("foto", archivoNuevo);
+                        await subirFotoProducto(nuevoProducto.id, fdFoto);
+                      }
+
                       setMostrarNuevo(false);
                       setTieneTamaniosNuevo(false);
                       setNombreNuevo("");
                       setDescripcionNueva("");
+                      setArchivoNuevo(null);
+                      setPreviewNuevo(null);
                       router.refresh();
                     } catch (err: unknown) {
                       const msg = err instanceof Error ? err.message : "Error al crear el producto";
@@ -459,7 +468,7 @@ export function ProductosDesktopView({
                       </datalist>
                     )}
                   </div>
-                  <div>
+                                    <div>
                     <label className="block text-gray-400 text-[11px] uppercase font-semibold mb-1">Descripción (opcional)</label>
                     <input
                       type="text"
@@ -469,6 +478,37 @@ export function ProductosDesktopView({
                       placeholder={sugerencia.placeholderDescripcion}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] transition-colors placeholder:text-gray-400"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-400 text-[11px] uppercase font-semibold mb-1">Foto del producto (opcional)</label>
+                    <input
+                      ref={fileInputNuevoRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        setArchivoNuevo(file);
+                        setPreviewNuevo(file ? URL.createObjectURL(file) : null);
+                      }}
+                    />
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 rounded-xl bg-gray-100 border border-gray-200 relative overflow-hidden shrink-0 flex items-center justify-center">
+                        {previewNuevo ? (
+                          <img src={previewNuevo} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-[9px] text-gray-300 text-center px-1">Sin foto</span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => fileInputNuevoRef.current?.click()}
+                        className="px-3 py-2 border border-gray-200 rounded-xl text-[12.5px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                      >
+                        {archivoNuevo ? "Cambiar imagen" : "Seleccionar imagen"}
+                      </button>
+                    </div>
                   </div>
 
                   <label className="flex items-start gap-2 text-[12.5px] text-gray-700 cursor-pointer pt-1 leading-snug">
