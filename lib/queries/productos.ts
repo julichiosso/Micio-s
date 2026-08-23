@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { secciones, productos, precios } from "@/db/schema";
-import { eq, and, isNotNull } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 /**
  * Trae todas las secciones activas, ordenadas.
@@ -68,23 +68,15 @@ export async function getTodosLosProductos() {
 }
 
 /**
- * Productos destacados para la home: solo los que tienen `destacado = true`,
- * están activos y ya tienen foto cargada (nunca mostramos "Sin foto" acá).
+ * Productos para destacar en la home: prioriza los que ya tienen foto
+ * cargada (se ven mejor), y si no hay suficientes con foto, completa
+ * con el resto. Trae como mucho `limite` productos.
  */
 export async function getProductosDestacados(limite = 4) {
-  return db.query.productos.findMany({
-    where: and(
-      eq(productos.activo, true),
-      eq(productos.destacado, true),
-      isNotNull(productos.fotoUrl)
-    ),
-    orderBy: (productos, { asc }) => [asc(productos.orden)],
-    with: {
-      precios: true,
-      seccion: true,
-    },
-    limit: limite,
-  });
+  const todos = await getTodosLosProductos();
+  const conFoto = todos.filter((p) => p.fotoUrl);
+  const sinFoto = todos.filter((p) => !p.fotoUrl);
+  return [...conFoto, ...sinFoto].slice(0, limite);
 }
 
 /**
@@ -97,6 +89,11 @@ export async function getSeccionesConFoto() {
   const todosLosProductos = await getTodosLosProductos();
 
   return todasLasSecciones.map((seccion) => {
+    // Prioridad: foto propia de la categoría (cargada por el dueño) →
+    // si no tiene, respaldo con la foto del primer producto con imagen.
+    if (seccion.fotoUrl) {
+      return seccion;
+    }
     const productoConFoto = todosLosProductos.find(
       (p) => p.seccionId === seccion.id && p.fotoUrl
     );

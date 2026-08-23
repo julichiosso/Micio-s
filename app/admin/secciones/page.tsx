@@ -6,6 +6,7 @@ import {
   reactivarSeccion,
   borrarSeccionDefinitiva,
 } from "@/lib/actions";
+import { subirFotoSeccion } from "@/lib/actions-storage";
 import { redirect } from "next/navigation";
 import { SeccionCard } from "./seccion-card";
 import { SeccionesDesktopView } from "./secciones-desktop";
@@ -37,10 +38,15 @@ async function actionReactivarSeccion(id: number) {
   redirect("/admin/secciones");
 }
 
-
 async function actionEliminarSeccionDefinitivo(id: number) {
   "use server";
   await borrarSeccionDefinitiva(id);
+  redirect("/admin/secciones");
+}
+
+async function actionSubirFotoSeccion(seccionId: number, formData: FormData) {
+  "use server";
+  await subirFotoSeccion(seccionId, formData);
   redirect("/admin/secciones");
 }
 
@@ -52,6 +58,7 @@ export default async function SeccionesAdminPage() {
     actionDesactivar: actionDesactivarSeccion,
     actionReactivar: actionReactivarSeccion,
     actionEliminarDefinitivo: actionEliminarSeccionDefinitivo,
+    actionSubirFoto: actionSubirFotoSeccion,
   };
 
   return (
@@ -68,7 +75,6 @@ export default async function SeccionesAdminPage() {
       {/* ─── MOBILE VIEW (diseño original dark, sin cambios) ─── */}
       <div className="md:hidden min-h-screen bg-[#141210] pb-16">
         <div className="px-4 pt-5 max-w-lg mx-auto flex flex-col gap-6">
-          {/* Crear nueva categoría */}
           <div className="border border-white/[0.1] rounded-2xl p-5 bg-[#1a1814]">
             <p className="text-white font-semibold text-[15px] mb-3">Nueva categoría</p>
             <form action={actionCrearSeccion} className="flex gap-2">
@@ -88,7 +94,6 @@ export default async function SeccionesAdminPage() {
             </form>
           </div>
 
-          {/* Listado */}
           <div className="flex flex-col gap-3">
             <p className="text-white/35 text-[11px] font-medium uppercase tracking-[0.12em] px-1">
               Categorías existentes ({seccionesList.length})

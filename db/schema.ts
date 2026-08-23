@@ -14,6 +14,7 @@ export const tamanioEnum = pgEnum("tamanio", [
 export const secciones = pgTable("secciones", {
   id: serial("id").primaryKey(),
   nombre: text("nombre").notNull(),
+  fotoUrl: text("foto_url"),
   orden: integer("orden").notNull().default(0),
   activo: boolean("activo").notNull().default(true),
   creadoEn: timestamp("creado_en").notNull().defaultNow(),
@@ -30,7 +31,6 @@ export const productos = pgTable("productos", {
   fotoUrl: text("foto_url"),
   tieneTamanios: boolean("tiene_tamanios").notNull().default(false),
   activo: boolean("activo").notNull().default(true),
-  destacado: boolean("destacado").notNull().default(false),
   orden: integer("orden").notNull().default(0),
   creadoEn: timestamp("creado_en").notNull().defaultNow(),
 });
@@ -44,9 +44,12 @@ export const precios = pgTable(
       .notNull()
       .references(() => productos.id, { onDelete: "cascade" }),
     tamanio: tamanioEnum("tamanio").notNull(),
-    precio: integer("precio").notNull(),
+    precio: integer("precio").notNull(), // guardamos en pesos, sin decimales
   },
   (table) => [
+    // Nunca puede haber 2 filas con el mismo producto+tamaño. Esto hace
+    // que la duplicación de precios sea IMPOSIBLE a nivel de base de datos,
+    // sin importar qué pase del lado de la aplicación (doble clic, lag, etc.)
     unique("precio_producto_tamanio_unico").on(
       table.productoId,
       table.tamanio

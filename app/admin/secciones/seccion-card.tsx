@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { IconTrash } from "@/app/icons";
 
 type Seccion = {
   id: number;
   nombre: string;
   activo: boolean;
+  fotoUrl: string | null;
 };
 
 // Modal de confirmación de borrado
@@ -59,16 +61,19 @@ export function SeccionCard({
   actionDesactivar,
   actionReactivar,
   actionEliminarDefinitivo,
+  actionSubirFoto,
 }: {
   seccion: Seccion;
   actionEditar: (id: number, nombre: string) => Promise<void>;
   actionDesactivar: (id: number) => Promise<void>;
   actionReactivar: (id: number) => Promise<void>;
   actionEliminarDefinitivo: (id: number) => Promise<void>;
+  actionSubirFoto: (seccionId: number, formData: FormData) => Promise<void>;
 }) {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nombre, setNombre] = useState(seccion.nombre);
   const [guardado, setGuardado] = useState(false);
+  const [subiendo, setSubiendo] = useState(false);
 
   return (
     <>
@@ -84,6 +89,48 @@ export function SeccionCard({
       )}
 
       <div className={`border rounded-2xl p-4 transition-all ${seccion.activo ? "border-white/[0.08] bg-[#1a1814]" : "border-white/[0.05] bg-[#161410] opacity-75"}`}>
+        {/* Foto de la categoría */}
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-14 h-14 rounded-xl bg-white/[0.05] shrink-0 relative overflow-hidden border border-white/[0.08]">
+            {seccion.fotoUrl ? (
+              <Image
+                src={seccion.fotoUrl}
+                alt={seccion.nombre}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-white/20 text-[9px] text-center px-1">
+                Sin foto
+              </div>
+            )}
+          </div>
+
+          <form
+            action={async (formData) => {
+              setSubiendo(true);
+              await actionSubirFoto(seccion.id, formData);
+              setSubiendo(false);
+            }}
+            className="flex-1 flex items-center gap-2"
+          >
+            <input
+              type="file"
+              name="foto"
+              accept="image/*"
+              required
+              className="flex-1 text-[11px] text-white/40 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-white/10 file:text-white cursor-pointer"
+            />
+            <button
+              type="submit"
+              disabled={subiendo}
+              className="shrink-0 bg-white/10 hover:bg-white/15 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {subiendo ? "Subiendo…" : "Subir"}
+            </button>
+          </form>
+        </div>
+
         {/* Cabecera de la categoría */}
         <div className="flex items-center justify-between gap-3 mb-3">
           <span className="text-white font-bold text-[16px] tracking-tight">
@@ -128,7 +175,6 @@ export function SeccionCard({
 
         {/* Barra de acciones inferiores */}
         <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
-          {/* Activar / Desactivar */}
           {seccion.activo ? (
             <button
               type="button"
@@ -147,7 +193,6 @@ export function SeccionCard({
             </button>
           )}
 
-          {/* Eliminar definitivo con confirmación */}
           <button
             type="button"
             onClick={() => setMostrarModal(true)}

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { IconTrash } from "@/app/icons";
 
-type Seccion = { id: number; nombre: string; activo: boolean };
+type Seccion = { id: number; nombre: string; activo: boolean; fotoUrl: string | null };
 
 function ConfirmDialog({
   nombre,
@@ -51,20 +52,36 @@ function SeccionFila({
   actionEditar,
   actionDesactivar,
   actionReactivar,
+  actionSubirFoto,
   onEliminarClick,
 }: {
   seccion: Seccion;
   actionEditar: (id: number, nombre: string) => Promise<void>;
   actionDesactivar: (id: number) => Promise<void>;
   actionReactivar: (id: number) => Promise<void>;
+  actionSubirFoto: (seccionId: number, formData: FormData) => Promise<void>;
   onEliminarClick: () => void;
 }) {
   const [nombre, setNombre] = useState(seccion.nombre);
+  const [subiendo, setSubiendo] = useState(false);
 
   return (
     <tr className={`border-b border-gray-100 hover:bg-gray-50/60 transition-colors ${!seccion.activo ? "opacity-55" : ""}`}>
-      {/* Nombre editable */}
+      {/* Foto */}
       <td className="py-3 pl-5 pr-3">
+        <div className="w-11 h-11 rounded-lg bg-gray-100 relative overflow-hidden border border-gray-200 shrink-0">
+          {seccion.fotoUrl ? (
+            <Image src={seccion.fotoUrl} alt={seccion.nombre} fill className="object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-300 text-[8px] text-center">
+              Sin foto
+            </div>
+          )}
+        </div>
+      </td>
+
+      {/* Nombre editable */}
+      <td className="py-3 pr-3">
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -77,7 +94,7 @@ function SeccionFila({
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-1.5 text-[13.5px] font-semibold text-gray-800 bg-white outline-none focus:border-[#c6f135] focus:ring-2 focus:ring-[#c6f135]/25 transition-all w-56 shadow-sm"
+            className="border border-gray-200 rounded-xl px-3 py-1.5 text-[13.5px] font-semibold text-gray-800 bg-white outline-none focus:border-[#c6f135] focus:ring-2 focus:ring-[#c6f135]/25 transition-all w-48 shadow-sm"
           />
           {nombre !== seccion.nombre && (
             <button
@@ -87,6 +104,33 @@ function SeccionFila({
               Guardar
             </button>
           )}
+        </form>
+      </td>
+
+      {/* Subir foto */}
+      <td className="py-3 pr-3">
+        <form
+          action={async (formData) => {
+            setSubiendo(true);
+            await actionSubirFoto(seccion.id, formData);
+            setSubiendo(false);
+          }}
+          className="flex items-center gap-1.5"
+        >
+          <input
+            type="file"
+            name="foto"
+            accept="image/*"
+            required
+            className="w-40 text-[11px] text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-gray-100 file:text-gray-700 cursor-pointer"
+          />
+          <button
+            type="submit"
+            disabled={subiendo}
+            className="text-[11px] px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+          >
+            {subiendo ? "..." : "Subir"}
+          </button>
         </form>
       </td>
 
@@ -142,6 +186,7 @@ export function SeccionesDesktopView({
   actionDesactivar,
   actionReactivar,
   actionEliminarDefinitivo,
+  actionSubirFoto,
 }: {
   seccionesList: Seccion[];
   actionCrearSeccion: (fd: FormData) => Promise<void>;
@@ -149,6 +194,7 @@ export function SeccionesDesktopView({
   actionDesactivar: (id: number) => Promise<void>;
   actionReactivar: (id: number) => Promise<void>;
   actionEliminarDefinitivo: (id: number) => Promise<void>;
+  actionSubirFoto: (seccionId: number, formData: FormData) => Promise<void>;
 }) {
   const [categoriaParaEliminar, setCategoriaParaEliminar] = useState<Seccion | null>(null);
 
@@ -157,7 +203,6 @@ export function SeccionesDesktopView({
 
   return (
     <div className="p-6 max-w-4xl">
-      {/* Modal de confirmación levantado fuera de la tabla para evitar errores de validación HTML */}
       {categoriaParaEliminar && (
         <ConfirmDialog
           nombre={categoriaParaEliminar.nombre}
@@ -170,7 +215,6 @@ export function SeccionesDesktopView({
         />
       )}
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
           { label: "Total categorías", value: seccionesList.length, color: "text-gray-900" },
@@ -184,7 +228,6 @@ export function SeccionesDesktopView({
         ))}
       </div>
 
-      {/* Formulario nueva categoría */}
       <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-5">
         <p className="text-[14px] font-bold text-gray-900 mb-2">Crear nueva categoría</p>
         <form action={actionCrearSeccion} className="flex gap-2.5">
@@ -204,12 +247,13 @@ export function SeccionesDesktopView({
         </form>
       </div>
 
-      {/* Tabla */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/70">
-              <th className="pl-5 py-3 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">Nombre de Categoría</th>
+              <th className="pl-5 py-3 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">Foto</th>
+              <th className="py-3 pr-3 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">Nombre</th>
+              <th className="py-3 pr-3 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">Subir foto</th>
               <th className="py-3 pr-3 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">Estado</th>
               <th className="py-3 pr-5 text-right text-[11px] font-bold text-gray-400 uppercase tracking-wider">Acciones</th>
             </tr>
@@ -217,7 +261,7 @@ export function SeccionesDesktopView({
           <tbody className="divide-y divide-gray-100">
             {seccionesList.length === 0 ? (
               <tr>
-                <td colSpan={3} className="py-16 text-center text-[14px] text-gray-400">
+                <td colSpan={5} className="py-16 text-center text-[14px] text-gray-400">
                   No hay categorías creadas todavía.
                 </td>
               </tr>
@@ -229,6 +273,7 @@ export function SeccionesDesktopView({
                   actionEditar={actionEditar}
                   actionDesactivar={actionDesactivar}
                   actionReactivar={actionReactivar}
+                  actionSubirFoto={actionSubirFoto}
                   onEliminarClick={() => setCategoriaParaEliminar(s)}
                 />
               ))

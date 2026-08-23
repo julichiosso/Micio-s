@@ -43,3 +43,28 @@ textarea,
 a {
   touch-action: manipulation;
 }
+
+@import "tailwindcss";
+ 
+/*
+  iOS hace zoom automático al enfocar un input cuyo font-size sea menor
+  a 16px. Esta regla fuerza 16px mínimo en TODOS los campos de formulario
+  del sitio (público y admin), sin importar qué clase de Tailwind se les
+  haya puesto encima, para que eso nunca vuelva a pasar en ningún lugar.
+*/
+input,
+select,
+textarea {
+  font-size: 16px !important;
+}
+ 
+/* En pantallas grandes (desktop, sin problema de zoom táctil) permitimos
+   que los inputs vuelvan a su tamaño visual pensado, más compacto. */
+@media (min-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 13.5px !important;
+  }
+}
+ 
