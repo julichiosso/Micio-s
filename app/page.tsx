@@ -24,6 +24,7 @@ export default async function HomePage() {
       {/* Header con sidebar integrado */}
       <Header variante="oscura" secciones={nombresSecciones} />
 
+
       {/* Hero con video real del local */}
       <div className="relative h-[42vh] min-h-[300px] w-full mt-3">
         <div className="absolute inset-0 overflow-hidden">
@@ -36,6 +37,15 @@ export default async function HomePage() {
           >
             <source src="/hero.mp4" type="video/mp4" />
           </video>
+
+          <video
+  autoPlay
+  muted
+  loop
+  playsInline
+  poster="/hero-poster.jpg"
+  className="absolute inset-0 w-full h-full object-cover"
+></video>
           {/* Scrim reforzado: garantiza contraste del texto sin importar
               qué haya de fondo en el video en ese instante */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#141210]/95 via-[#141210]/55 to-[#141210]/15" />
@@ -172,7 +182,7 @@ export default async function HomePage() {
           </p>
         </div>
 
-        <WhatsappConsulta />
+    
 
         {/* ── Encontranos (Panel Blanquito) ── */}
         <section id="encontranos" className="bg-[#f7f3ea] rounded-3xl p-5 mb-6 text-black">

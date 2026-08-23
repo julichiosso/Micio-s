@@ -8,18 +8,18 @@ export default function FooterInfo() {
         alt="Micio's"
         width={80}
         height={30}
-        className="h-6 w-auto opacity-40"
+        className="h-6 w-auto opacity-50"
       />
       <div className="flex flex-col items-center gap-1.5">
         <a
           href="https://instagram.com/webya.dev"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-white/25 text-[11px] tracking-wider hover:text-white/40 transition-colors font-medium uppercase"
+          className="text-white/40 text-[11px] tracking-wider hover:text-white/60 transition-colors font-medium uppercase"
         >
-          Impulsado por <span className="font-bold text-white/40">Webya</span>
+          Impulsado por <span className="font-bold text-white/55">Webya</span>
         </a>
-        <p className="text-white/15 text-[10px]">
+        <p className="text-white/30 text-[10px]">
           Micio&apos;s Pizzería · San Jorge, Santa Fe
         </p>
       </div>

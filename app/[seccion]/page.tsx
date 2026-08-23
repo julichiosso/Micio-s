@@ -34,6 +34,14 @@ export default async function SeccionPage({
         className="relative w-full overflow-hidden"
         style={{ minHeight: "220px", height: "36vh" }}
       >
+        <video
+  autoPlay
+  muted
+  loop
+  playsInline
+  poster="/seccionPizzas-poster.jpg"
+  className="absolute inset-0 w-full h-full object-cover"
+></video>
         {/* Video de fondo (si existe para esta sección) */}
         {videoSrc ? (
           <video
