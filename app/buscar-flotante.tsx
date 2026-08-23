@@ -24,9 +24,14 @@ export default function BuscarFlotante() {
 
   return (
     <div
-      className={`fixed bottom-6 inset-x-0 z-40 flex justify-center pointer-events-none transition-all duration-300 ease-out ${
+      className={`fixed inset-x-0 z-30 flex justify-center pointer-events-none transition-all duration-300 ease-out ${
         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
       }`}
+      style={{
+        // Se apila arriba del cart bar si está visible (variable publicada
+        // por CarritoFlotante), y respeta el safe-area de iOS.
+        bottom: "calc(1.5rem + env(safe-area-inset-bottom) + var(--cart-bar-height, 0px))",
+      }}
     >
       <Link
         href="/buscar"

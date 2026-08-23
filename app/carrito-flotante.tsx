@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { IconCarrito } from "./icons";
 import { getCarrito, getTotalCarrito, ItemCarrito } from "@/lib/carrito";
@@ -9,6 +9,7 @@ export default function CarritoFlotante() {
   const [items, setItems] = useState<ItemCarrito[]>([]);
   const pathname = usePathname();
   const router = useRouter();
+  const barRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     function cargar() {
@@ -23,25 +24,40 @@ export default function CarritoFlotante() {
     };
   }, [pathname]);
 
-  // No mostrar en el panel admin, ni en la página del carrito (ya está ahí),
-  // ni en la página de producto (tiene su propio CTA fijo abajo),
-  // ni si no hay items todavía.
   const ocultarEn =
     pathname.startsWith("/admin") ||
     pathname === "/carrito" ||
     pathname.startsWith("/producto/");
 
   const cantidadTotal = items.reduce((acc, i) => acc + i.cantidad, 0);
+  const visible = !ocultarEn && cantidadTotal > 0;
 
-  if (ocultarEn || cantidadTotal === 0) return null;
+  // Publica la altura real de esta barra (o 0 si no está) en una variable
+  // CSS global, así otros elementos flotantes (ej. el buscador) pueden
+  // apilarse arriba sin necesitar conocerse entre sí directamente.
+  useEffect(() => {
+    function actualizarAltura() {
+      const alto = visible && barRef.current ? barRef.current.offsetHeight : 0;
+      document.documentElement.style.setProperty(
+        "--cart-bar-height",
+        alto > 0 ? `${alto + 12}px` : "0px" // +12 = separación entre ambos
+      );
+    }
+    actualizarAltura();
+    window.addEventListener("resize", actualizarAltura);
+    return () => window.removeEventListener("resize", actualizarAltura);
+  }, [visible, cantidadTotal]);
+
+  if (!visible) return null;
 
   const total = getTotalCarrito(items);
 
   return (
-    // z-30: por debajo del sidebar (z-40/z-50) pero sobre el contenido normal
     <button
+      ref={barRef}
       onClick={() => router.push("/carrito")}
-      className="fixed bottom-4 left-4 right-4 z-30 bg-[#141210] text-white rounded-2xl px-5 py-4 flex items-center justify-between border border-white/[0.08] active:scale-[0.98] transition-transform"
+      className="fixed left-4 right-4 z-30 bg-[#141210] text-white rounded-2xl px-5 py-4 flex items-center justify-between border border-white/[0.08] active:scale-[0.98] transition-transform"
+      style={{ bottom: "calc(1rem + env(safe-area-inset-bottom))" }}
       aria-label={`Ver pedido — $${total.toLocaleString("es-AR")}`}
     >
       <div className="flex items-center gap-3">

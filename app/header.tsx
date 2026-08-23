@@ -1,23 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { IconMenu, IconCarrito } from "./icons";
 import Sidebar from "./sidebar";
-import { useEffect } from "react";
 import { getCarrito } from "@/lib/carrito";
 import Image from "next/image";
 
 type HeaderProps = {
-  /** Variante oscura (sobre video/fondo oscuro) o clara (sobre fondo claro) */
   variante?: "oscura" | "clara";
-  /** Nombres de secciones para el sidebar */
   secciones?: string[];
 };
 
 export default function Header({ variante = "oscura", secciones = [] }: HeaderProps) {
   const [sidebarAbierto, setSidebarAbierto] = useState(false);
   const [cantidadCarrito, setCantidadCarrito] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+  const tickingRef = useRef(false);
 
   useEffect(() => {
     function cargar() {
@@ -29,9 +28,22 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
     return () => window.removeEventListener("carrito-actualizado", cargar);
   }, []);
 
+  useEffect(() => {
+    function onScroll() {
+      if (tickingRef.current) return;
+      tickingRef.current = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 30);
+        tickingRef.current = false;
+      });
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const esOscura = variante === "oscura";
   const colorTexto = esOscura ? "text-white/70" : "text-black/60";
-  const colorMarca = esOscura ? "text-white" : "text-black";
 
   return (
     <>
@@ -41,7 +53,17 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
         secciones={secciones}
       />
 
-      <div className="flex items-center justify-between px-5 pt-5 pb-1">
+      {/* Espaciador: como el header pasa a fixed, el contenido de abajo
+          necesita este hueco para no quedar tapado al cargar la página */}
+      <div className="h-[60px]" />
+
+      <div
+        className={`fixed top-0 inset-x-0 z-40 flex items-center justify-between px-5 pt-5 pb-3 transition-all duration-300 ease-out ${
+          scrolled
+            ? "bg-[#141210]/90 backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]"
+            : "bg-transparent"
+        }`}
+      >
         <button
           onClick={() => setSidebarAbierto(true)}
           className={`${colorTexto} active:opacity-60 transition-opacity`}

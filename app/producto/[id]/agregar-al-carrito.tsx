@@ -90,7 +90,10 @@ export default function AgregarAlCarrito({
       )}
 
       {/* Barra fija inferior */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4 flex gap-3 z-20">
+      <div
+  className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] px-4 pt-4 flex gap-3 z-20"
+  style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+>
         <motion.button
           onClick={handleAgregar}
           whileTap={{ scale: 0.97 }}

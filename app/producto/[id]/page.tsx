@@ -98,9 +98,9 @@ export default async function ProductoPage({
       </div>
 
       {/* Footer al pie en fondo oscuro */}
-      <div className="pb-24">
-        <FooterInfo />
-      </div>
+      <div className="pb-28">
+  <FooterInfo />
+</div>
     </main>
   );
 }
