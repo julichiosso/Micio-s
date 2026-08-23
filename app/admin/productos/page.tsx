@@ -16,22 +16,14 @@ import { ProductosDesktopView } from "./productos-desktop";
 import { NuevoProductoForm } from "./nuevo-producto-form";
 import { SeccionAcordeon } from "./seccion-acordeon";
 
-async function actionCrearProducto(formData: FormData) {
-  "use server";
-  await crearProducto({
-    seccionId: Number(formData.get("seccionId")),
-    nombre: formData.get("nombre") as string,
-    descripcion: (formData.get("descripcion") as string) || undefined,
-    tieneTamanios: formData.get("tieneTamanios") === "on",
-  });
-  redirect("/admin/productos");
-}
-
+// Acción "objeto" que crea el producto (con precios opcionales incluidos
+// en la misma operación). La usan tanto el form mobile como el desktop.
 async function actionCrearProductoConFoto(datos: {
   seccionId: number;
   nombre: string;
   descripcion?: string;
   tieneTamanios: boolean;
+  precios?: { tamanio: string; precio: number }[];
 }) {
   "use server";
   return await crearProducto(datos);
@@ -104,7 +96,6 @@ export default async function ProductosAdminPage() {
     productos: productosList.filter((p) => p.seccion.id === s.id),
   }));
 
-  // Stats calculados del mismo array, sin queries extra
   const totalProductos = productosList.length;
   const sinFoto = productosList.filter((p) => !p.fotoUrl).length;
   const inactivos = productosList.filter((p) => !p.activo).length;
@@ -128,13 +119,13 @@ export default async function ProductosAdminPage() {
           seccionesList={seccionesList}
           productosList={productosList}
           stats={{ totalProductos, sinFoto, inactivos }}
-          actionCrearProducto={actionCrearProducto}
+          actionCrearProducto={actionCrearProductoConFoto}
           actionAumentoMasivo={actionAumentoMasivo}
           {...sharedActions}
         />
       </div>
 
-      {/* ─── MOBILE VIEW (sin cambios del diseño original) ─── */}
+      {/* ─── MOBILE VIEW ─── */}
       <div className="md:hidden min-h-screen bg-[#141210] pb-16">
 
         <div className="px-4 pt-5 flex flex-col gap-6">

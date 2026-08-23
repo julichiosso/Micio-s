@@ -71,6 +71,10 @@ export async function crearProducto(datos: {
   descripcion?: string;
   tieneTamanios: boolean;
   fotoUrl?: string;
+  // Precios opcionales: si vienen, se cargan en la misma operación de
+  // crear el producto (así el empleado no tiene que volver a "Editar"
+  // después solo para poner el precio).
+  precios?: { tamanio: string; precio: number }[];
 }) {
   await requireAuth();
   const [nuevo] = await db
@@ -83,7 +87,26 @@ export async function crearProducto(datos: {
       fotoUrl: datos.fotoUrl,
     })
     .returning();
+
+  if (datos.precios && datos.precios.length > 0) {
+    for (const p of datos.precios) {
+      if (!p.precio || p.precio <= 0) continue;
+      const tamanio = p.tamanio as
+        | "xl"
+        | "media_xl"
+        | "clasica"
+        | "media_clasica"
+        | "unico";
+      await db.insert(precios).values({
+        productoId: nuevo.id,
+        tamanio,
+        precio: p.precio,
+      });
+    }
+  }
+
   revalidatePath("/admin/productos");
+  revalidatePath("/", "layout");
   return nuevo;
 }
 

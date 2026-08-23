@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { IconStar, IconTrash, IconImage } from "@/app/icons";
 import { ModalEditarProducto } from "./modal-editar-producto";
@@ -109,7 +110,13 @@ export function ProductosDesktopView({
   seccionesList: Seccion[];
   productosList: Producto[];
   stats: { totalProductos: number; sinFoto: number; inactivos: number };
-  actionCrearProducto: (fd: FormData) => Promise<void>;
+  actionCrearProducto: (datos: {
+    seccionId: number;
+    nombre: string;
+    descripcion?: string;
+    tieneTamanios: boolean;
+    precios?: { tamanio: string; precio: number }[];
+  }) => Promise<{ id: number }>;
   actionAumentoMasivo: (fd: FormData) => Promise<void>;
   actionToggleDestacado: (id: number, valor: boolean) => Promise<void>;
   actionDesactivar: (id: number) => Promise<void>;
@@ -120,6 +127,7 @@ export function ProductosDesktopView({
   actionActualizarPrecioUnico: (id: number, precio: number) => Promise<void>;
   actionActualizarPreciosPizza: (id: number, map: Record<string, number>) => Promise<void>;
 }) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>("todas");
   const [mostrarNuevo, setMostrarNuevo] = useState(false);
@@ -127,6 +135,9 @@ export function ProductosDesktopView({
   const [seccionNuevoProducto, setSeccionNuevoProducto] = useState<number | null>(
     seccionesList[0]?.id ?? null
   );
+  const [tieneTamaniosNuevo, setTieneTamaniosNuevo] = useState(false);
+  const [creandoProducto, setCreandoProducto] = useState(false);
+  const [mensajeCrear, setMensajeCrear] = useState<string | null>(null);
 
   const seccionSeleccionadaNombre = normalizar(
     seccionesList.find((s) => s.id === seccionNuevoProducto)?.nombre ?? ""
@@ -324,7 +335,49 @@ export function ProductosDesktopView({
             {mostrarNuevo && (
               <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-2xl p-5 z-20 animate-in fade-in zoom-in-95 duration-100">
                 <p className="text-[14px] font-bold text-gray-900 mb-3">Agregar producto</p>
-                <form action={actionCrearProducto} className="flex flex-col gap-3">
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    setCreandoProducto(true);
+                    setMensajeCrear(null);
+                    const fd = new FormData(e.currentTarget);
+
+                    const listaPrecios: { tamanio: string; precio: number }[] = [];
+                    if (tieneTamaniosNuevo) {
+                      for (const tam of ["xl", "media_xl", "clasica", "media_clasica"]) {
+                        const val = Number(fd.get(`precio_${tam}`));
+                        if (val > 0) listaPrecios.push({ tamanio: tam, precio: val });
+                      }
+                    } else {
+                      const val = Number(fd.get("precio_unico"));
+                      if (val > 0) listaPrecios.push({ tamanio: "unico", precio: val });
+                    }
+
+                    try {
+                      await actionCrearProducto({
+                        seccionId: Number(fd.get("seccionId")),
+                        nombre: fd.get("nombre") as string,
+                        descripcion: (fd.get("descripcion") as string) || undefined,
+                        tieneTamanios: tieneTamaniosNuevo,
+                        precios: listaPrecios,
+                      });
+                      setMostrarNuevo(false);
+                      setTieneTamaniosNuevo(false);
+                      router.refresh();
+                    } catch (err: unknown) {
+                      const msg = err instanceof Error ? err.message : "Error al crear el producto";
+                      if (msg.includes("NEXT_REDIRECT")) {
+                        setMostrarNuevo(false);
+                        router.refresh();
+                      } else {
+                        setMensajeCrear(`❌ ${msg}`);
+                      }
+                    } finally {
+                      setCreandoProducto(false);
+                    }
+                  }}
+                  className="flex flex-col gap-3"
+                >
                   <div>
                     <label className="block text-gray-400 text-[11px] uppercase font-semibold mb-1">Categoría</label>
                     <select
@@ -366,15 +419,64 @@ export function ProductosDesktopView({
                       className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] transition-colors placeholder:text-gray-400"
                     />
                   </div>
-                  <label className="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer pt-1">
-                    <input type="checkbox" name="tieneTamanios" className="w-4 h-4 rounded accent-[#7fa800]" />
-                    Se vende en varios tamaños con precios distintos (ej: pizzas: XL / 1/2 XL / Clásica). Dejalo sin marcar si es un solo precio, como bebidas o postres.
+
+                  <label className="flex items-start gap-2 text-[12.5px] text-gray-700 cursor-pointer pt-1 leading-snug">
+                    <input
+                      type="checkbox"
+                      checked={tieneTamaniosNuevo}
+                      onChange={(e) => setTieneTamaniosNuevo(e.target.checked)}
+                      className="w-4 h-4 rounded accent-[#7fa800] shrink-0 mt-0.5"
+                    />
+                    Se vende en varios tamaños con precios distintos (ej: pizzas). Dejalo sin marcar si es un solo precio.
                   </label>
+
+                  {/* Precios: 4 campos si tiene tamaños, 1 solo si no */}
+                  <div>
+                    <label className="block text-gray-400 text-[11px] uppercase font-semibold mb-1.5">
+                      {tieneTamaniosNuevo ? "Precios por tamaño" : "Precio"}
+                    </label>
+                    {tieneTamaniosNuevo ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { key: "xl", label: "XL" },
+                          { key: "media_xl", label: "1/2 XL" },
+                          { key: "clasica", label: "Clásica" },
+                          { key: "media_clasica", label: "Clásica 1/2" },
+                        ].map((t) => (
+                          <div key={t.key} className="relative">
+                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]">$</span>
+                            <input
+                              type="number"
+                              name={`precio_${t.key}`}
+                              placeholder={t.label}
+                              className="w-full border border-gray-200 rounded-lg pl-6 pr-2 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] transition-colors"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]">$</span>
+                        <input
+                          type="number"
+                          name="precio_unico"
+                          placeholder="Precio en pesos"
+                          className="w-full border border-gray-200 rounded-xl pl-7 pr-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] transition-colors"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {mensajeCrear && (
+                    <p className="text-[12px] font-semibold text-red-600">{mensajeCrear}</p>
+                  )}
+
                   <button
                     type="submit"
-                    className="w-full bg-[#c6f135] text-[#141210] rounded-xl py-2.5 font-bold text-[13.5px] hover:bg-[#d4ff3d] transition-colors mt-1 cursor-pointer"
+                    disabled={creandoProducto}
+                    className="w-full bg-[#c6f135] text-[#141210] rounded-xl py-2.5 font-bold text-[13.5px] hover:bg-[#d4ff3d] transition-colors mt-1 cursor-pointer disabled:opacity-50"
                   >
-                    Crear producto
+                    {creandoProducto ? "Creando..." : "Crear producto"}
                   </button>
                 </form>
               </div>

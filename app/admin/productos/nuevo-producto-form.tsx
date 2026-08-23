@@ -45,6 +45,7 @@ export function NuevoProductoForm({
         nombre: string;
         descripcion?: string;
         tieneTamanios: boolean;
+        precios?: { tamanio: string; precio: number }[];
     }) => Promise<ProductoCreado>;
     actionSubirFoto: (id: number, fd: FormData) => Promise<unknown>;
 }) {
@@ -55,6 +56,7 @@ export function NuevoProductoForm({
     const [seccionId, setSeccionId] = useState<number | null>(
         seccionesList[0]?.id ?? null
     );
+    const [tieneTamanios, setTieneTamanios] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -80,11 +82,24 @@ export function NuevoProductoForm({
 
         try {
             const fd = new FormData(e.currentTarget);
+
+            const listaPrecios: { tamanio: string; precio: number }[] = [];
+            if (tieneTamanios) {
+                for (const tam of ["xl", "media_xl", "clasica", "media_clasica"]) {
+                    const val = Number(fd.get(`precio_${tam}`));
+                    if (val > 0) listaPrecios.push({ tamanio: tam, precio: val });
+                }
+            } else {
+                const val = Number(fd.get("precio_unico"));
+                if (val > 0) listaPrecios.push({ tamanio: "unico", precio: val });
+            }
+
             const nuevo = await actionCrearProducto({
                 seccionId: Number(fd.get("seccionId")),
                 nombre: fd.get("nombre") as string,
                 descripcion: (fd.get("descripcion") as string) || undefined,
-                tieneTamanios: fd.get("tieneTamanios") === "on",
+                tieneTamanios,
+                precios: listaPrecios,
             });
 
             if (archivo && nuevo?.id) {
@@ -97,6 +112,7 @@ export function NuevoProductoForm({
             formRef.current?.reset();
             setArchivo(null);
             setPreviewUrl(null);
+            setTieneTamanios(false);
             window.location.reload();
         } catch (err: unknown) {
             const errorMsg = err instanceof Error ? err.message : "Error al crear el producto";
@@ -180,11 +196,49 @@ export function NuevoProductoForm({
             <label className="flex items-center gap-2.5 px-1 text-white/60 text-[13px] cursor-pointer leading-snug">
                 <input
                     type="checkbox"
-                    name="tieneTamanios"
+                    checked={tieneTamanios}
+                    onChange={(e) => setTieneTamanios(e.target.checked)}
                     className="w-4 h-4 rounded accent-[#c6f135] shrink-0"
                 />
                 Se vende en varios tamaños (como pizzas: XL, 1/2 XL, etc.). Dejalo sin marcar si tiene un solo precio.
             </label>
+
+            {/* Precios */}
+            <div>
+                <label className="block text-white/40 text-[11px] uppercase tracking-wider mb-1.5 font-bold px-1">
+                    {tieneTamanios ? "Precios por tamaño" : "Precio"}
+                </label>
+                {tieneTamanios ? (
+                    <div className="grid grid-cols-2 gap-2">
+                        {[
+                            { key: "xl", label: "XL" },
+                            { key: "media_xl", label: "1/2 XL" },
+                            { key: "clasica", label: "Clásica" },
+                            { key: "media_clasica", label: "Clásica 1/2" },
+                        ].map((t) => (
+                            <div key={t.key} className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[14px]">$</span>
+                                <input
+                                    type="number"
+                                    name={`precio_${t.key}`}
+                                    placeholder={t.label}
+                                    className="w-full bg-white/[0.06] rounded-xl pl-6 pr-2 py-2.5 text-white text-[15px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="relative">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30 text-[15px]">$</span>
+                        <input
+                            type="number"
+                            name="precio_unico"
+                            placeholder="Precio en pesos"
+                            className="w-full bg-white/[0.06] rounded-xl pl-8 pr-3.5 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
+                        />
+                    </div>
+                )}
+            </div>
 
             {mensaje && (
                 <p
