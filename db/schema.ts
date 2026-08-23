@@ -31,6 +31,7 @@ export const productos = pgTable("productos", {
   fotoUrl: text("foto_url"),
   tieneTamanios: boolean("tiene_tamanios").notNull().default(false),
   activo: boolean("activo").notNull().default(true),
+  destacado: boolean("destacado").notNull().default(false),
   orden: integer("orden").notNull().default(0),
   creadoEn: timestamp("creado_en").notNull().defaultNow(),
 });
@@ -76,3 +77,4 @@ export const preciosRelations = relations(precios, ({ one }) => ({
     references: [productos.id],
   }),
 }));
+
