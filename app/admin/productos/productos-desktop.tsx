@@ -32,12 +32,19 @@ function normalizar(t: string) {
 // Sugerencias de nombre según la categoría elegida en "Nuevo producto"
 const SUGERENCIAS_POR_CATEGORIA: Record<
   string,
-  { placeholder: string; opciones?: string[] }
+  { placeholder: string; placeholderDescripcion: string; opciones?: string[] }
 > = {
-  pizzas: { placeholder: "Ej: Pizza Napolitana" },
-  bebidas: { placeholder: "Ej: Coca-Cola 500ml" },
+  pizzas: {
+    placeholder: "Ej: Pizza Napolitana",
+    placeholderDescripcion: "Ej: Muzzarella, tomate, jamón, orégano...",
+  },
+  bebidas: {
+    placeholder: "Ej: Coca-Cola 500ml",
+    placeholderDescripcion: "Ej: Bien fría, botella descartable",
+  },
   postres: {
     placeholder: "Ej: Tiramisú",
+    placeholderDescripcion: "Ej: Porción individual, con cacao",
     opciones: ["Tiramisú", "Chocolina", "Mousse de chocolate", "Cheese cake"],
   },
 };
@@ -126,7 +133,7 @@ export function ProductosDesktopView({
   );
   const sugerencia =
     SUGERENCIAS_POR_CATEGORIA[seccionSeleccionadaNombre] ??
-    { placeholder: "Ej: nombre del producto" };
+    { placeholder: "Ej: nombre del producto", placeholderDescripcion: "Detalle del producto..." };
 
   // Modal de edición y modal de borrado
   const [productoParaEditar, setProductoParaEditar] = useState<Producto | null>(null);
@@ -355,13 +362,13 @@ export function ProductosDesktopView({
                     <input
                       type="text"
                       name="descripcion"
-                      placeholder="Ingredientes..."
+                      placeholder={sugerencia.placeholderDescripcion}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2 text-[13px] text-gray-700 bg-white outline-none focus:border-[#c6f135] transition-colors placeholder:text-gray-400"
                     />
                   </div>
                   <label className="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer pt-1">
                     <input type="checkbox" name="tieneTamanios" className="w-4 h-4 rounded accent-[#7fa800]" />
-                    Tiene varios tamaños (ej: pizzas)
+                    Se vende en varios tamaños con precios distintos (ej: pizzas: XL / 1/2 XL / Clásica). Dejalo sin marcar si es un solo precio, como bebidas o postres.
                   </label>
                   <button
                     type="submit"

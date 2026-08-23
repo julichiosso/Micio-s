@@ -17,12 +17,19 @@ function normalizar(t: string) {
 // Sugerencias de nombre según la categoría elegida
 const SUGERENCIAS_POR_CATEGORIA: Record<
     string,
-    { placeholder: string; opciones?: string[] }
+    { placeholder: string; placeholderDescripcion: string; opciones?: string[] }
 > = {
-    pizzas: { placeholder: "Nombre del producto (ej: Pizza Napolitana)" },
-    bebidas: { placeholder: "Nombre del producto (ej: Coca-Cola 500ml)" },
+    pizzas: {
+        placeholder: "Nombre del producto (ej: Pizza Napolitana)",
+        placeholderDescripcion: "Ej: Muzzarella, tomate, jamón, orégano...",
+    },
+    bebidas: {
+        placeholder: "Nombre del producto (ej: Coca-Cola 500ml)",
+        placeholderDescripcion: "Ej: Bien fría, botella descartable",
+    },
     postres: {
         placeholder: "Nombre del producto (ej: Tiramisú)",
+        placeholderDescripcion: "Ej: Porción individual, con cacao",
         opciones: ["Tiramisú", "Chocolina", "Mousse de chocolate", "Cheese cake"],
     },
 };
@@ -56,7 +63,7 @@ export function NuevoProductoForm({
     );
     const sugerencia =
         SUGERENCIAS_POR_CATEGORIA[seccionNombre] ??
-        { placeholder: "Nombre del producto" };
+        { placeholder: "Nombre del producto", placeholderDescripcion: "Descripción (opcional)" };
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -138,7 +145,7 @@ export function NuevoProductoForm({
             <input
                 type="text"
                 name="descripcion"
-                placeholder="Descripción (opcional)"
+                placeholder={sugerencia.placeholderDescripcion}
                 className="w-full bg-white/[0.06] rounded-xl px-3 py-3 text-white text-[16px] placeholder:text-white/25 outline-none border border-white/[0.08] focus:border-white/20 transition-colors"
             />
 
@@ -170,13 +177,13 @@ export function NuevoProductoForm({
                 </button>
             </div>
 
-            <label className="flex items-center gap-2.5 px-1 text-white/60 text-[14px] cursor-pointer">
+            <label className="flex items-center gap-2.5 px-1 text-white/60 text-[13px] cursor-pointer leading-snug">
                 <input
                     type="checkbox"
                     name="tieneTamanios"
-                    className="w-4 h-4 rounded accent-[#c6f135]"
+                    className="w-4 h-4 rounded accent-[#c6f135] shrink-0"
                 />
-                Tiene varios tamaños (pizzas)
+                Se vende en varios tamaños (como pizzas: XL, 1/2 XL, etc.). Dejalo sin marcar si tiene un solo precio.
             </label>
 
             {mensaje && (
