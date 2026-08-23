@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { IconStar, IconTrash, IconImage } from "@/app/icons";
 import { ModalEditarProducto } from "./modal-editar-producto";
-import { subirFotoProducto } from "@/db/actions-storage";
+import { subirFotoProducto } from "@/lib/actions-storage";
 // ─── Tipos ───────────────────────────────────────────────────────────
 type Precio = { id: number; tamanio: string; precio: number };
 type Seccion = { id: number; nombre: string };
