@@ -48,9 +48,9 @@ export default async function HomePage() {
             className="text-white text-[32px] leading-[0.92] tracking-tight"
             style={{ fontFamily: "var(--font-heading)" }}
           >
-            Pizza a la piedra,
+            Cuatro años
             <br />
-            hecha como se debe.
+            haciendo las mejores pizzas.
           </h1>
           <HorariosToggle />
         </div>

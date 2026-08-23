@@ -5,7 +5,7 @@ import { getSeccionConProductos, getSecciones } from "@/lib/queries/productos";
 import { IconArrowLeft, IconSearch, IconImage } from "@/app/icons";
 import FooterInfo from "../footer-info";
 import StickyTopbar from "./sticky-topbar";
-
+import ProductosLista from "../producto/lista";
 // Mapeo de sección → video de fondo (puede expandirse con más secciones)
 const SECCION_VIDEO: Record<string, string> = {
   pizzas: "/seccionPizzas.mp4",
@@ -109,67 +109,9 @@ export default async function SeccionPage({
         </div>
 
         {/* Contenido encima del watermark */}
+        {/* Contenido encima del watermark */}
         <div className="relative z-10">
-          {productos.length === 0 ? (
-            <p className="text-black/50 text-sm px-2">
-              Todavía no hay productos cargados en esta sección.
-            </p>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {productos.map((producto) => {
-                const desde = producto.precios.length
-                  ? Math.min(...producto.precios.map((p) => p.precio))
-                  : null;
-
-                return (
-                  <Link
-                    key={producto.id}
-                    href={`/producto/${producto.id}`}
-                    className="flex items-center gap-4 bg-white rounded-2xl p-3 active:scale-[0.98] transition-transform"
-                  >
-                    {/* Imagen o fallback visual coherente */}
-                    <div className="w-20 h-20 rounded-xl bg-[#f0ebe0] shrink-0 relative overflow-hidden">
-                      {producto.fotoUrl ? (
-                        <Image
-                          src={producto.fotoUrl}
-                          alt={producto.nombre}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <IconImage size={24} className="text-black/15" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-black text-[16px] truncate">
-                        {producto.nombre}
-                      </p>
-                      {producto.descripcion && (
-                        <p className="text-[13px] text-black/50 truncate mt-0.5">
-                          {producto.descripcion}
-                        </p>
-                      )}
-                      {desde !== null && (
-                        <p className="text-[14px] font-bold text-black mt-1.5">
-                          {producto.tieneTamanios && (
-                            <span className="text-black/40 font-normal text-[12px]">
-                              Desde{" "}
-                            </span>
-                          )}
-                          ${desde.toLocaleString("es-AR")}
-                        </p>
-                      )}
-                    </div>
-
-                    <span className="text-black/20 text-2xl shrink-0">›</span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+          <ProductosLista productos={productos} />
         </div>
 
       </div>
