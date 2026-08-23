@@ -151,8 +151,11 @@ export default function CarritoPage() {
               />
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] p-4 z-20">
-              <div className="flex items-center justify-between mb-3">
+            <div
+              className="fixed bottom-0 left-0 right-0 bg-[#f7f3ea] border-t border-black/[0.08] px-4 pt-4 z-20"
+              style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+            >
+              <div className="flex items-center justify-between mb-1">
                 <span className="text-black/60 font-medium text-[14px]">
                   Total
                 </span>
@@ -160,6 +163,9 @@ export default function CarritoPage() {
                   ${total.toLocaleString("es-AR")}
                 </span>
               </div>
+              <p className="text-black/35 text-[11.5px] mb-3">
+                Revisá que esté todo bien antes de enviar
+              </p>
               <button
                 onClick={handleConfirmar}
                 disabled={!nombre.trim()}

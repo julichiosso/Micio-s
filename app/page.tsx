@@ -10,6 +10,7 @@ import Header from "./header";
 import { IconSearch, IconPin } from "./icons";
 import FooterInfo from "./footer-info";
 import BuscarFlotante from "./buscar-flotante";
+import WhatsappConsulta from "./whatsapp-consulta";
 
 export default async function HomePage() {
   const secciones = await getSeccionesConFoto();
@@ -25,7 +26,6 @@ export default async function HomePage() {
 
       {/* Hero con video real del local */}
       <div className="relative h-[42vh] min-h-[300px] w-full mt-3">
-        {/* Capa de video con overflow-hidden */}
         <div className="absolute inset-0 overflow-hidden">
           <video
             autoPlay
@@ -36,16 +36,17 @@ export default async function HomePage() {
           >
             <source src="/hero.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/45 to-[#141210]/10" />
+          {/* Scrim reforzado: garantiza contraste del texto sin importar
+              qué haya de fondo en el video en ese instante */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#141210]/95 via-[#141210]/55 to-[#141210]/15" />
         </div>
 
-        {/* Textos del hero */}
         <div className="absolute inset-x-0 bottom-0 px-5 pb-6 flex flex-col items-start z-10">
           <span className="bg-[#c6f135] text-[#141210] text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full mb-3">
             Take away
           </span>
           <h1
-            className="text-white text-[32px] leading-[0.92] tracking-tight"
+            className="text-white text-[32px] leading-[0.92] tracking-tight drop-shadow-lg"
             style={{ fontFamily: "var(--font-heading)" }}
           >
             Cuatro años
@@ -68,18 +69,18 @@ export default async function HomePage() {
           </span>
         </Link>
 
-        {/* Secciones con foto de fondo */}
+        {/* Secciones — scroll horizontal con preview parcial de la siguiente */}
         <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
           Elegí qué pedir
         </p>
-        <div className="flex flex-col gap-3 mb-9">
+        <div className="flex gap-3 mb-9 overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-5 px-5">
           {secciones.map((s) => {
             const slug = s.nombre.toLowerCase();
             return (
               <Link
                 key={s.id}
                 href={`/${slug}`}
-                className="group relative h-24 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
+                className="group relative h-32 w-[78%] shrink-0 snap-start rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
               >
                 {s.fotoUrl ? (
                   <Image
@@ -91,13 +92,14 @@ export default async function HomePage() {
                 ) : (
                   <div className="absolute inset-0 bg-[#1c1a17]" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#141210]/90 via-[#141210]/60 to-transparent" />
-                <div className="absolute inset-0 flex items-center px-5">
+                {/* Scrim reforzado — mismo criterio que el hero */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#141210]/90 via-[#141210]/40 to-transparent" />
+                <div className="absolute inset-0 flex items-end px-5 pb-4">
                   <div>
-                    <p className="text-white font-semibold text-[18px] leading-none">
+                    <p className="text-white font-semibold text-[18px] leading-none drop-shadow">
                       {s.nombre}
                     </p>
-                    <p className="text-white/45 text-[12.5px] mt-1 font-normal">
+                    <p className="text-white/70 text-[12.5px] mt-1 font-normal">
                       Ver el menú
                     </p>
                   </div>
@@ -107,7 +109,7 @@ export default async function HomePage() {
           })}
         </div>
 
-        {/* Destacadas — solo productos con destacado=true y foto real */}
+        {/* Destacadas */}
         {destacados.length > 0 && (
           <>
             <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
@@ -125,7 +127,6 @@ export default async function HomePage() {
                     className="block bg-white/[0.04] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
                   >
                     <div className="relative h-44 w-full">
-                      {/* Siempre tiene foto (filtrado en la query) */}
                       <Image
                         src={producto.fotoUrl!}
                         alt={producto.nombre}
@@ -151,7 +152,8 @@ export default async function HomePage() {
                           {producto.descripcion}
                         </p>
                       )}
-                      <span className="inline-block bg-white/[0.06] text-white/80 text-[13px] font-medium px-4 py-2.5 rounded-full">
+                      {/* CTA con jerarquía real: color de marca, más peso */}
+                      <span className="inline-block bg-[#c6f135] text-[#141210] text-[13.5px] font-bold px-5 py-2.5 rounded-full">
                         Ver producto
                       </span>
                     </div>
@@ -170,17 +172,28 @@ export default async function HomePage() {
           </p>
         </div>
 
+        <WhatsappConsulta />
+
         {/* ── Encontranos (Panel Blanquito) ── */}
         <section id="encontranos" className="bg-[#f7f3ea] rounded-3xl p-5 mb-6 text-black">
           <p className="text-black/40 text-[11px] font-bold uppercase tracking-[0.12em] mb-3">
             Encontranos
           </p>
-          <div className="rounded-2xl overflow-hidden border border-black/[0.08]" style={{ height: "200px" }}>
+          <div
+            className="rounded-2xl overflow-hidden border border-black/[0.08]"
+            style={{ height: "200px" }}
+          >
+            {/* Filtro CSS que oscurece el mapa sin necesitar API key propio.
+                No es el dark-mode nativo de Google, pero integra mucho mejor
+                con el resto del sitio que el mapa blanco por defecto. */}
             <iframe
               src="https://maps.google.com/maps?q=Mendoza+1480,+San+Jorge,+Santa+Fe,+Argentina&output=embed&z=16"
               width="100%"
               height="100%"
-              style={{ border: 0 }}
+              style={{
+                border: 0,
+                filter: "invert(92%) hue-rotate(180deg) grayscale(15%) contrast(90%)",
+              }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
