@@ -5,7 +5,7 @@ import { getSeccionConProductos, getSecciones } from "@/lib/queries/productos";
 import { IconArrowLeft, IconSearch, IconImage } from "@/app/icons";
 import FooterInfo from "../footer-info";
 import StickyTopbar from "./sticky-topbar";
-import ProductosLista from "../producto/lista";
+import ProductosLista from "./productos-lista";
 // Mapeo de sección → video de fondo (puede expandirse con más secciones)
 const SECCION_VIDEO: Record<string, string> = {
   pizzas: "/seccionPizzas.mp4",
@@ -108,8 +108,6 @@ export default async function SeccionPage({
           />
         </div>
 
-        {/* Contenido encima del watermark */}
-        {/* Contenido encima del watermark */}
         <div className="relative z-10">
           <ProductosLista productos={productos} />
         </div>
