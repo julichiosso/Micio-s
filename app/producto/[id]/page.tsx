@@ -41,7 +41,7 @@ export default async function ProductoPage({
     <main className="min-h-screen bg-[#141210]">
       <div className="bg-[#f7f3ea] pb-10">
         {/* Foto grande — contenedor portrait = llena sin barras */}
-        <div className="relative w-full" style={{ aspectRatio: "3/4" }}>
+        <div className="relative w-full h-[42svh] min-h-[280px] max-h-[420px]">
           {producto.fotoUrl ? (
             <Image
               src={producto.fotoUrl}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { IconMenu, IconCarrito } from "./icons";
+import { IconMenu, IconCarrito, IconInstagram } from "./icons";
 import Sidebar from "./sidebar";
 import { getCarrito } from "@/lib/carrito";
 import Image from "next/image";
@@ -11,6 +11,8 @@ type HeaderProps = {
   variante?: "oscura" | "clara";
   secciones?: string[];
 };
+
+
 
 export default function Header({ variante = "oscura", secciones = [] }: HeaderProps) {
   const [sidebarAbierto, setSidebarAbierto] = useState(false);
@@ -89,6 +91,16 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
             </span>
           )}
         </Link>
+
+        
+<a href="https://instagram.com/tu_usuario_de_instagram"
+  target="_blank"
+  rel="noopener noreferrer"
+  className={`${colorTexto} active:opacity-60 transition-opacity`}
+  aria-label="Ver Instagram"
+>
+  <IconInstagram size={20} />
+</a>
       </div>
     </>
   );
