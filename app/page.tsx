@@ -125,67 +125,73 @@ export default async function HomePage() {
     <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
       Destacadas
     </p>
-    <div className="flex flex-col gap-4 mb-8">
-      {destacados.map((producto) => {
-        const desde = producto.precios.length
-          ? Math.min(...producto.precios.map((p) => p.precio))
-          : null;
-        return (
-          <Link
-            key={producto.id}
-            href={`/producto/${producto.id}`}
-            className="block bg-white/[0.04] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
-          >
-            <div className="relative h-64 w-full">
-              <Image
-                src={producto.fotoUrl!}
-                alt={producto.nombre}
-                fill
-                className="object-cover"
-              />
-              {/* Degradado para que el texto de abajo se lea bien sobre la foto */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/10 to-transparent" />
+    <div className="mb-8">
+  {destacados.map((producto, index) => {
+    const desde = producto.precios.length
+      ? Math.min(...producto.precios.map((p) => p.precio))
+      : null;
+    return (
+      <div
+        key={producto.id}
+        className="sticky pb-4"
+        style={{
+          top: `${72 + index * 14}px`,
+          zIndex: index + 1,
+        }}
+      >
+        <Link
+          href={`/producto/${producto.id}`}
+          className="block bg-[#141210] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
+        >
+          <div className="relative h-64 w-full">
+            <Image
+              src={producto.fotoUrl!}
+              alt={producto.nombre}
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/10 to-transparent" />
 
-              <span className="absolute top-3 left-3 bg-[#141210]/60 backdrop-blur-md text-white/85 text-[10.5px] font-medium tracking-wide px-2.5 py-1 rounded-full">
-                {producto.seccion.nombre}
+            <span className="absolute top-3 left-3 bg-[#141210]/60 backdrop-blur-md text-white/85 text-[10.5px] font-medium tracking-wide px-2.5 py-1 rounded-full">
+              {producto.seccion.nombre}
+            </span>
+            {desde !== null && (
+              <span className="absolute top-3 right-3 bg-[#c6f135] text-[#141210] text-[12.5px] font-semibold px-2.5 py-1 rounded-full">
+                {producto.tieneTamanios ? "Desde " : ""}$
+                {desde.toLocaleString("es-AR")}
               </span>
-              {desde !== null && (
-                <span className="absolute top-3 right-3 bg-[#c6f135] text-[#141210] text-[12.5px] font-semibold px-2.5 py-1 rounded-full">
-                  {producto.tieneTamanios ? "Desde " : ""}$
-                  {desde.toLocaleString("es-AR")}
-                </span>
-              )}
+            )}
 
-              {/* Texto superpuesto directo sobre la foto, no en bloque aparte */}
-              <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-white font-semibold text-[17px] leading-none tracking-tight mb-1.5 truncate">
-  {producto.nombre}
-</p>
-                  {producto.descripcion && (
-                    <p className="text-white/60 text-[13px] font-normal line-clamp-1">
-                      {producto.descripcion}
-                    </p>
-                  )}
-                </div>
-
-                <span className="shrink-0 w-9 h-9 rounded-full bg-[#c6f135] flex items-center justify-center text-[#141210]">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M5 12h14M13 6l6 6-6 6"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-</span>
+            <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-white font-semibold text-[17px] leading-none tracking-tight mb-1.5 truncate">
+                  {producto.nombre}
+                </p>
+                {producto.descripcion && (
+                  <p className="text-white/60 text-[13px] font-normal line-clamp-1">
+                    {producto.descripcion}
+                  </p>
+                )}
               </div>
+
+              <span className="shrink-0 w-9 h-9 rounded-full bg-[#c6f135] flex items-center justify-center text-[#141210]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M5 12h14M13 6l6 6-6 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
             </div>
-          </Link>
-        );
-      })}
-    </div>
+          </div>
+        </Link>
+      </div>
+    );
+  })}
+</div>
   </>
 )}
 
