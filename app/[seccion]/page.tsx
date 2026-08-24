@@ -12,6 +12,11 @@ const SECCION_VIDEO: Record<string, string> = {
   bebidas: "/seccion_bebidas.mp4",
 };
 
+const SECCION_POSTER: Record<string, string> = {
+  pizzas: "/seccionPizzas-poster.jpg",
+  bebidas: "/seccion_bebidas-poster.jpg",
+};
+
 export default async function SeccionPage({
   params,
 }: {
@@ -37,19 +42,19 @@ export default async function SeccionPage({
       >
         {/* Video de fondo (si existe para esta sección) */}
         {videoSrc ? (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src={videoSrc} type="video/mp4" />
-          </video>
-        ) : (
-          /* Fallback: gradiente oscuro puro */
-          <div className="absolute inset-0 bg-[#1a1814]" />
-        )}
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    poster={SECCION_POSTER[slug.toLowerCase()]}
+    className="absolute inset-0 w-full h-full object-cover"
+  >
+    <source src={videoSrc} type="video/mp4" />
+  </video>
+) : (
+  <div className="absolute inset-0 bg-[#1a1814]" />
+)}
 
         {/* Gradiente encima del video para legibilidad */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/60 to-[#141210]/20" />
