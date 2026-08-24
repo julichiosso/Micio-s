@@ -243,7 +243,7 @@ export function IconMinus({ size = 16, className = "", strokeWidth = 1.75 }: Ico
   );
 }
 
-function IconInstagram({ size = 20, className = "" }: { size?: number; className?: string }) {
+export function IconInstagram({ size = 20, className = "" }: { size?: number; className?: string }) {
   return (
     <svg
       width={size}

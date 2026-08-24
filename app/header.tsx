@@ -12,8 +12,6 @@ type HeaderProps = {
   secciones?: string[];
 };
 
-
-
 export default function Header({ variante = "oscura", secciones = [] }: HeaderProps) {
   const [sidebarAbierto, setSidebarAbierto] = useState(false);
   const [cantidadCarrito, setCantidadCarrito] = useState(0);
@@ -66,6 +64,7 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
             : "bg-transparent"
         }`}
       >
+        {/* Izquierda: menú */}
         <button
           onClick={() => setSidebarAbierto(true)}
           className={`${colorTexto} active:opacity-60 transition-opacity`}
@@ -74,6 +73,7 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
           <IconMenu size={20} />
         </button>
 
+        {/* Centro: logo */}
         <Image
           src="/micios_logo_white.svg"
           alt="Micio's"
@@ -83,24 +83,27 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
           className="h-6 w-auto"
         />
 
-        <Link href="/carrito" className={`relative ${colorTexto}`} aria-label="Ver carrito">
-          <IconCarrito size={20} />
-          {cantidadCarrito > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#c6f135] text-[#141210] text-[9px] font-black flex items-center justify-center leading-none">
-              {cantidadCarrito}
-            </span>
-          )}
-        </Link>
+        {/* Derecha: instagram + carrito, agrupados */}
+        <div className="flex items-center gap-4">
+          
+          <a  href="https://www.instagram.com/miciospizza/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${colorTexto} active:opacity-60 transition-opacity`}
+            aria-label="Ver Instagram"
+          >
+            <IconInstagram size={20} />
+          </a>
 
-        
-<a href="https://instagram.com/tu_usuario_de_instagram"
-  target="_blank"
-  rel="noopener noreferrer"
-  className={`${colorTexto} active:opacity-60 transition-opacity`}
-  aria-label="Ver Instagram"
->
-  <IconInstagram size={20} />
-</a>
+          <Link href="/carrito" className={`relative ${colorTexto}`} aria-label="Ver carrito">
+            <IconCarrito size={20} />
+            {cantidadCarrito > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#c6f135] text-[#141210] text-[9px] font-black flex items-center justify-center leading-none">
+                {cantidadCarrito}
+              </span>
+            )}
+          </Link>
+        </div>
       </div>
     </>
   );
