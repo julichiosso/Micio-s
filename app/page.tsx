@@ -120,59 +120,70 @@ export default async function HomePage() {
         </div>
 
         {/* Destacadas */}
-        {destacados.length > 0 && (
-          <>
-            <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
-              Destacadas
-            </p>
-            <div className="flex flex-col gap-4 mb-8">
-              {destacados.map((producto) => {
-                const desde = producto.precios.length
-                  ? Math.min(...producto.precios.map((p) => p.precio))
-                  : null;
-                return (
-                  <Link
-                    key={producto.id}
-                    href={`/producto/${producto.id}`}
-                    className="block bg-white/[0.04] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
+{destacados.length > 0 && (
+  <>
+    <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
+      Destacadas
+    </p>
+    <div className="flex flex-col gap-4 mb-8">
+      {destacados.map((producto) => {
+        const desde = producto.precios.length
+          ? Math.min(...producto.precios.map((p) => p.precio))
+          : null;
+        return (
+          <Link
+            key={producto.id}
+            href={`/producto/${producto.id}`}
+            className="block bg-white/[0.04] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform"
+          >
+            <div className="relative h-64 w-full">
+              <Image
+                src={producto.fotoUrl!}
+                alt={producto.nombre}
+                fill
+                className="object-cover"
+              />
+              {/* Degradado para que el texto de abajo se lea bien sobre la foto */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/10 to-transparent" />
+
+              <span className="absolute top-3 left-3 bg-[#141210]/60 backdrop-blur-md text-white/85 text-[10.5px] font-medium tracking-wide px-2.5 py-1 rounded-full">
+                {producto.seccion.nombre}
+              </span>
+              {desde !== null && (
+                <span className="absolute top-3 right-3 bg-[#c6f135] text-[#141210] text-[12.5px] font-semibold px-2.5 py-1 rounded-full">
+                  {producto.tieneTamanios ? "Desde " : ""}$
+                  {desde.toLocaleString("es-AR")}
+                </span>
+              )}
+
+              {/* Texto superpuesto directo sobre la foto, no en bloque aparte */}
+              <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-3">
+                <div className="min-w-0">
+                  <p
+                    className="text-white text-[20px] leading-none uppercase mb-1.5 truncate"
+                    style={{ fontFamily: "var(--font-heading)" }}
                   >
-                    <div className="relative h-44 w-full">
-                      <Image
-                        src={producto.fotoUrl!}
-                        alt={producto.nombre}
-                        fill
-                        className="object-cover"
-                      />
-                      <span className="absolute top-3 left-3 bg-[#141210]/60 backdrop-blur-md text-white/85 text-[10.5px] font-medium tracking-wide px-2.5 py-1 rounded-full">
-                        {producto.seccion.nombre}
-                      </span>
-                      {desde !== null && (
-                        <span className="absolute top-3 right-3 bg-[#c6f135] text-[#141210] text-[12.5px] font-semibold px-2.5 py-1 rounded-full">
-                          {producto.tieneTamanios ? "Desde " : ""}$
-                          {desde.toLocaleString("es-AR")}
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <p className="text-white font-semibold text-[16px] leading-none mb-1.5">
-                        {producto.nombre}
-                      </p>
-                      {producto.descripcion && (
-                        <p className="text-white/40 text-[13px] font-normal line-clamp-2 mb-3">
-                          {producto.descripcion}
-                        </p>
-                      )}
-                      {/* CTA con jerarquía real: color de marca, más peso */}
-                      <span className="inline-block bg-[#c6f135] text-[#141210] text-[13.5px] font-bold px-5 py-2.5 rounded-full">
-                        Ver producto
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
+                    {producto.nombre}
+                  </p>
+                  {producto.descripcion && (
+                    <p className="text-white/60 text-[13px] font-normal line-clamp-1">
+                      {producto.descripcion}
+                    </p>
+                  )}
+                </div>
+
+                {/* Botón circular con flecha en vez del pill "Ver producto" */}
+                <span className="shrink-0 w-10 h-10 rounded-full bg-[#c6f135] flex items-center justify-center text-[#141210] text-lg font-bold">
+                  →
+                </span>
+              </div>
             </div>
-          </>
-        )}
+          </Link>
+        );
+      })}
+    </div>
+  </>
+)}
 
         {/* Info de retiro */}
         <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] px-4 py-3.5 mb-10">
