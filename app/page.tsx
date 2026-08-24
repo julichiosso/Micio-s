@@ -159,12 +159,9 @@ export default async function HomePage() {
               {/* Texto superpuesto directo sobre la foto, no en bloque aparte */}
               <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-3">
                 <div className="min-w-0">
-                  <p
-                    className="text-white text-[20px] leading-none uppercase mb-1.5 truncate"
-                    style={{ fontFamily: "var(--font-heading)" }}
-                  >
-                    {producto.nombre}
-                  </p>
+                  <p className="text-white font-semibold text-[17px] leading-none tracking-tight mb-1.5 truncate">
+  {producto.nombre}
+</p>
                   {producto.descripcion && (
                     <p className="text-white/60 text-[13px] font-normal line-clamp-1">
                       {producto.descripcion}
