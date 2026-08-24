@@ -11,6 +11,7 @@
     "subir-fotos": "tsx db/subir-fotos.ts"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.71.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "browser-image-compression": "^2.0.2",
