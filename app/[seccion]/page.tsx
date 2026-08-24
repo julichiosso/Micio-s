@@ -9,6 +9,7 @@ import ProductosLista from "./productos-lista";
 // Mapeo de sección → video de fondo (puede expandirse con más secciones)
 const SECCION_VIDEO: Record<string, string> = {
   pizzas: "/seccionPizzas.mp4",
+  bebidas: "/seccion_bebidas.mp4",
 };
 
 export default async function SeccionPage({
@@ -34,14 +35,6 @@ export default async function SeccionPage({
         className="relative w-full overflow-hidden"
         style={{ minHeight: "220px", height: "36vh" }}
       >
-        <video
-  autoPlay
-  muted
-  loop
-  playsInline
-  poster="/seccionPizzas-poster.jpg"
-  className="absolute inset-0 w-full h-full object-cover"
-></video>
         {/* Video de fondo (si existe para esta sección) */}
         {videoSrc ? (
           <video
