@@ -169,10 +169,17 @@ export default async function HomePage() {
                   )}
                 </div>
 
-                {/* Botón circular con flecha en vez del pill "Ver producto" */}
-                <span className="shrink-0 w-10 h-10 rounded-full bg-[#c6f135] flex items-center justify-center text-[#141210] text-lg font-bold">
-                  →
-                </span>
+                <span className="shrink-0 w-9 h-9 rounded-full bg-[#c6f135] flex items-center justify-center text-[#141210]">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M5 12h14M13 6l6 6-6 6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+</span>
               </div>
             </div>
           </Link>
