@@ -6,7 +6,6 @@ import { IconMenu, IconCarrito, IconInstagram } from "./icons";
 import Sidebar from "./sidebar";
 import { getCarrito } from "@/lib/carrito";
 import Image from "next/image";
-import { div } from "motion/react-client";
 
 type HeaderProps = {
   variante?: "oscura" | "clara";

@@ -6,15 +6,18 @@ import { IconArrowLeft, IconSearch, IconImage } from "@/app/icons";
 import FooterInfo from "../footer-info";
 import StickyTopbar from "./sticky-topbar";
 import ProductosLista from "./productos-lista";
+
+export const revalidate = 0;
+
 // Mapeo de sección → video de fondo (puede expandirse con más secciones)
 const SECCION_VIDEO: Record<string, string> = {
   pizzas: "/seccionPizzas.mp4",
-  bebidas: "/seccion_bebidas.mp4",
+  bebidas: "/seccionBebidas.mp4",
 };
 
 const SECCION_POSTER: Record<string, string> = {
-  pizzas: "/seccionPizzas-poster.jpg",
-  bebidas: "/seccion_bebidas-poster.jpg",
+  pizzas: "/seccionPizzas-poster.jpeg",
+  bebidas: "/seccionBebidas-poster.jpeg",
 };
 
 export default async function SeccionPage({
@@ -31,6 +34,7 @@ export default async function SeccionPage({
   const { seccion, productos } = data;
 
   const videoSrc = SECCION_VIDEO[slug.toLowerCase()] ?? null;
+  const posterSrc = SECCION_POSTER[slug.toLowerCase()] ?? "/hero-poster.jpg";
 
   return (
     <main className="min-h-screen bg-[#141210] pb-36">
@@ -47,11 +51,11 @@ export default async function SeccionPage({
   muted
   loop
   playsInline
-  preload="auto"
-  poster="/hero-poster.jpg"
+  preload="none"
+  poster={posterSrc}
   className="absolute inset-0 w-full h-full object-cover"
 >
-  <source src="/hero.mp4" type="video/mp4" />
+  <source src={videoSrc} type="video/mp4" />
 </video>
 ) : (
   <div className="absolute inset-0 bg-[#1a1814]" />

@@ -66,6 +66,7 @@ export default function ProductosLista({ productos }: { productos: Producto[] })
                     src={producto.fotoUrl}
                     alt={producto.nombre}
                     fill
+                    sizes="80px"
                     className="object-cover"
                   />
                 ) : (

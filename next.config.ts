@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Serve modern formats automatically (AVIF first, WebP fallback)
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
@@ -13,8 +15,33 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '4mb',
+      bodySizeLimit: "4mb",
     },
+  },
+  async headers() {
+    return [
+      {
+        // Next.js generated JS/CSS with content-hash — safe to cache 1 year
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // Static assets in /public: images, videos, fonts, icons
+        source:
+          "/:path((?!_next).*\\.(?:jpg|jpeg|png|gif|svg|webp|avif|mp4|woff|woff2|ttf|otf|ico)$)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
   },
 };
 

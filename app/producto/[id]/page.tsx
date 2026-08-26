@@ -7,6 +7,9 @@ import { IconArrowLeft, IconImage } from "@/app/icons";
 import FooterInfo from "@/app/footer-info";
 import CarritoIconoFlotante from "./carrito-icono-flotante";
 
+export const revalidate = 0;
+export const dynamicParams = true;
+
 const LABELS_TAMANIO: Record<string, string> = {
   xl: "XL",
   media_xl: "1/2 XL",

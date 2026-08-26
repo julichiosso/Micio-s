@@ -13,6 +13,8 @@ import BuscarFlotante from "./buscar-flotante";
 import WhatsappConsulta from "./whatsapp-consulta";
 import MapaLazy from "./mapa-lazy";
 
+export const revalidate = 0;
+
 export default async function HomePage() {
   const secciones = await getSeccionesConFoto();
   const todasLasSecciones = await getSecciones();
@@ -33,7 +35,7 @@ export default async function HomePage() {
             muted
             loop
             playsInline
-            preload="auto"
+            preload="none"
             poster="/hero-poster.jpg"
             className="absolute inset-0 w-full h-full object-cover"
           >
@@ -136,7 +138,7 @@ export default async function HomePage() {
                           src={producto.fotoUrl!}
                           alt={producto.nombre}
                           fill
-                          sizes="100vw"
+                          sizes="(max-width: 640px) 90vw, 600px"
                           className="object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/10 to-transparent" />

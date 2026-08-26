@@ -1,6 +1,8 @@
 import { getTodosLosProductos, getSeccionesConFoto } from "@/lib/queries/productos";
 import BuscadorCliente from "./buscador-cliente";
 
+export const revalidate = 0;
+
 export default async function BuscarPage() {
   const [productos, secciones] = await Promise.all([
     getTodosLosProductos(),

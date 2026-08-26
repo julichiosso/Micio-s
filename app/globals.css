@@ -8,8 +8,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,8 +42,6 @@ a {
   touch-action: manipulation;
 }
 
-@import "tailwindcss";
- 
 /*
   iOS hace zoom automático al enfocar un input cuyo font-size sea menor
   a 16px. Esta regla fuerza 16px mínimo en TODOS los campos de formulario
@@ -57,7 +53,7 @@ select,
 textarea {
   font-size: 16px !important;
 }
- 
+
 /* En pantallas grandes (desktop, sin problema de zoom táctil) permitimos
    que los inputs vuelvan a su tamaño visual pensado, más compacto. */
 @media (min-width: 768px) {
@@ -67,4 +63,3 @@ textarea {
     font-size: 13.5px !important;
   }
 }
- 
