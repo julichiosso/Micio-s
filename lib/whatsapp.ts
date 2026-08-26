@@ -1,8 +1,6 @@
 import { ItemCarrito } from "@/lib/carrito";
 
-// Número del local en formato internacional, sin +, sin espacios ni guiones.
-// TODO: reemplazar por el número real de Micio's cuando lo tengamos.
-export const NUMERO_WHATSAPP_LOCAL = "5493406419495";
+export const NUMERO_WHATSAPP_LOCAL = "5493406423772";
 
 export function armarLinkWhatsapp({
   items,
