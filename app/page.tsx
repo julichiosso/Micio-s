@@ -11,7 +11,16 @@ import { IconSearch, IconPin } from "./icons";
 import FooterInfo from "./footer-info";
 import BuscarFlotante from "./buscar-flotante";
 import WhatsappConsulta from "./whatsapp-consulta";
+import MapaLazy from "./mapa-lazy";
 
+// ...
+
+<div
+  className="rounded-2xl overflow-hidden border border-black/[0.08]"
+  style={{ height: "200px" }}
+>
+  <MapaLazy />
+</div>
 export default async function HomePage() {
   const secciones = await getSeccionesConFoto();
   const todasLasSecciones = await getSecciones();
