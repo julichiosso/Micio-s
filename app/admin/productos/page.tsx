@@ -11,10 +11,15 @@ import {
 } from "@/lib/actions";
 import { subirFotoProducto } from "@/lib/actions-storage";
 import { redirect } from "next/navigation";
+import dynamic from "next/dynamic";
 import { ProductoCard } from "./producto-card";
-import { ProductosDesktopView } from "./productos-desktop";
 import { NuevoProductoForm } from "./nuevo-producto-form";
 import { SeccionAcordeon } from "./seccion-acordeon";
+
+const ProductosDesktopView = dynamic(
+  () => import("./productos-desktop").then((m) => m.ProductosDesktopView)
+);
+
 
 // Acción "objeto" que crea el producto (con precios opcionales incluidos
 // en la misma operación). La usan tanto el form mobile como el desktop.

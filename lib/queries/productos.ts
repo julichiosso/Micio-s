@@ -37,8 +37,9 @@ export async function getSeccionConProductos(slug: string) {
     },
   });
 
-  return { seccion, productos: productosDeSeccion };
+  return { seccion, productos: productosDeSeccion, todasLasSecciones };
 }
+
 
 /**
  * Trae un producto puntual con sus precios y su sección.

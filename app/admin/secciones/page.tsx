@@ -8,8 +8,13 @@ import {
 } from "@/lib/actions";
 import { subirFotoSeccion } from "@/lib/actions-storage";
 import { redirect } from "next/navigation";
+import dynamic from "next/dynamic";
 import { SeccionCard } from "./seccion-card";
-import { SeccionesDesktopView } from "./secciones-desktop";
+
+const SeccionesDesktopView = dynamic(
+  () => import("./secciones-desktop").then((m) => m.SeccionesDesktopView)
+);
+
 
 async function actionCrearSeccion(formData: FormData) {
   "use server";

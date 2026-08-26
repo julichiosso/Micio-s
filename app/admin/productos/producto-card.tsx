@@ -2,8 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { IconStar, IconTrash, IconImage } from "@/app/icons";
-import { ModalEditarProducto } from "./modal-editar-producto";
+
+const ModalEditarProducto = dynamic(
+  () => import("./modal-editar-producto").then((m) => m.ModalEditarProducto),
+  { ssr: false }
+);
+
 
 // -------- Tipos --------
 type Precio = {

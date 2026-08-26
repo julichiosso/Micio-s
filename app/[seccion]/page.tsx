@@ -27,11 +27,11 @@ export default async function SeccionPage({
 }) {
   const { seccion: slug } = await params;
   const data = await getSeccionConProductos(slug);
-  const todasLasSecciones = await getSecciones();
 
   if (!data) notFound();
 
-  const { seccion, productos } = data;
+  const { seccion, productos, todasLasSecciones } = data;
+
 
   const videoSrc = SECCION_VIDEO[slug.toLowerCase()] ?? null;
   const posterSrc = SECCION_POSTER[slug.toLowerCase()] ?? "/hero-poster.jpg";

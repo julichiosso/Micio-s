@@ -2,9 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
-  getSeccionesConFoto,
-  getProductosDestacados,
   getSecciones,
+  getTodosLosProductos,
 } from "@/lib/queries/productos";
 import HorariosToggle from "./horarios-toggle";
 import Header from "./header";
@@ -15,15 +14,31 @@ import WhatsappConsulta from "./whatsapp-consulta";
 const BuscarFlotante = dynamic(() => import("./buscar-flotante"));
 const MapaLazy = dynamic(() => import("./mapa-lazy"));
 
-
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const secciones = await getSeccionesConFoto();
-  const todasLasSecciones = await getSecciones();
-  const destacados = await getProductosDestacados(4);
+  const [todasLasSecciones, todosLosProductos] = await Promise.all([
+    getSecciones(),
+    getTodosLosProductos(),
+  ]);
+
+  const secciones = todasLasSecciones.map((seccion) => {
+    if (seccion.fotoUrl) return seccion;
+    const productoConFoto = todosLosProductos.find(
+      (p) => p.seccionId === seccion.id && p.fotoUrl
+    );
+    return {
+      ...seccion,
+      fotoUrl: productoConFoto?.fotoUrl ?? null,
+    };
+  });
+
+  const conFoto = todosLosProductos.filter((p) => p.fotoUrl);
+  const sinFoto = todosLosProductos.filter((p) => !p.fotoUrl);
+  const destacados = [...conFoto, ...sinFoto].slice(0, 4);
 
   const nombresSecciones = todasLasSecciones.map((s) => s.nombre);
+
 
   return (
     <main className="min-h-screen bg-[#141210] pb-24">
