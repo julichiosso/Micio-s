@@ -169,7 +169,7 @@ export function ModalEditarProducto({
         </div>
 
         {/* Formulario unificado */}
-        <form onSubmit={handleGuardarTodo} className="flex flex-col overflow-y-auto flex-1 p-4 sm:p-5 gap-4">
+        <form id="form-editar-producto" onSubmit={handleGuardarTodo} className="flex flex-col overflow-y-auto flex-1 p-4 sm:p-5 gap-4">
           {/* Fila 1: Foto + Nombre */}
           <div className="flex items-start gap-3.5">
             {/* Foto thumbnail */}
@@ -302,24 +302,26 @@ export function ModalEditarProducto({
             </p>
           )}
 
-          {/* Botones de acción inferiores */}
-          <div className="pt-2 flex items-center justify-end gap-2.5 mt-auto border-t border-white/[0.06] md:border-gray-100">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-xl text-white/60 md:text-gray-600 hover:text-white md:hover:text-gray-900 text-[13px] font-semibold transition-colors cursor-pointer"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={guardando}
-              className="px-5 py-2 rounded-xl bg-[#c6f135] hover:bg-[#d6ff47] text-[#141210] font-bold text-[13.5px] transition-all disabled:opacity-50 cursor-pointer active:scale-95 shadow-sm"
-            >
-              {guardando ? "Guardando..." : "Guardar cambios"}
-            </button>
-          </div>
         </form>
+
+        {/* Botones de acción — FUERA del form/scroll, siempre visible con fondo blanco */}
+        <div className="px-4 sm:px-5 py-3 border-t border-white/[0.06] md:border-gray-100 flex items-center justify-end gap-2.5 shrink-0 bg-[#1a1814] md:bg-white rounded-b-2xl md:rounded-b-3xl">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-white/60 md:text-gray-600 hover:text-white md:hover:text-gray-900 text-[13px] font-semibold transition-colors cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            form="form-editar-producto"
+            disabled={guardando}
+            className="px-5 py-2 rounded-xl bg-[#c6f135] hover:bg-[#d6ff47] text-[#141210] font-bold text-[13.5px] transition-all disabled:opacity-50 cursor-pointer active:scale-95 shadow-sm"
+          >
+            {guardando ? "Guardando..." : "Guardar cambios"}
+          </button>
+        </div>
       </div>
     </div>
   );
