@@ -1,8 +1,5 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "motion/react";
 import { IconImage } from "@/app/icons";
 
 type Producto = {
@@ -12,24 +9,6 @@ type Producto = {
   fotoUrl: string | null;
   tieneTamanios: boolean;
   precios: { precio: number }[];
-};
-
-const contenedor = {
-  oculto: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
-
-const item = {
-  oculto: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
-  },
 };
 
 export default function ProductosLista({ productos }: { productos: Producto[] }) {
@@ -42,19 +21,18 @@ export default function ProductosLista({ productos }: { productos: Producto[] })
   }
 
   return (
-    <motion.div
-      variants={contenedor}
-      initial="oculto"
-      animate="visible"
-      className="flex flex-col gap-3"
-    >
-      {productos.map((producto) => {
+    <div className="flex flex-col gap-3">
+      {productos.map((producto, index) => {
         const desde = producto.precios.length
           ? Math.min(...producto.precios.map((p) => p.precio))
           : null;
 
         return (
-          <motion.div key={producto.id} variants={item}>
+          <div
+            key={producto.id}
+            className="animate-item-fade"
+            style={{ animationDelay: `${index * 40}ms` }}
+          >
             <Link
               href={`/producto/${producto.id}`}
               className="flex items-center gap-4 bg-white rounded-2xl p-3 active:scale-[0.98] transition-transform"
@@ -99,9 +77,9 @@ export default function ProductosLista({ productos }: { productos: Producto[] })
 
               <span className="text-black/20 text-2xl shrink-0">›</span>
             </Link>
-          </motion.div>
+          </div>
         );
       })}
-    </motion.div>
+    </div>
   );
-}
+}

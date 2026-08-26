@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "motion/react";
 import { IconCarrito } from "./icons";
 import { getCarrito, getTotalCarrito, ItemCarrito } from "@/lib/carrito";
 
@@ -64,18 +63,12 @@ export default function CarritoFlotante() {
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-full bg-[#c6f135] flex items-center justify-center shrink-0 relative">
           <IconCarrito size={16} className="text-[#141210]" />
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.span
-              key={cantidadTotal}
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 500, damping: 20 }}
-              className="absolute -top-1.5 -right-1.5 w-[18px] h-[18px] rounded-full bg-white text-[#141210] text-[10px] font-black flex items-center justify-center leading-none"
-            >
-              {cantidadTotal}
-            </motion.span>
-          </AnimatePresence>
+          <span
+            key={cantidadTotal}
+            className="animate-pop-badge absolute -top-1.5 -right-1.5 w-[18px] h-[18px] rounded-full bg-white text-[#141210] text-[10px] font-black flex items-center justify-center leading-none"
+          >
+            {cantidadTotal}
+          </span>
         </div>
         <span className="font-bold text-[14px]">Ver pedido</span>
       </div>

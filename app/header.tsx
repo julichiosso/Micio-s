@@ -3,9 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { IconMenu, IconCarrito, IconInstagram } from "./icons";
-import Sidebar from "./sidebar";
+import dynamic from "next/dynamic";
 import { getCarrito } from "@/lib/carrito";
 import Image from "next/image";
+
+const Sidebar = dynamic(() => import("./sidebar"), { ssr: false });
 
 type HeaderProps = {
   variante?: "oscura" | "clara";

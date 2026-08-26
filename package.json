@@ -11,10 +11,10 @@
     "subir-fotos": "tsx db/subir-fotos.ts"
   },
   "browserslist": [
-    "chrome >= 105",
-    "edge >= 105",
-    "firefox >= 105",
-    "safari >= 15.4"
+    "> 0.5%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
   ],
   "dependencies": {
     "@sentry/nextjs": "^10.71.0",

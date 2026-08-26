@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Inter } from "next/font/google";
 import "./globals.css";
-import CarritoFlotante from "./carrito-flotante";
+import dynamic from "next/dynamic";
+
+const CarritoFlotante = dynamic(() => import("./carrito-flotante"));
+
 
 const anton = Anton({
   variable: "--font-heading",

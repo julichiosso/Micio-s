@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
   getSeccionesConFoto,
   getProductosDestacados,
@@ -9,9 +10,11 @@ import HorariosToggle from "./horarios-toggle";
 import Header from "./header";
 import { IconSearch, IconPin } from "./icons";
 import FooterInfo from "./footer-info";
-import BuscarFlotante from "./buscar-flotante";
 import WhatsappConsulta from "./whatsapp-consulta";
-import MapaLazy from "./mapa-lazy";
+
+const BuscarFlotante = dynamic(() => import("./buscar-flotante"));
+const MapaLazy = dynamic(() => import("./mapa-lazy"));
+
 
 export const revalidate = 0;
 
@@ -30,6 +33,14 @@ export default async function HomePage() {
       {/* Hero con video real del local */}
       <div className="relative h-[42vh] min-h-[300px] w-full mt-3">
         <div className="absolute inset-0 overflow-hidden">
+          <Image
+            src="/hero-poster.jpg"
+            alt="Micio's Pizzería"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover -z-10"
+          />
           <video
             autoPlay
             muted
@@ -138,7 +149,7 @@ export default async function HomePage() {
                           src={producto.fotoUrl!}
                           alt={producto.nombre}
                           fill
-                          sizes="(max-width: 640px) 90vw, 600px"
+                          sizes="(max-width: 640px) calc(100vw - 40px), 600px"
                           className="object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/10 to-transparent" />
