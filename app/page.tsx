@@ -13,14 +13,6 @@ import BuscarFlotante from "./buscar-flotante";
 import WhatsappConsulta from "./whatsapp-consulta";
 import MapaLazy from "./mapa-lazy";
 
-// ...
-
-<div
-  className="rounded-2xl overflow-hidden border border-black/[0.08]"
-  style={{ height: "200px" }}
->
-  <MapaLazy />
-</div>
 export default async function HomePage() {
   const secciones = await getSeccionesConFoto();
   const todasLasSecciones = await getSecciones();
@@ -33,7 +25,6 @@ export default async function HomePage() {
       {/* Header con sidebar integrado */}
       <Header variante="oscura" secciones={nombresSecciones} />
 
-
       {/* Hero con video real del local */}
       <div className="relative h-[42vh] min-h-[300px] w-full mt-3">
         <div className="absolute inset-0 overflow-hidden">
@@ -42,6 +33,8 @@ export default async function HomePage() {
             muted
             loop
             playsInline
+            preload="auto"
+            poster="/hero-poster.jpg"
             className="absolute inset-0 w-full h-full object-cover"
           >
             <source src="/hero.mp4" type="video/mp4" />
@@ -98,6 +91,7 @@ export default async function HomePage() {
                     src={s.fotoUrl}
                     alt={s.nombre}
                     fill
+                    sizes="78vw"
                     className="object-cover"
                   />
                 ) : (
@@ -121,80 +115,74 @@ export default async function HomePage() {
         </div>
 
         {/* Destacadas */}
-{destacados.length > 0 && (
-  <>
-    <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
-      Destacadas
-    </p>
-    <div className="mb-8">
-  {destacados.map((producto, index) => {
-    const desde = producto.precios.length
-      ? Math.min(...producto.precios.map((p) => p.precio))
-      : null;
-    return (
-      <div
-        key={producto.id}
-        className="sticky pb-4"
-        style={{
-          top: `${72 + index * 14}px`,
-          zIndex: index + 1,
-        }}
-      >
-        <Link
-          href={`/producto/${producto.id}`}
-          className="block bg-[#141210] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
-        >
-          <div className="relative h-64 w-full">
-            <Image
-              src={producto.fotoUrl!}
-              alt={producto.nombre}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/10 to-transparent" />
+        {destacados.length > 0 && (
+          <>
+            <p className="text-white/40 text-[11px] font-medium uppercase tracking-[0.12em] mb-3">
+              Destacadas
+            </p>
+            <div className="mb-8">
+              {destacados.map((producto) => {
+                const desde = producto.precios.length
+                  ? Math.min(...producto.precios.map((p) => p.precio))
+                  : null;
+                return (
+                  <div key={producto.id} className="pb-4">
+                    <Link
+                      href={`/producto/${producto.id}`}
+                      className="block bg-[#141210] rounded-2xl overflow-hidden active:scale-[0.98] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
+                    >
+                      <div className="relative h-64 w-full">
+                        <Image
+                          src={producto.fotoUrl!}
+                          alt={producto.nombre}
+                          fill
+                          sizes="100vw"
+                          className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-[#141210]/10 to-transparent" />
 
-            <span className="absolute top-3 left-3 bg-[#141210]/60 backdrop-blur-md text-white/85 text-[10.5px] font-medium tracking-wide px-2.5 py-1 rounded-full">
-              {producto.seccion.nombre}
-            </span>
-            {desde !== null && (
-              <span className="absolute top-3 right-3 bg-[#c6f135] text-[#141210] text-[12.5px] font-semibold px-2.5 py-1 rounded-full">
-                {producto.tieneTamanios ? "Desde " : ""}$
-                {desde.toLocaleString("es-AR")}
-              </span>
-            )}
+                        <span className="absolute top-3 left-3 bg-[#141210]/60 backdrop-blur-md text-white/85 text-[10.5px] font-medium tracking-wide px-2.5 py-1 rounded-full">
+                          {producto.seccion.nombre}
+                        </span>
+                        {desde !== null && (
+                          <span className="absolute top-3 right-3 bg-[#c6f135] text-[#141210] text-[12.5px] font-semibold px-2.5 py-1 rounded-full">
+                            {producto.tieneTamanios ? "Desde " : ""}$
+                            {desde.toLocaleString("es-AR")}
+                          </span>
+                        )}
 
-            <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-white font-semibold text-[17px] leading-none tracking-tight mb-1.5 truncate">
-                  {producto.nombre}
-                </p>
-                {producto.descripcion && (
-                  <p className="text-white/60 text-[13px] font-normal line-clamp-1">
-                    {producto.descripcion}
-                  </p>
-                )}
-              </div>
+                        <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-white font-semibold text-[17px] leading-none tracking-tight mb-1.5 truncate">
+                              {producto.nombre}
+                            </p>
+                            {producto.descripcion && (
+                              <p className="text-white/60 text-[13px] font-normal line-clamp-1">
+                                {producto.descripcion}
+                              </p>
+                            )}
+                          </div>
 
-              <span className="shrink-0 w-9 h-9 rounded-full bg-[#c6f135] flex items-center justify-center text-[#141210]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M5 12h14M13 6l6 6-6 6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
+                          <span className="shrink-0 w-9 h-9 rounded-full bg-[#c6f135] flex items-center justify-center text-[#141210]">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path
+                                d="M5 12h14M13 6l6 6-6 6"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
-          </div>
-        </Link>
-      </div>
-    );
-  })}
-</div>
-  </>
-)}
+          </>
+        )}
 
         {/* Info de retiro */}
         <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] px-4 py-3.5 mb-10">
@@ -203,8 +191,6 @@ export default async function HomePage() {
             Pedís acá, confirmás por WhatsApp, retirás y pagás en el local.
           </p>
         </div>
-
-    
 
         {/* ── Encontranos (Panel Blanquito) ── */}
         <section id="encontranos" className="bg-[#f7f3ea] rounded-3xl p-5 mb-6 text-black">
@@ -215,22 +201,7 @@ export default async function HomePage() {
             className="rounded-2xl overflow-hidden border border-black/[0.08]"
             style={{ height: "200px" }}
           >
-            {/* Filtro CSS que oscurece el mapa sin necesitar API key propio.
-                No es el dark-mode nativo de Google, pero integra mucho mejor
-                con el resto del sitio que el mapa blanco por defecto. */}
-            <iframe
-              src="https://maps.google.com/maps?q=Mendoza+1480,+San+Jorge,+Santa+Fe,+Argentina&output=embed&z=16"
-              width="100%"
-              height="100%"
-              style={{
-                border: 0,
-                filter: "invert(92%) hue-rotate(180deg) grayscale(15%) contrast(90%)",
-              }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Ubicación Micio's Pizzería"
-            />
+            <MapaLazy />
           </div>
           <p className="text-black/60 text-[12.5px] font-medium mt-3 text-center">
             📍 Mendoza 1480, San Jorge, Santa Fe
