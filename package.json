@@ -10,6 +10,12 @@
     "seed": "tsx db/seed.ts",
     "subir-fotos": "tsx db/subir-fotos.ts"
   },
+  "browserslist": [
+    "chrome >= 105",
+    "edge >= 105",
+    "firefox >= 105",
+    "safari >= 15.4"
+  ],
   "dependencies": {
     "@sentry/nextjs": "^10.71.0",
     "@supabase/ssr": "^0.12.4",
