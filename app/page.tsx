@@ -33,9 +33,13 @@ export default async function HomePage() {
     };
   });
 
-  const conFoto = todosLosProductos.filter((p) => p.fotoUrl);
-  const sinFoto = todosLosProductos.filter((p) => !p.fotoUrl);
-  const destacados = [...conFoto, ...sinFoto].slice(0, 4);
+  // Primero buscamos los marcados como destacados (con estrella en el admin)
+  const marcadosDestacados = todosLosProductos.filter((p) => p.destacado);
+  // Fallback: si no hay ninguno marcado, mostramos los primeros 4 con foto
+  const conFoto = todosLosProductos.filter((p) => p.fotoUrl && !p.destacado);
+  const destacados = marcadosDestacados.length > 0
+    ? marcadosDestacados.filter((p) => p.fotoUrl).slice(0, 6)
+    : todosLosProductos.filter((p) => p.fotoUrl).slice(0, 4);
 
   const nombresSecciones = todasLasSecciones.map((s) => s.nombre);
 

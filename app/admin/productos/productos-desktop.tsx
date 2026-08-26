@@ -328,7 +328,7 @@ export function ProductosDesktopView({
               Aumento masivo %
             </button>
             {mostrarAumento && (
-              <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-2xl p-4.5 z-20 animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-2xl p-4.5 z-50 shadow-xl animate-in fade-in zoom-in-95 duration-100">
                 <p className="text-[13px] font-bold text-gray-800 mb-1">Ajustar precios masivos</p>
                 <p className="text-[11.5px] text-gray-500 mb-3">Aumenta o disminuye el % de una categoría entera.</p>
                 <form action={actionAumentoMasivo} className="flex flex-col gap-2.5">
