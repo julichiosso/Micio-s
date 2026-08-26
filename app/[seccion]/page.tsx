@@ -43,15 +43,16 @@ export default async function SeccionPage({
         {/* Video de fondo (si existe para esta sección) */}
         {videoSrc ? (
   <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    poster={SECCION_POSTER[slug.toLowerCase()]}
-    className="absolute inset-0 w-full h-full object-cover"
-  >
-    <source src={videoSrc} type="video/mp4" />
-  </video>
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+  poster="/hero-poster.jpg"
+  className="absolute inset-0 w-full h-full object-cover"
+>
+  <source src="/hero.mp4" type="video/mp4" />
+</video>
 ) : (
   <div className="absolute inset-0 bg-[#1a1814]" />
 )}
