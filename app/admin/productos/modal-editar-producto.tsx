@@ -195,6 +195,12 @@ export function ModalEditarProducto({
                   Cambiar
                 </div>
               </div>
+              {/* Badge: foto nueva lista para subir */}
+              {archivoSeleccionado && (
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#c6f135] rounded-full flex items-center justify-center text-[#141210] text-[10px] font-black shadow-md z-10">
+                  ✓
+                </span>
+              )}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -203,6 +209,7 @@ export function ModalEditarProducto({
                 className="hidden"
               />
             </div>
+
 
             {/* Nombre */}
             <div className="flex-1 min-w-0">
