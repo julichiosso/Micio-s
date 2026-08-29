@@ -5,6 +5,11 @@ export type ItemCarrito = {
   label: string;
   precio: number;
   cantidad: number;
+  // Presente solo si es una pizza combinada (mitad + mitad de otro sabor)
+  combo?: {
+    productoId: number;
+    nombre: string;
+  };
 };
 
 const CLAVE_STORAGE = "micios_carrito";
@@ -22,16 +27,18 @@ export function getCarrito(): ItemCarrito[] {
 
 function guardarCarrito(items: ItemCarrito[]) {
   window.localStorage.setItem(CLAVE_STORAGE, JSON.stringify(items));
-  // Avisamos a otros componentes de la misma pestaña que el carrito cambió
   window.dispatchEvent(new Event("carrito-actualizado"));
 }
 
 export function agregarItemAlCarrito(nuevoItem: ItemCarrito) {
   const items = getCarrito();
 
-  // Si ya existe el mismo producto+tamaño, sumamos cantidad en vez de duplicar
+  // Si ya existe el mismo producto+tamaño+combo, sumamos cantidad en vez de duplicar
   const existente = items.find(
-    (i) => i.productoId === nuevoItem.productoId && i.tamanio === nuevoItem.tamanio
+    (i) =>
+      i.productoId === nuevoItem.productoId &&
+      i.tamanio === nuevoItem.tamanio &&
+      i.combo?.productoId === nuevoItem.combo?.productoId
   );
 
   if (existente) {
@@ -46,17 +53,26 @@ export function agregarItemAlCarrito(nuevoItem: ItemCarrito) {
 export function actualizarCantidad(
   productoId: number,
   tamanio: string,
-  cantidad: number
+  cantidad: number,
+  comboProductoId?: number
 ) {
   let items = getCarrito();
 
   if (cantidad <= 0) {
     items = items.filter(
-      (i) => !(i.productoId === productoId && i.tamanio === tamanio)
+      (i) =>
+        !(
+          i.productoId === productoId &&
+          i.tamanio === tamanio &&
+          i.combo?.productoId === comboProductoId
+        )
     );
   } else {
     const item = items.find(
-      (i) => i.productoId === productoId && i.tamanio === tamanio
+      (i) =>
+        i.productoId === productoId &&
+        i.tamanio === tamanio &&
+        i.combo?.productoId === comboProductoId
     );
     if (item) item.cantidad = cantidad;
   }

@@ -12,34 +12,74 @@ type Opcion = {
   precio: number;
 };
 
+type OpcionCombo = {
+  productoId: number;
+  nombre: string;
+  precio: number;
+};
+
 export default function AgregarAlCarrito({
   producto,
   opciones,
+  opcionesCombo,
 }: {
   producto: { id: number; nombre: string };
   opciones: Opcion[];
+  // Para tamaños "media_*": lista de otras pizzas disponibles para la otra mitad
+  opcionesCombo?: Record<string, OpcionCombo[]>;
 }) {
   const [seleccion, setSeleccion] = useState<Opcion>(opciones[0]);
+  const [otraMitad, setOtraMitad] = useState<OpcionCombo | null>(null);
   const [cantidad, setCantidad] = useState(1);
   const [agregado, setAgregado] = useState(false);
   const router = useRouter();
 
+  const esMedia = seleccion.tamanio.startsWith("media_");
+  const listaCombo = opcionesCombo?.[seleccion.tamanio] ?? [];
+
+  // Opción para completar con la misma pizza (mitad y mitad iguales = entera)
+  const opcionMismaPizza: OpcionCombo = {
+    productoId: producto.id,
+    nombre: producto.nombre,
+    precio: seleccion.precio,
+  };
+
+  function handleSeleccionarTamanio(op: Opcion) {
+    setSeleccion(op);
+    setOtraMitad(null); // resetea la mitad elegida al cambiar de tamaño
+  }
+
   function handleAgregar() {
+    if (esMedia && !otraMitad) return; // no debería poder llegar acá sin elegir
+
+    const esComboConsigoMisma = otraMitad?.productoId === producto.id;
+
     agregarItemAlCarrito({
       productoId: producto.id,
-      nombre: producto.nombre,
+      nombre: esMedia && !esComboConsigoMisma
+        ? `${producto.nombre} + ${otraMitad!.nombre}`
+        : producto.nombre,
       tamanio: seleccion.tamanio,
       label: seleccion.label,
-      precio: seleccion.precio,
+      precio: esMedia ? seleccion.precio + (otraMitad?.precio ?? 0) : seleccion.precio,
       cantidad,
+      combo:
+        esMedia && otraMitad && !esComboConsigoMisma
+          ? { productoId: otraMitad.productoId, nombre: otraMitad.nombre }
+          : undefined,
     });
     setAgregado(true);
     setCantidad(1);
+    setOtraMitad(null);
     setTimeout(() => setAgregado(false), 900);
   }
 
   const soloUnTamanio = opciones.length === 1;
-  const subtotal = seleccion.precio * cantidad;
+  const subtotal = esMedia
+    ? (seleccion.precio + (otraMitad?.precio ?? 0)) * cantidad
+    : seleccion.precio * cantidad;
+
+  const puedeAgregar = !esMedia || otraMitad !== null;
 
   return (
     <div>
@@ -54,7 +94,7 @@ export default function AgregarAlCarrito({
               return (
                 <button
                   key={op.tamanio}
-                  onClick={() => setSeleccion(op)}
+                  onClick={() => handleSeleccionarTamanio(op)}
                   className="relative flex items-center justify-between rounded-xl px-4 py-3.5 text-left overflow-hidden"
                 >
                   {activo && (
@@ -87,10 +127,74 @@ export default function AgregarAlCarrito({
         </>
       )}
 
-      {soloUnTamanio && (
+      {soloUnTamanio && !esMedia && (
         <p className="text-2xl font-black text-black mb-6">
           ${opciones[0].precio.toLocaleString("es-AR")}
         </p>
+      )}
+
+      {/* Selector de la otra mitad — obligatorio si el tamaño elegido es "media" */}
+      {esMedia && (
+        <>
+          <p className="text-[11px] uppercase tracking-wider text-black/40 mb-2.5">
+            Elegí la otra mitad
+          </p>
+          <div className="flex flex-col gap-2 mb-6 max-h-[280px] overflow-y-auto">
+            <button
+              onClick={() => setOtraMitad(opcionMismaPizza)}
+              className={`relative flex items-center justify-between rounded-xl px-4 py-3.5 text-left border ${
+                otraMitad?.productoId === producto.id
+                  ? "bg-[#141210] border-[#141210]"
+                  : "bg-white border-black/[0.06]"
+              }`}
+            >
+              <span
+                className={`font-semibold text-[14px] ${
+                  otraMitad?.productoId === producto.id ? "text-white" : "text-black"
+                }`}
+              >
+                Misma pizza completa ({producto.nombre})
+              </span>
+              <span
+                className={`font-bold text-[14px] ${
+                  otraMitad?.productoId === producto.id ? "text-white" : "text-black"
+                }`}
+              >
+                ${opcionMismaPizza.precio.toLocaleString("es-AR")}
+              </span>
+            </button>
+
+            {listaCombo.map((op) => {
+              const activo = otraMitad?.productoId === op.productoId;
+              return (
+                <button
+                  key={op.productoId}
+                  onClick={() => setOtraMitad(op)}
+                  className={`relative flex items-center justify-between rounded-xl px-4 py-3.5 text-left border ${
+                    activo ? "bg-[#141210] border-[#141210]" : "bg-white border-black/[0.06]"
+                  }`}
+                >
+                  <span
+                    className={`font-semibold text-[14px] ${activo ? "text-white" : "text-black"}`}
+                  >
+                    {op.nombre}
+                  </span>
+                  <span
+                    className={`font-bold text-[14px] ${activo ? "text-white" : "text-black"}`}
+                  >
+                    ${op.precio.toLocaleString("es-AR")}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {!otraMitad && (
+            <p className="text-[12.5px] text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5 mb-6">
+              Elegí la otra mitad para poder agregar al pedido.
+            </p>
+          )}
+        </>
       )}
 
       {/* Stepper de cantidad */}
@@ -138,10 +242,11 @@ export default function AgregarAlCarrito({
       >
         <motion.button
           onClick={handleAgregar}
-          whileTap={{ scale: 0.97 }}
+          disabled={!puedeAgregar}
+          whileTap={{ scale: puedeAgregar ? 0.97 : 1 }}
           animate={{ backgroundColor: agregado ? "#c6f135" : "#141210" }}
           transition={{ duration: 0.25 }}
-          className="flex-1 rounded-full py-3.5 font-bold text-[15px]"
+          className="flex-1 rounded-full py-3.5 font-bold text-[15px] disabled:opacity-40"
           style={{ color: agregado ? "#141210" : "#ffffff" }}
         >
           {agregado ? "Agregado" : `Agregar · $${subtotal.toLocaleString("es-AR")}`}
@@ -158,4 +263,3 @@ export default function AgregarAlCarrito({
     </div>
   );
 }
-
