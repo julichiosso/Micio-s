@@ -21,6 +21,7 @@ import FooterInfo from "@/app/footer-info";
 export default function CarritoPage() {
   const [items, setItems] = useState<ItemCarrito[]>([]);
   const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
@@ -36,7 +37,8 @@ export default function CarritoPage() {
   const total = getTotalCarrito(items);
 
   function handleConfirmar() {
-    const link = armarLinkWhatsapp({ items, nombre, total });
+    const nombreCompleto = `${nombre.trim()} ${apellido.trim()}`.trim();
+    const link = armarLinkWhatsapp({ items, nombre: nombreCompleto, total });
     vaciarCarrito();
     window.location.href = link;
   }
@@ -138,17 +140,31 @@ export default function CarritoPage() {
               ¿Querés agregar algo más?
             </Link>
 
-            <div className="mb-4">
-              <label className="block text-[11px] uppercase tracking-wider text-black/40 mb-2">
-                Tu nombre
-              </label>
-              <input
-                type="text"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                placeholder="¿Cómo te llamamos?"
-                className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[16px] border border-black/[0.06]"
-              />
+                        <div className="mb-4 flex gap-2.5">
+              <div className="flex-1">
+                <label className="block text-[11px] uppercase tracking-wider text-black/40 mb-2">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  placeholder="Nombre"
+                  className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[16px] border border-black/[0.06]"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-[11px] uppercase tracking-wider text-black/40 mb-2">
+                  Apellido
+                </label>
+                <input
+                  type="text"
+                  value={apellido}
+                  onChange={(e) => setApellido(e.target.value)}
+                  placeholder="Apellido"
+                  className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[16px] border border-black/[0.06]"
+                />
+              </div>
             </div>
 
             <div
@@ -168,7 +184,7 @@ export default function CarritoPage() {
               </p>
               <button
                 onClick={handleConfirmar}
-                disabled={!nombre.trim()}
+                disabled={!nombre.trim() || !apellido.trim()}
                 className="w-full bg-[#141210] text-white rounded-full py-3.5 font-bold text-[15px] disabled:opacity-35 active:scale-[0.98] transition-all"
               >
                 Confirmar por WhatsApp
