@@ -22,6 +22,7 @@ export default function CarritoPage() {
   const [items, setItems] = useState<ItemCarrito[]>([]);
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
+  const [hora, setHora] = useState("");
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
@@ -162,6 +163,18 @@ export default function CarritoPage() {
                   value={apellido}
                   onChange={(e) => setApellido(e.target.value)}
                   placeholder="Apellido"
+                  className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[16px] border border-black/[0.06]"
+                />
+              </div>
+              
+              <div >
+                <label className="block text-[11px] uppercase tracking-wider text-black/40 mb-2">
+                  ¿A qué hora lo retirás?
+                </label>
+                <input
+                  type="time"
+                  value={hora}
+                  onChange={(e) => setHora(e.target.value)}
                   className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[16px] border border-black/[0.06]"
                 />
               </div>
