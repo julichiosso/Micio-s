@@ -101,13 +101,6 @@ export default function Sidebar({ abierto, onCerrar, secciones }: SidebarProps) 
             <br />
             Pago en el local.
           </p>
-          <Link
-            href="/admin/login"
-            onClick={onCerrar}
-            className="text-white/20 text-[11px] hover:text-white/40 transition-colors font-medium tracking-wide"
-          >
-            Acceso admin →
-          </Link>
         </div>
       </div>
     </>
