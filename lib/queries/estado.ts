@@ -7,6 +7,8 @@ export type EstadoLocalData = {
   abierto: boolean;
   mensajePersonalizado: string | null;
   capacidadDefaultTurno: number;
+  horaApertura: string;
+  horaCierre: string;
   actualizadoEn: Date;
 };
 
@@ -17,13 +19,23 @@ export async function getEstadoLocal(): Promise<EstadoLocalData> {
   });
 
   if (estado) {
-    return estado;
+    return {
+      ...estado,
+      horaApertura: estado.horaApertura ?? "20:00",
+      horaCierre: estado.horaCierre ?? "23:00",
+    };
   }
 
   // Fallback si no estuviera creado aún
   const [nuevo] = await db
     .insert(estadoLocal)
-    .values({ id: 1, abierto: true, capacidadDefaultTurno: 7 })
+    .values({
+      id: 1,
+      abierto: true,
+      capacidadDefaultTurno: 7,
+      horaApertura: "20:00",
+      horaCierre: "23:00",
+    })
     .onConflictDoNothing()
     .returning();
 
@@ -33,6 +45,8 @@ export async function getEstadoLocal(): Promise<EstadoLocalData> {
       abierto: true,
       mensajePersonalizado: null,
       capacidadDefaultTurno: 7,
+      horaApertura: "20:00",
+      horaCierre: "23:00",
       actualizadoEn: new Date(),
     }
   );

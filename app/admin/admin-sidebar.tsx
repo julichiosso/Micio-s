@@ -187,33 +187,33 @@ export function AdminMobileHeader({ currentPath }: { currentPath?: string }) {
           {titulo}
         </p>
       </div>
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="flex items-center gap-1.5 shrink-0">
         <Link
           href="/admin/turnos"
-          className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
+          className={`text-[11.5px] px-2.5 py-2 rounded-xl border font-bold transition-all min-h-[36px] flex items-center justify-center ${
             pathname.startsWith("/admin/turnos")
               ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
-              : "border-white/10 text-white/60 bg-white/[0.04]"
+              : "border-white/10 text-white/60 bg-white/[0.04] active:bg-white/[0.08]"
           }`}
         >
           Horarios
         </Link>
         <Link
           href="/admin/productos"
-          className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
+          className={`text-[11.5px] px-2.5 py-2 rounded-xl border font-bold transition-all min-h-[36px] flex items-center justify-center ${
             pathname.startsWith("/admin/productos")
               ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
-              : "border-white/10 text-white/60 bg-white/[0.04]"
+              : "border-white/10 text-white/60 bg-white/[0.04] active:bg-white/[0.08]"
           }`}
         >
           Productos
         </Link>
         <Link
           href="/admin/secciones"
-          className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
+          className={`text-[11.5px] px-2.5 py-2 rounded-xl border font-bold transition-all min-h-[36px] flex items-center justify-center ${
             pathname.startsWith("/admin/secciones")
               ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
-              : "border-white/10 text-white/60 bg-white/[0.04]"
+              : "border-white/10 text-white/60 bg-white/[0.04] active:bg-white/[0.08]"
           }`}
         >
           Categorías
@@ -222,7 +222,7 @@ export function AdminMobileHeader({ currentPath }: { currentPath?: string }) {
           type="button"
           onClick={handleLogout}
           disabled={saliendo}
-          className="text-[11px] px-2 py-1.5 rounded-lg border border-white/10 text-white/40 hover:text-red-400 hover:border-red-400/30 transition-colors disabled:opacity-50 font-medium"
+          className="text-[11px] px-2 py-2 rounded-xl border border-white/10 text-white/40 hover:text-red-400 hover:border-red-400/30 transition-colors disabled:opacity-50 font-medium min-h-[36px] flex items-center justify-center cursor-pointer"
         >
           Salir
         </button>

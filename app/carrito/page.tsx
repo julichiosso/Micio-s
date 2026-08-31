@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import {
   IconArrowLeft,
@@ -16,7 +16,7 @@ import {
   ItemCarrito,
 } from "@/lib/carrito";
 import { armarLinkWhatsapp } from "@/lib/whatsapp";
-import { crearPedidoConAsignacionTurno } from "@/lib/actions-turnos";
+import { crearPedidoConAsignacionTurno, confirmarPedido } from "@/lib/actions-turnos";
 import FooterInfo from "@/app/footer-info";
 
 type EstadoTurnoResponse = {
@@ -35,10 +35,12 @@ export default function CarritoPage() {
   const [items, setItems] = useState<ItemCarrito[]>([]);
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
-  const [hora, setHora] = useState("");
   const [cargando, setCargando] = useState(true);
   const [procesando, setProcesando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
+
+  // Almacenar el ID del pedido recién creado para confirmar al regresar de WhatsApp
+  const pedidoCreadoIdRef = useRef<number | null>(null);
 
   // Estado en vivo y turno estimado
   const [estadoTurno, setEstadoTurno] = useState<EstadoTurnoResponse>({
@@ -81,6 +83,29 @@ export default function CarritoPage() {
     };
   }, []);
 
+  // Confirmar pedido cuando el usuario vuelve desde WhatsApp a la aplicación
+  useEffect(() => {
+    async function marcarConfirmadoSiVolvio() {
+      if (document.visibilityState === "visible" && pedidoCreadoIdRef.current) {
+        const id = pedidoCreadoIdRef.current;
+        pedidoCreadoIdRef.current = null;
+        try {
+          await confirmarPedido(id);
+        } catch (e) {
+          console.error("Error al confirmar pedido post-WhatsApp:", e);
+        }
+      }
+    }
+
+    document.addEventListener("visibilitychange", marcarConfirmadoSiVolvio);
+    window.addEventListener("focus", marcarConfirmadoSiVolvio);
+
+    return () => {
+      document.removeEventListener("visibilitychange", marcarConfirmadoSiVolvio);
+      window.removeEventListener("focus", marcarConfirmadoSiVolvio);
+    };
+  }, []);
+
   const total = getTotalCarrito(items);
 
   async function handleConfirmar() {
@@ -98,23 +123,25 @@ export default function CarritoPage() {
       .join(" | ");
 
     try {
-      // 1. Asignación atómica del pedido al turno en la base de datos
+      // 1. Asignación atómica del pedido al turno en la base de datos (con expiración de 5 min)
       const res = await crearPedidoConAsignacionTurno({
         clienteNombre: nombreCompleto,
-        horaRetiroDeseada: hora || undefined,
         total,
         detalles: detallesPedido,
       });
 
-      if (!res.exito) {
+      if (!res.exito || !res.pedidoId) {
         setErrorEnvio(res.error || "No se pudo procesar el pedido. Por favor intentá nuevamente.");
         setProcesando(false);
         return;
       }
 
+      // Guardar el ID del pedido para confirmarlo al retornar
+      pedidoCreadoIdRef.current = res.pedidoId;
+
       // 2. Armar texto de WhatsApp con el turno asignado
       const textoTurno = res.turnoHoraInicio
-        ? `Turno asignado: ${res.turnoHoraInicio} hs (${res.textoDemora || "~15-20 min de espera"})`
+        ? `${res.turnoHoraInicio} hs (${res.textoDemora || "~15-20 min de preparación"})`
         : undefined;
 
       const link = armarLinkWhatsapp({
@@ -122,7 +149,6 @@ export default function CarritoPage() {
         nombre: nombreCompleto,
         total,
         turnoAsignado: textoTurno,
-        horaRetiroDeseada: hora || undefined,
         pedidoId: res.pedidoId,
       });
 
@@ -210,31 +236,36 @@ export default function CarritoPage() {
               </div>
             )}
 
-            {/* Tarjeta de Turno / Horario Estimado en Tiempo Real */}
+            {/* Tarjeta de Turno / Horario Estimado de Retiro (Solo lectura, 100% clara) */}
             {estadoTurno.abierto && (
               <div className="bg-white rounded-2xl p-4 border border-black/[0.06] mb-5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-[#c6f135]/20 text-[#3e4d00] flex items-center justify-center shrink-0">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                      </svg>
-                    </div>
-                    <div>
-                      <span className="text-[10.5px] font-bold uppercase tracking-wider text-black/40">
-                        Tiempo estimado de preparación
-                      </span>
-                      <p className="text-[14px] font-black text-black">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#c6f135]/25 text-[#3e4d00] flex items-center justify-center shrink-0 mt-0.5">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-[10.5px] font-bold uppercase tracking-wider text-black/40 block mb-0.5">
+                      Modalidad: Retiro en el local
+                    </span>
+                    {estadoTurno.turno ? (
+                      <p className="text-[14.5px] font-extrabold text-black leading-snug">
+                        Tu pizza va a estar lista para retirar aprox. a las{" "}
+                        <span className="text-[#3e4d00] bg-[#c6f135]/30 px-2 py-0.5 rounded-lg font-black inline-block">
+                          {estadoTurno.turno.horaInicio} hs
+                        </span>
+                      </p>
+                    ) : (
+                      <p className="text-[14px] font-bold text-black">
                         {estadoTurno.textoDemora}
                       </p>
-                    </div>
+                    )}
+                    <p className="text-[12px] text-black/50 mt-1">
+                      El pago se realiza en el mostrador al momento de retirar.
+                    </p>
                   </div>
-                  {estadoTurno.turno && (
-                    <span className="bg-[#c6f135]/25 text-[#3e4d00] border border-[#c6f135] text-[12px] font-black px-2.5 py-1 rounded-lg shrink-0">
-                      {estadoTurno.turno.horaInicio} hs
-                    </span>
-                  )}
                 </div>
               </div>
             )}
@@ -298,7 +329,7 @@ export default function CarritoPage() {
               ¿Querés agregar algo más?
             </Link>
 
-            {/* Formulario de cliente */}
+            {/* Formulario de cliente: solo Nombre y Apellido (sin hora de retiro manual) */}
             <div className="mb-4 flex flex-col gap-3">
               <div className="flex gap-2.5">
                 <div className="flex-1">
@@ -310,7 +341,7 @@ export default function CarritoPage() {
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
                     placeholder="Nombre"
-                    className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[15px] border border-black/[0.06]"
+                    className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[15px] border border-black/[0.06] focus:border-black/20 transition-colors"
                   />
                 </div>
                 <div className="flex-1">
@@ -322,21 +353,9 @@ export default function CarritoPage() {
                     value={apellido}
                     onChange={(e) => setApellido(e.target.value)}
                     placeholder="Apellido"
-                    className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[15px] border border-black/[0.06]"
+                    className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[15px] border border-black/[0.06] focus:border-black/20 transition-colors"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] uppercase tracking-wider text-black/40 mb-1.5 font-bold">
-                  ¿A qué hora preferís retirarlo? (Opcional)
-                </label>
-                <input
-                  type="time"
-                  value={hora}
-                  onChange={(e) => setHora(e.target.value)}
-                  className="w-full bg-white rounded-xl px-4 py-3.5 text-black placeholder:text-black/35 outline-none text-[15px] border border-black/[0.06]"
-                />
               </div>
             </div>
 

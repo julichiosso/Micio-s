@@ -3,19 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import { IconChevronDown } from "./icons";
 
-const horarios = [
-  { dia: "Lunes", horario: "Cerrado", abierto: false },
-  { dia: "Martes", horario: "Cerrado", abierto: false },
-  { dia: "Miércoles", horario: "Cerrado", abierto: false },
-  { dia: "Jueves", horario: "20:00 a 23:00", abierto: true },
-  { dia: "Viernes", horario: "20:00 a 23:00", abierto: true },
-  { dia: "Sábado", horario: "20:00 a 23:00", abierto: true },
-  { dia: "Domingo", horario: "20:00 a 23:00", abierto: true },
-];
-
 export default function HorariosToggle() {
   const [abierto, setAbierto] = useState(false);
   const [localAbierto, setLocalAbierto] = useState(true);
+  const [horaApertura, setHoraApertura] = useState("20:00");
+  const [horaCierre, setHoraCierre] = useState("23:00");
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,6 +19,8 @@ export default function HorariosToggle() {
           if (data && typeof data.abierto === "boolean") {
             setLocalAbierto(data.abierto);
           }
+          if (data?.horaApertura) setHoraApertura(data.horaApertura);
+          if (data?.horaCierre) setHoraCierre(data.horaCierre);
         }
       } catch (e) {
         // Fallback silencioso
@@ -34,6 +28,16 @@ export default function HorariosToggle() {
     }
     checkEstado();
   }, []);
+
+  const horarios = [
+    { dia: "Lunes", horario: "Cerrado", abierto: false },
+    { dia: "Martes", horario: "Cerrado", abierto: false },
+    { dia: "Miércoles", horario: "Cerrado", abierto: false },
+    { dia: "Jueves", horario: `${horaApertura} a ${horaCierre}`, abierto: true },
+    { dia: "Viernes", horario: `${horaApertura} a ${horaCierre}`, abierto: true },
+    { dia: "Sábado", horario: `${horaApertura} a ${horaCierre}`, abierto: true },
+    { dia: "Domingo", horario: `${horaApertura} a ${horaCierre}`, abierto: true },
+  ];
 
   // Cerrar al hacer clic afuera
   useEffect(() => {
@@ -78,7 +82,7 @@ export default function HorariosToggle() {
           }`}
         />
         <span className="text-white/70 text-[13px] font-normal hover:text-white transition-colors">
-          {localAbierto ? "Jueves a domingos, 20 a 23 hs" : "Cerrado en este momento"}
+          {localAbierto ? `Jueves a domingos, ${horaApertura} a ${horaCierre} hs` : "Cerrado en este momento"}
         </span>
         <IconChevronDown
           size={13}

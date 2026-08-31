@@ -7,7 +7,6 @@ export function armarLinkWhatsapp({
   nombre,
   total,
   turnoAsignado,
-  horaRetiroDeseada,
   pedidoId,
 }: {
   items: ItemCarrito[];
@@ -31,8 +30,7 @@ export function armarLinkWhatsapp({
     "",
     `Total: $${total.toLocaleString("es-AR")}`,
     `Nombre: ${nombre}`,
-    ...(horaRetiroDeseada ? [`Hora de retiro deseada: ${horaRetiroDeseada}`] : []),
-    ...(turnoAsignado ? [`🕒 ${turnoAsignado}`] : []),
+    ...(turnoAsignado ? [`Turno para retirar: ${turnoAsignado}`] : []),
   ].join("\n");
 
   const mensajeCodificado = encodeURIComponent(mensaje);

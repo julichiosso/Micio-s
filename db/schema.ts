@@ -86,6 +86,9 @@ export const estadoLocal = pgTable("estado_local", {
   abierto: boolean("abierto").notNull().default(true),
   mensajePersonalizado: text("mensaje_personalizado"), // Ej: "Demora de 30 min por alta demanda"
   capacidadDefaultTurno: integer("capacidad_default_turno").notNull().default(7),
+  // Horario de atención configurable desde el admin (formato HH:MM, 24h, hora Argentina)
+  horaApertura: text("hora_apertura").notNull().default("20:00"),
+  horaCierre: text("hora_cierre").notNull().default("23:00"),
   actualizadoEn: timestamp("actualizado_en").notNull().defaultNow(),
 });
 
@@ -122,6 +125,12 @@ export const pedidos = pgTable("pedidos", {
   horaRetiroDeseada: text("hora_retiro_deseada"),
   total: integer("total").notNull(),
   detalles: text("detalles").notNull(), // JSON o resumen de items
+  // Estado de la reserva para evitar cupos fantasma
+  // 'pendiente' = turno reservado, aún no confirmado por WhatsApp (expira en 5 min)
+  // 'confirmado' = mensaje enviado por WhatsApp
+  // 'cancelado' = reserva vencida o cancelada manualmente
+  estado: text("estado").notNull().default("confirmado"), // default 'confirmado' para pedidos existentes
+  expiraEn: timestamp("expira_en"), // null = sin expiración (pedidos viejos/confirmados)
   creadoEn: timestamp("creado_en").notNull().defaultNow(),
 });
 
@@ -136,5 +145,3 @@ export const pedidosRelations = relations(pedidos, ({ one }) => ({
     references: [turnos.id],
   }),
 }));
-
-

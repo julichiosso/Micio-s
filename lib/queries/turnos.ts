@@ -1,8 +1,9 @@
 import { db } from "@/lib/db";
 import { turnos, pedidos } from "@/db/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, and, or, gt, isNull } from "drizzle-orm";
 import {
   getFechaHoyArgentina,
+  getHoraActualArgentina,
   generarSlotsHorarios,
   isTurnoPasado,
   formatearDemoraEstimada,
@@ -23,10 +24,16 @@ export type TurnoConConteo = {
 };
 
 // Asegura que existan los turnos del día en la BD con ON CONFLICT DO NOTHING
+// Lee horaApertura/horaCierre desde estado_local (fuente única de verdad)
 export async function asegurarTurnosDelDia(fechaDeseada?: string): Promise<void> {
   const fecha = fechaDeseada || getFechaHoyArgentina();
   const estado = await getEstadoLocal();
-  const slots = generarSlotsHorarios("15:30", "23:30", 15);
+
+  // Usar los horarios configurados por el dueño desde el admin
+  const horaDesde = estado.horaApertura || "20:00";
+  const horaHasta = estado.horaCierre || "23:00";
+
+  const slots = generarSlotsHorarios(horaDesde, horaHasta, 15);
 
   const filas = slots.map((slot) => ({
     fecha,
@@ -45,7 +52,32 @@ export async function asegurarTurnosDelDia(fechaDeseada?: string): Promise<void>
     });
 }
 
-// Obtiene todos los turnos del día con su conteo de pedidos y estado
+// Cuenta pedidos vigentes de un turno:
+// - estado = 'confirmado', O
+// - estado = 'pendiente' Y expira_en > NOW() (reserva aún válida)
+async function contarPedidosVigentes(turnoId: number): Promise<number> {
+  const ahora = new Date();
+
+  const resultado = await db
+    .select()
+    .from(pedidos)
+    .where(
+      and(
+        eq(pedidos.turnoId, turnoId),
+        or(
+          eq(pedidos.estado, "confirmado"),
+          and(
+            eq(pedidos.estado, "pendiente"),
+            gt(pedidos.expiraEn, ahora)
+          )
+        )
+      )
+    );
+
+  return resultado.length;
+}
+
+// Obtiene todos los turnos del día con su conteo de pedidos vigentes y estado
 export async function getTurnosConConteo(fechaDeseada?: string): Promise<TurnoConConteo[]> {
   const fecha = fechaDeseada || getFechaHoyArgentina();
 
@@ -55,30 +87,45 @@ export async function getTurnosConConteo(fechaDeseada?: string): Promise<TurnoCo
   const turnosList = await db.query.turnos.findMany({
     where: eq(turnos.fecha, fecha),
     orderBy: [asc(turnos.horaInicio)],
-    with: {
-      pedidos: true,
-    },
   });
 
-  return turnosList.map((t) => {
-    const pedidosCount = t.pedidos?.length ?? 0;
-    const pasado = isTurnoPasado(t.horaFin, t.fecha);
-    const disponible = !pasado && !t.bloqueado && pedidosCount < t.capacidad;
-    const ocupacionPct = Math.min(100, Math.round((pedidosCount / Math.max(1, t.capacidad)) * 100));
+  // Contar pedidos vigentes por turno (confirmados + pendientes no vencidos)
+  const turnosConConteo = await Promise.all(
+    turnosList.map(async (t) => {
+      const pedidosCount = await contarPedidosVigentes(t.id);
+      const pasado = isTurnoPasado(t.horaFin, t.fecha);
+      const disponible = !pasado && !t.bloqueado && pedidosCount < t.capacidad;
+      const ocupacionPct = Math.min(100, Math.round((pedidosCount / Math.max(1, t.capacidad)) * 100));
 
-    return {
-      id: t.id,
-      fecha: t.fecha,
-      horaInicio: t.horaInicio,
-      horaFin: t.horaFin,
-      capacidad: t.capacidad,
-      bloqueado: t.bloqueado,
-      pedidosCount,
-      ocupacionPct,
-      pasado,
-      disponible,
-    };
-  });
+      return {
+        id: t.id,
+        fecha: t.fecha,
+        horaInicio: t.horaInicio,
+        horaFin: t.horaFin,
+        capacidad: t.capacidad,
+        bloqueado: t.bloqueado,
+        pedidosCount,
+        ocupacionPct,
+        pasado,
+        disponible,
+      };
+    })
+  );
+
+  return turnosConConteo;
+}
+
+// Calcula si el local está abierto considerando horario configurado + switch manual
+// Lógica: abierto_efectivo = switch_manual_ON AND horaActual >= horaApertura AND horaActual < horaCierre
+export function calcularAbiertoEfectivo(
+  switchManualOn: boolean,
+  horaApertura: string,
+  horaCierre: string
+): boolean {
+  if (!switchManualOn) return false; // Switch manual apagado = cerrado inmediatamente
+
+  const horaActual = getHoraActualArgentina();
+  return horaActual >= horaApertura && horaActual < horaCierre;
 }
 
 // Obtiene el turno estimado disponible para un cliente en este momento
@@ -88,15 +135,27 @@ export async function getTurnoEstimadoActual(): Promise<{
   textoDemora: string;
   abierto: boolean;
   mensajePersonalizado: string | null;
+  horaApertura: string;
+  horaCierre: string;
 }> {
   const estado = await getEstadoLocal();
-  if (!estado.abierto) {
+
+  // Verificar si está abierto efectivamente (switch + horario)
+  const abiertoEfectivo = calcularAbiertoEfectivo(
+    estado.abierto,
+    estado.horaApertura,
+    estado.horaCierre
+  );
+
+  if (!abiertoEfectivo) {
     return {
       turno: null,
       minutosEspera: 0,
       textoDemora: "Local cerrado",
       abierto: false,
       mensajePersonalizado: estado.mensajePersonalizado,
+      horaApertura: estado.horaApertura,
+      horaCierre: estado.horaCierre,
     };
   }
 
@@ -113,11 +172,12 @@ export async function getTurnoEstimadoActual(): Promise<{
       textoDemora: demora.textoDemora,
       abierto: true,
       mensajePersonalizado: estado.mensajePersonalizado,
+      horaApertura: estado.horaApertura,
+      horaCierre: estado.horaCierre,
     };
   }
 
-  // Si todos los turnos están llenos o pasados pero el local sigue abierto,
-  // tomamos el último turno del día o avisamos demora extendida
+  // Si todos los turnos están llenos o pasados pero el local sigue abierto
   const ultimoTurno = turnosHoy[turnosHoy.length - 1];
   return {
     turno: ultimoTurno ?? null,
@@ -125,5 +185,7 @@ export async function getTurnoEstimadoActual(): Promise<{
     textoDemora: "Alta demanda: demora aproximada ~45-60 min",
     abierto: true,
     mensajePersonalizado: estado.mensajePersonalizado,
+    horaApertura: estado.horaApertura,
+    horaCierre: estado.horaCierre,
   };
 }

@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { estadoLocal, turnos, pedidos } from "@/db/schema";
-import { eq, asc, count } from "drizzle-orm";
+import { eq, asc, and, or, gt } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -10,7 +10,7 @@ import {
   isTurnoPasado,
   formatearDemoraEstimada,
 } from "@/lib/date-utils";
-import { asegurarTurnosDelDia } from "@/lib/queries/turnos";
+import { asegurarTurnosDelDia, calcularAbiertoEfectivo } from "@/lib/queries/turnos";
 
 async function requireAuth() {
   const supabase = await createClient();
@@ -27,6 +27,8 @@ export async function actualizarEstadoLocal(datos: {
   abierto: boolean;
   mensajePersonalizado?: string | null;
   capacidadDefaultTurno?: number;
+  horaApertura?: string;
+  horaCierre?: string;
 }) {
   await requireAuth();
 
@@ -37,18 +39,26 @@ export async function actualizarEstadoLocal(datos: {
       abierto: datos.abierto,
       mensajePersonalizado: datos.mensajePersonalizado?.trim() || null,
       capacidadDefaultTurno: datos.capacidadDefaultTurno || 7,
+      horaApertura: datos.horaApertura || "20:00",
+      horaCierre: datos.horaCierre || "23:00",
       actualizadoEn: new Date(),
     })
     .onConflictDoUpdate({
       target: [estadoLocal.id],
       set: {
         abierto: datos.abierto,
-        mensajePersonalizado: datos.mensajePersonalizado !== undefined
-          ? (datos.mensajePersonalizado?.trim() || null)
-          : undefined,
-        capacidadDefaultTurno: datos.capacidadDefaultTurno !== undefined
-          ? datos.capacidadDefaultTurno
-          : undefined,
+        mensajePersonalizado:
+          datos.mensajePersonalizado !== undefined
+            ? datos.mensajePersonalizado?.trim() || null
+            : undefined,
+        capacidadDefaultTurno:
+          datos.capacidadDefaultTurno !== undefined
+            ? datos.capacidadDefaultTurno
+            : undefined,
+        horaApertura:
+          datos.horaApertura !== undefined ? datos.horaApertura : undefined,
+        horaCierre:
+          datos.horaCierre !== undefined ? datos.horaCierre : undefined,
         actualizadoEn: new Date(),
       },
     });
@@ -83,12 +93,21 @@ export async function toggleBloqueoTurno(turnoId: number, bloqueado: boolean) {
   revalidatePath("/carrito");
 }
 
+// ---------- ACCIÓN PÚBLICA — Confirmar pedido al volver desde WhatsApp ----------
+
+export async function confirmarPedido(pedidoId: number): Promise<void> {
+  if (!pedidoId) return;
+  await db
+    .update(pedidos)
+    .set({ estado: "confirmado", expiraEn: null })
+    .where(eq(pedidos.id, pedidoId));
+}
+
 // ---------- ACCIÓN PÚBLICA / CLIENTE (Transacción atómica con lock) ----------
 
 export async function crearPedidoConAsignacionTurno(datos: {
   clienteNombre: string;
   clienteTelefono?: string;
-  horaRetiroDeseada?: string;
   total: number;
   detalles: string;
 }): Promise<{
@@ -102,8 +121,11 @@ export async function crearPedidoConAsignacionTurno(datos: {
   try {
     const fechaHoy = getFechaHoyArgentina();
 
-    // Aseguramos primero fuera de la tx que existan los turnos del día si aún no se crearon
+    // Aseguramos primero fuera de la tx que existan los turnos del día
     await asegurarTurnosDelDia(fechaHoy);
+
+    // Timestamp de expiración: 5 minutos desde ahora
+    const expiraEn = new Date(Date.now() + 5 * 60 * 1000);
 
     // Transacción atómica en PostgreSQL con SELECT ... FOR UPDATE
     const resultado = await db.transaction(async (tx) => {
@@ -113,8 +135,15 @@ export async function crearPedidoConAsignacionTurno(datos: {
         .from(estadoLocal)
         .where(eq(estadoLocal.id, 1));
 
-      if (estado && !estado.abierto) {
-        throw new Error("El local se encuentra cerrado en este momento.");
+      if (estado) {
+        const abiertoEfectivo = calcularAbiertoEfectivo(
+          estado.abierto,
+          estado.horaApertura ?? "20:00",
+          estado.horaCierre ?? "23:00"
+        );
+        if (!abiertoEfectivo) {
+          throw new Error("El local se encuentra cerrado en este momento.");
+        }
       }
 
       // 2. Lock de los turnos de hoy para serializar la asignación bajo concurrencia
@@ -125,20 +154,30 @@ export async function crearPedidoConAsignacionTurno(datos: {
         .orderBy(asc(turnos.horaInicio))
         .for("update");
 
+      const ahora = new Date();
       let turnoSeleccionado: typeof turnos.$inferSelect | null = null;
 
-      // 3. Buscar el primer turno disponible (no pasado, no bloqueado y con cupo)
+      // 3. Buscar el primer turno disponible (no pasado, no bloqueado y con cupo vigente)
       for (const t of turnosHoy) {
         if (isTurnoPasado(t.horaFin, t.fecha) || t.bloqueado) {
           continue;
         }
 
-        const [conteoResult] = await tx
-          .select({ count: count() })
+        // Contar solo pedidos vigentes (confirmados + pendientes no vencidos)
+        const pedidosVigentes = await tx
+          .select()
           .from(pedidos)
-          .where(eq(pedidos.turnoId, t.id));
+          .where(
+            and(
+              eq(pedidos.turnoId, t.id),
+              or(
+                eq(pedidos.estado, "confirmado"),
+                and(eq(pedidos.estado, "pendiente"), gt(pedidos.expiraEn, ahora))
+              )
+            )
+          );
 
-        const pedidosActuales = Number(conteoResult?.count || 0);
+        const pedidosActuales = pedidosVigentes.length;
 
         if (pedidosActuales < t.capacidad) {
           turnoSeleccionado = t;
@@ -146,13 +185,18 @@ export async function crearPedidoConAsignacionTurno(datos: {
         }
       }
 
-      // Si todos los turnos no-pasados están al 100% de capacidad, asignamos al último turno activo
+      // Si todos los turnos no-pasados están al 100%, asignamos al último turno activo
       if (!turnoSeleccionado) {
-        const turnosNoPasados = turnosHoy.filter((t) => !isTurnoPasado(t.horaFin, t.fecha) && !t.bloqueado);
-        turnoSeleccionado = turnosNoPasados[turnosNoPasados.length - 1] || turnosHoy[turnosHoy.length - 1] || null;
+        const turnosNoPasados = turnosHoy.filter(
+          (t) => !isTurnoPasado(t.horaFin, t.fecha) && !t.bloqueado
+        );
+        turnoSeleccionado =
+          turnosNoPasados[turnosNoPasados.length - 1] ||
+          turnosHoy[turnosHoy.length - 1] ||
+          null;
       }
 
-      // 4. Insertar el pedido vinculado al turno asignado
+      // 4. Insertar el pedido como 'pendiente' con tiempo de expiración de 5 min
       const [nuevoPedido] = await tx
         .insert(pedidos)
         .values({
@@ -160,9 +204,11 @@ export async function crearPedidoConAsignacionTurno(datos: {
           fecha: fechaHoy,
           clienteNombre: datos.clienteNombre.trim(),
           clienteTelefono: datos.clienteTelefono?.trim() || null,
-          horaRetiroDeseada: datos.horaRetiroDeseada?.trim() || null,
+          horaRetiroDeseada: null, // Se eliminó el campo manual de hora
           total: datos.total,
           detalles: datos.detalles,
+          estado: "pendiente",
+          expiraEn,
         })
         .returning();
 
