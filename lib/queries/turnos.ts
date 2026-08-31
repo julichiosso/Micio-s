@@ -26,7 +26,7 @@ export type TurnoConConteo = {
 export async function asegurarTurnosDelDia(fechaDeseada?: string): Promise<void> {
   const fecha = fechaDeseada || getFechaHoyArgentina();
   const estado = await getEstadoLocal();
-  const slots = generarSlotsHorarios("20:00", "23:00", 15);
+  const slots = generarSlotsHorarios("15:30", "23:30", 15);
 
   const filas = slots.map((slot) => ({
     fecha,

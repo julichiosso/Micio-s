@@ -16,9 +16,10 @@ type Props = {
   turnosIniciales: TurnoConConteo[];
 };
 
+// Sugerencias adaptadas a Take Away (retiro y pago en el local)
 const SUGERENCIAS_AVISOS = [
-  "Demora de 25-30 min por mucha demanda",
-  "Demora de 40-50 min por lluvia",
+  "Demora de 25-30 min por alta demanda",
+  "Solo retiro y pago en mostrador",
   "Últimos pedidos de la noche",
   "Tomando pedidos con normalidad",
 ];
@@ -33,19 +34,17 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
   const [guardandoMensaje, setGuardandoMensaje] = useState(false);
   const [mensajeGuardadoOk, setMensajeGuardadoOk] = useState(false);
 
-  // Estados colapsables por franja horaria (20hs, 21hs, 22hs)
-  // Inicialmente todas abiertas para visualización rápida
-  const [bloquesAbiertos, setBloquesAbiertos] = useState<Record<string, boolean>>({
-    "20": true,
-    "21": true,
-    "22": true,
-  });
+  // Estados colapsables por franja horaria (dinámico para cualquier hora)
+  const [bloquesAbiertos, setBloquesAbiertos] = useState<Record<string, boolean>>({});
 
   function toggleBloque(horaStr: string) {
-    setBloquesAbiertos((prev) => ({
-      ...prev,
-      [horaStr]: !prev[horaStr],
-    }));
+    setBloquesAbiertos((prev) => {
+      const estadoActual = prev[horaStr] !== false; // Abierto por defecto
+      return {
+        ...prev,
+        [horaStr]: !estadoActual,
+      };
+    });
   }
 
   useEffect(() => {
@@ -130,7 +129,7 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
   const totalPedidosHoy = turnos.reduce((acc, t) => acc + t.pedidosCount, 0);
   const horariosConLugar = turnos.filter((t) => t.disponible).length;
 
-  // Agrupación de turnos por hora (20:xx -> "20", 21:xx -> "21", 22:xx -> "22")
+  // Agrupación dinámica de turnos por hora
   const gruposPorHora = useMemo(() => {
     const grupos: Record<string, TurnoConConteo[]> = {};
     for (const t of turnos) {
@@ -145,7 +144,6 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
       const lugaresEnHora = lista.filter((it) => it.disponible).length;
       return {
         hora,
-        titulo: `Franja ${hora}:00 a ${Number(hora) + 1}:00 hs`,
         pedidosEnHora,
         lugaresEnHora,
         turnos: lista,
@@ -158,14 +156,14 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
       {/* ═══════════════════════════════════════════════
           VISTA MOBILE (md:hidden) — 100% OSCURA Y MINIMIZABLE
       ═══════════════════════════════════════════════ */}
-      <div className="md:hidden px-4 pt-5 pb-20 flex flex-col gap-6">
+      <div className="md:hidden px-4 pt-5 pb-20 flex flex-col gap-6 max-w-lg mx-auto">
         {/* Tarjeta 1: Estado del local */}
         <div className="bg-[#1a1814] border border-white/[0.1] rounded-2xl p-5 shadow-sm">
           <p className="text-[10.5px] font-bold uppercase tracking-widest text-white/40 mb-0.5">
             Control Principal
           </p>
           <h2 className="text-[20px] font-black text-white leading-tight">
-            Estado de la Pizzería
+            Estado del Local
           </h2>
           <p className="text-[12.5px] text-white/55 mt-1 mb-4 leading-normal">
             Si cerrás el local, el botón de confirmar pedidos por WhatsApp queda deshabilitado en la web.
@@ -208,7 +206,7 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
                 type="text"
                 value={mensaje}
                 onChange={(e) => setMensaje(e.target.value)}
-                placeholder="Ej: Demora de 30 min por alta demanda..."
+                placeholder="Ej: Demora de 25-30 min por alta demanda..."
                 className="flex-1 min-w-0 bg-white/[0.06] border border-white/[0.12] rounded-xl px-3.5 py-2.5 text-[14px] text-white placeholder:text-white/30 outline-none focus:border-[#c6f135]/60 transition-colors"
               />
               <button
@@ -234,7 +232,7 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
               )}
             </div>
 
-            {/* Chips de sugerencia rápida */}
+            {/* Chips de sugerencia rápida para Take Away */}
             <div className="flex flex-wrap gap-1.5 pt-1">
               {SUGERENCIAS_AVISOS.map((sug) => (
                 <button
@@ -275,7 +273,7 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
           {/* Bloques horarios desplegables */}
           <div className="flex flex-col gap-3.5">
             {gruposPorHora.map((grupo) => {
-              const estaAbierto = bloquesAbiertos[grupo.hora] ?? true;
+              const estaAbierto = bloquesAbiertos[grupo.hora] !== false;
 
               return (
                 <div
@@ -452,7 +450,7 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
       {/* ═══════════════════════════════════════════════
           VISTA DESKTOP (hidden md:block) — ESPACIOSA Y SEPARADA
       ═══════════════════════════════════════════════ */}
-      <div className="hidden md:block p-8 lg:p-12 max-w-5xl mx-auto flex flex-col gap-10">
+      <div className="hidden md:block px-10 py-10 lg:px-14 lg:py-12 max-w-5xl mx-auto flex flex-col gap-10">
         {/* Tarjeta 1: Estado del local */}
         <section className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
           <div className="flex items-center justify-between pb-6 border-b border-gray-100">
@@ -502,7 +500,7 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
                 type="text"
                 value={mensaje}
                 onChange={(e) => setMensaje(e.target.value)}
-                placeholder="Ej: Demora de 30 min por alta demanda..."
+                placeholder="Ej: Demora de 25-30 min por alta demanda..."
                 className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14.5px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-gray-400 focus:bg-white transition-all"
               />
               <button
@@ -576,7 +574,7 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
                       {grupo.hora}:00 a {Number(grupo.hora) + 1}:00 hs
                     </span>
                     <span className="bg-gray-100 text-gray-600 text-[11px] font-bold px-2 py-0.5 rounded-full">
-                      {grupo.pedidosEnHora} pedidos
+                      {grupo.pedidosEnHora} {grupo.pedidosEnHora === 1 ? "pedido" : "pedidos"}
                     </span>
                   </div>
                 </div>

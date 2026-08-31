@@ -25,10 +25,10 @@ export function getHoraActualArgentina(): string {
 }
 
 // Genera los slots de turnos de 15 min entre horaInicio y horaFin
-// Por defecto: 20:00 a 23:00 (12 turnos)
+// Rango activo: 15:30 a 23:30 (slots de 15 min para pruebas y servicio)
 export function generarSlotsHorarios(
-  horaDesde: string = "20:00",
-  horaHasta: string = "23:00",
+  horaDesde: string = "15:30",
+  horaHasta: string = "23:30",
   intervaloMinutos: number = 15
 ): { horaInicio: string; horaFin: string }[] {
   const slots: { horaInicio: string; horaFin: string }[] = [];
@@ -69,7 +69,7 @@ export function isTurnoPasado(horaFin: string, fechaTurno?: string): boolean {
   return horaActual >= horaFin;
 }
 
-// Formatear demora estimada de forma natural e inteligente para el cliente
+// Formatear demora estimada de forma natural e inteligente para el cliente (Take Away)
 export function formatearDemoraEstimada(horaInicioTurno: string): {
   minutosEspera: number;
   textoDemora: string;
@@ -81,22 +81,13 @@ export function formatearDemoraEstimada(horaInicioTurno: string): {
   const actTotalMin = hAct * 60 + mAct;
   const turnoTotalMin = hTurno * 60 + mTurno;
 
-  // 1. Si el cliente pide ANTES de la apertura (ej: durante la tarde, antes de las 20:00)
-  if (actTotalMin < 20 * 60) {
-    return {
-      minutosEspera: 15,
-      textoDemora: `Para la apertura: horario ${horaInicioTurno} hs`,
-    };
-  }
-
-  // 2. Si estamos dentro del horario de atención (20:00 en adelante)
   const diffMin = Math.max(0, turnoTotalMin - actTotalMin);
 
-  // Si el turno asignado es el actual (o inicia en menos de 5 min)
+  // Si el turno asignado es el actual o inicia en breves minutos
   if (diffMin <= 5) {
     return {
       minutosEspera: 15,
-      textoDemora: "Preparación estimada: ~15 a 20 min",
+      textoDemora: `Preparación estimada: ~15 a 20 min (${horaInicioTurno} hs)`,
     };
   }
 
