@@ -284,7 +284,7 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
         {/* Tarjeta 1: Estado del local */}
         <div className="bg-[#1a1814] border border-white/[0.1] rounded-2xl p-5 shadow-sm">
           <p className="text-[10.5px] font-bold uppercase tracking-widest text-white/40 mb-0.5">Control Principal</p>
-          <h2 className="text-[20px] font-black text-white leading-tight">Estado de la Pizzería</h2>
+          <h2 className="text-[20px] font-black text-white leading-tight">Estado del Local</h2>
           <p className="text-[12.5px] text-white/55 mt-1 mb-4 leading-normal">
             Si cerrás el local, el botón de confirmar pedidos por WhatsApp queda deshabilitado en la web.
           </p>

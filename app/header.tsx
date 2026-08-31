@@ -36,7 +36,7 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
       if (tickingRef.current) return;
       tickingRef.current = true;
       requestAnimationFrame(() => {
-        setScrolled(window.scrollY > 30);
+        setScrolled(window.scrollY > 20);
         tickingRef.current = false;
       });
     }
@@ -46,7 +46,7 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
   }, []);
 
   const esOscura = variante === "oscura";
-  const colorTexto = esOscura ? "text-white/70" : "text-black/60";
+  const colorTexto = esOscura ? "text-white/80" : "text-black/70";
 
   return (
     <>
@@ -56,62 +56,72 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
         secciones={secciones}
       />
 
-      {/* Espaciador: como el header pasa a fixed, el contenido de abajo
-          necesita este hueco para no quedar tapado al cargar la página */}
-      <div className="h-[60px]" />
-
-      <div
-        className={`fixed top-0 inset-x-0 z-40 flex items-center justify-between px-5 pt-5 pb-3 transition-all duration-300 ease-out ${
-          scrolled
-            ? "bg-[#141210]/90 backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]"
-            : "bg-transparent"
-        }`}
-      >
-        {/* Izquierda: menú */}
-        <button
-          onClick={() => setSidebarAbierto(true)}
-          className={`${colorTexto} active:opacity-60 transition-opacity relative z-10`}
-          aria-label="Abrir menú"
+      {/* Header Unificado Fixed (Navbar + Banner de Estado) */}
+      <header className="fixed top-0 inset-x-0 z-40 flex flex-col transition-all duration-200">
+        <div
+          className={`flex items-center justify-between px-5 pt-4 pb-3 transition-colors duration-300 ${
+            scrolled
+              ? "bg-[#141210]/95 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
+              : "bg-gradient-to-b from-[#141210]/90 via-[#141210]/60 to-transparent"
+          }`}
         >
-          <IconMenu size={20} />
-        </button>
-
-        {/* Centro: logo, centrado absoluto respecto a toda la barra */}
-        <div className="absolute left-1/2 -translate-x-1/2">
-          <Image
-            src="/micios_logo_white.svg"
-            alt="Micio's"
-            width={140}
-            height={40}
-            priority
-            className="h-6 w-auto"
-          />
-        </div>
-
-        {/* Derecha: instagram + carrito, agrupados */}
-        <div className="flex items-center gap-4 relative z-10">
-          <a
-            href="https://www.instagram.com/miciospizza/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${colorTexto} active:opacity-60 transition-opacity`}
-            aria-label="Ver Instagram"
+          {/* Izquierda: menú */}
+          <button
+            type="button"
+            onClick={() => setSidebarAbierto(true)}
+            className={`${colorTexto} hover:text-white active:opacity-60 transition-opacity relative z-10 cursor-pointer p-1 -ml-1`}
+            aria-label="Abrir menú"
           >
-            <IconInstagram size={20} />
-          </a>
+            <IconMenu size={20} />
+          </button>
 
-          <Link href="/carrito" className={`relative ${colorTexto}`} aria-label="Ver carrito">
-            <IconCarrito size={20} />
-            {cantidadCarrito > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#c6f135] text-[#141210] text-[9px] font-black flex items-center justify-center leading-none">
-                {cantidadCarrito}
-              </span>
-            )}
-          </Link>
+          {/* Centro: logo centrado */}
+          <div className="absolute left-1/2 -translate-x-1/2">
+            <Link href="/" aria-label="Ir al inicio">
+              <Image
+                src="/micios_logo_white.svg"
+                alt="Micio's"
+                width={130}
+                height={36}
+                priority
+                className="h-5.5 w-auto"
+              />
+            </Link>
+          </div>
+
+          {/* Derecha: Instagram + Carrito */}
+          <div className="flex items-center gap-3.5 relative z-10">
+            <a
+              href="https://www.instagram.com/miciospizza/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${colorTexto} hover:text-white active:opacity-60 transition-opacity p-1`}
+              aria-label="Ver Instagram"
+            >
+              <IconInstagram size={19} />
+            </a>
+
+            <Link
+              href="/carrito"
+              className={`relative ${colorTexto} hover:text-white p-1`}
+              aria-label="Ver carrito"
+            >
+              <IconCarrito size={19} />
+              {cantidadCarrito > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#c6f135] text-[#141210] text-[9.5px] font-black flex items-center justify-center leading-none">
+                  {cantidadCarrito}
+                </span>
+              )}
+            </Link>
+          </div>
         </div>
-      </div>
 
-      <EstadoBanner />
+        {/* Banner de estado integrado suavemente debajo del navbar */}
+        <EstadoBanner />
+      </header>
+
+      {/* Espaciador base para el contenido debajo */}
+      <div className="h-[56px]" />
     </>
   );
 }

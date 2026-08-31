@@ -81,7 +81,10 @@ export default function HorariosToggle() {
             localAbierto ? "bg-[#c6f135]" : "bg-red-500"
           }`}
         />
-        <span className="text-white/70 text-[13px] font-normal hover:text-white transition-colors">
+        <span
+          suppressHydrationWarning
+          className="text-white/70 text-[13px] font-normal hover:text-white transition-colors"
+        >
           {localAbierto ? `Jueves a domingos, ${horaApertura} a ${horaCierre} hs` : "Cerrado en este momento"}
         </span>
         <IconChevronDown

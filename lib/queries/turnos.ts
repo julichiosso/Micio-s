@@ -165,7 +165,7 @@ export async function getTurnoEstimadoActual(): Promise<{
   const turnoLibre = turnosHoy.find((t) => t.disponible);
 
   if (turnoLibre) {
-    const demora = formatearDemoraEstimada(turnoLibre.horaInicio);
+    const demora = formatearDemoraEstimada(turnoLibre.horaInicio, turnoLibre.horaFin);
     return {
       turno: turnoLibre,
       minutosEspera: demora.minutosEspera,

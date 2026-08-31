@@ -25,10 +25,9 @@ export function getHoraActualArgentina(): string {
 }
 
 // Genera los slots de turnos de 15 min entre horaInicio y horaFin
-// Rango activo: 15:30 a 23:30 (slots de 15 min para pruebas y servicio)
 export function generarSlotsHorarios(
-  horaDesde: string = "15:30",
-  horaHasta: string = "23:30",
+  horaDesde: string = "20:00",
+  horaHasta: string = "23:00",
   intervaloMinutos: number = 15
 ): { horaInicio: string; horaFin: string }[] {
   const slots: { horaInicio: string; horaFin: string }[] = [];
@@ -57,7 +56,7 @@ export function generarSlotsHorarios(
   return slots;
 }
 
-// Determina si un turno ya pasó para la fecha dada (o hoy si no se especifica)
+// Determina si un turno ya pasó para la fecha dada
 export function isTurnoPasado(horaFin: string, fechaTurno?: string): boolean {
   const fechaHoy = getFechaHoyArgentina();
   const fecha = fechaTurno || fechaHoy;
@@ -69,10 +68,12 @@ export function isTurnoPasado(horaFin: string, fechaTurno?: string): boolean {
   return horaActual >= horaFin;
 }
 
-// Formatear demora estimada de forma natural e inteligente para el cliente (Take Away)
-export function formatearDemoraEstimada(horaInicioTurno: string): {
+// Formatear demora estimada de forma natural, humana y clara (Pizzería Take Away)
+// El cliente retira cuando la tanda termina (horaFin) o en ~15-20 min.
+export function formatearDemoraEstimada(horaInicioTurno: string, horaFinTurno?: string): {
   minutosEspera: number;
   textoDemora: string;
+  horaEstimadaRetiro: string;
 } {
   const horaActual = getHoraActualArgentina();
   const [hAct, mAct] = horaActual.split(":").map(Number);
@@ -81,20 +82,33 @@ export function formatearDemoraEstimada(horaInicioTurno: string): {
   const actTotalMin = hAct * 60 + mAct;
   const turnoTotalMin = hTurno * 60 + mTurno;
 
-  const diffMin = Math.max(0, turnoTotalMin - actTotalMin);
+  // Si no pasaron horaFin, calculamos 15 min después de horaInicio
+  let horaFinCalculada = horaFinTurno;
+  if (!horaFinCalculada) {
+    const finMin = turnoTotalMin + 15;
+    const hF = String(Math.floor(finMin / 60) % 24).padStart(2, "0");
+    const mF = String(finMin % 60).padStart(2, "0");
+    horaFinCalculada = `${hF}:${mF}`;
+  }
 
-  // Si el turno asignado es el actual o inicia en breves minutos
-  if (diffMin <= 5) {
+  const [hFin, mFin] = horaFinCalculada.split(":").map(Number);
+  const finTotalMin = hFin * 60 + mFin;
+  const diffHastaFin = Math.max(15, finTotalMin - actTotalMin);
+
+  // Caso 1: Turno actual inmediato (demora estándar de preparación ~15-20 min)
+  if (turnoTotalMin <= actTotalMin + 5) {
     return {
       minutosEspera: 15,
-      textoDemora: `Preparación estimada: ~15 a 20 min (${horaInicioTurno} hs)`,
+      textoDemora: "Demora estimada: 15 a 20 min",
+      horaEstimadaRetiro: horaFinCalculada,
     };
   }
 
-  // Si el turno actual está lleno y pasa a un turno posterior
-  const esperaAprox = diffMin + 15;
+  // Caso 2: Hay turnos anteriores llenos, se pasa a una tanda posterior
+  const minutosCalculados = Math.round(diffHastaFin / 5) * 5; // redondeado a múltiplos de 5 min
   return {
-    minutosEspera: esperaAprox,
-    textoDemora: `Horario asignado: ${horaInicioTurno} hs (~${esperaAprox} min de espera)`,
+    minutosEspera: minutosCalculados,
+    textoDemora: `Demora estimada: ~${minutosCalculados} min`,
+    horaEstimadaRetiro: horaFinCalculada,
   };
 }

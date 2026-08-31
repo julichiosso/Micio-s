@@ -220,8 +220,8 @@ export async function crearPedidoConAsignacionTurno(datos: {
     });
 
     const demora = resultado.turnoHoraInicio
-      ? formatearDemoraEstimada(resultado.turnoHoraInicio)
-      : { textoDemora: "Preparación inmediata" };
+      ? formatearDemoraEstimada(resultado.turnoHoraInicio, resultado.turnoHoraFin)
+      : { textoDemora: "Demora estimada: ~15-20 min", horaEstimadaRetiro: "" };
 
     revalidatePath("/admin/turnos");
 

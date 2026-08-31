@@ -141,21 +141,12 @@ export function AdminSidebar() {
   );
 }
 
-// Header mobile para celulares
+// Header mobile para celulares: Espacioso, cómodo y nativo
 export function AdminMobileHeader({ currentPath }: { currentPath?: string }) {
   const routerPath = usePathname();
   const pathname = currentPath || routerPath || "";
   const router = useRouter();
   const [saliendo, setSaliendo] = useState(false);
-
-  const titulo =
-    pathname.startsWith("/admin/turnos")
-      ? "Horarios"
-      : pathname.startsWith("/admin/secciones")
-      ? "Categorías"
-      : pathname.startsWith("/admin/productos")
-      ? "Productos"
-      : "Admin";
 
   async function handleLogout() {
     setSaliendo(true);
@@ -168,65 +159,71 @@ export function AdminMobileHeader({ currentPath }: { currentPath?: string }) {
   return (
     <div
       suppressHydrationWarning
-      className="md:hidden sticky top-0 z-20 bg-[#141210]/95 backdrop-blur-md border-b border-white/[0.1] px-3 py-2.5 flex items-center justify-between shadow-sm"
+      className="md:hidden sticky top-0 z-20 bg-[#141210]/95 backdrop-blur-md border-b border-white/[0.1] px-4 pt-3.5 pb-3 flex flex-col gap-2.5 shadow-sm"
     >
-      <div className="min-w-0 pr-1.5">
-        <div className="flex items-center gap-1.5">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 leading-none">
-            Admin · Micio&apos;s
-          </p>
+      {/* Fila superior: Logo Admin + Ver Web + Salir */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-[17px] font-black text-white tracking-tight">
+            Micio&apos;s
+          </span>
+          <span className="text-[10.5px] font-bold text-white/40 uppercase tracking-widest bg-white/[0.06] px-2 py-0.5 rounded-md">
+            Admin
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
           <Link
             href="/"
             target="_blank"
-            className="text-[10px] font-bold text-[#c6f135] hover:underline flex items-center gap-0.5 bg-[#c6f135]/20 border border-[#c6f135]/30 px-1.5 py-0.5 rounded"
+            className="text-[12px] font-bold text-[#c6f135] bg-[#c6f135]/15 hover:bg-[#c6f135]/25 border border-[#c6f135]/30 px-2.5 py-1.5 rounded-xl flex items-center gap-1 transition-colors active:scale-95"
           >
             Ver web ↗
           </Link>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={saliendo}
+            className="text-[12px] font-medium text-white/50 hover:text-red-400 border border-white/10 hover:border-red-500/30 px-2.5 py-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 active:scale-95"
+          >
+            {saliendo ? "..." : "Salir"}
+          </button>
         </div>
-        <p className="text-[16px] font-black text-white leading-tight mt-0.5 truncate">
-          {titulo}
-        </p>
       </div>
-      <div className="flex items-center gap-1.5 shrink-0">
+
+      {/* Fila inferior: Segmented Tabs con área táctil cómoda */}
+      <nav className="grid grid-cols-3 gap-1.5 bg-white/[0.04] p-1 rounded-2xl border border-white/[0.08]">
         <Link
           href="/admin/turnos"
-          className={`text-[11.5px] px-2.5 py-2 rounded-xl border font-bold transition-all min-h-[36px] flex items-center justify-center ${
+          className={`text-[12.5px] font-bold py-2 rounded-xl text-center transition-all flex items-center justify-center min-h-[38px] ${
             pathname.startsWith("/admin/turnos")
-              ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
-              : "border-white/10 text-white/60 bg-white/[0.04] active:bg-white/[0.08]"
+              ? "bg-[#c6f135] text-[#141210] shadow-sm"
+              : "text-white/60 hover:text-white active:bg-white/[0.08]"
           }`}
         >
           Horarios
         </Link>
         <Link
           href="/admin/productos"
-          className={`text-[11.5px] px-2.5 py-2 rounded-xl border font-bold transition-all min-h-[36px] flex items-center justify-center ${
+          className={`text-[12.5px] font-bold py-2 rounded-xl text-center transition-all flex items-center justify-center min-h-[38px] ${
             pathname.startsWith("/admin/productos")
-              ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
-              : "border-white/10 text-white/60 bg-white/[0.04] active:bg-white/[0.08]"
+              ? "bg-[#c6f135] text-[#141210] shadow-sm"
+              : "text-white/60 hover:text-white active:bg-white/[0.08]"
           }`}
         >
           Productos
         </Link>
         <Link
           href="/admin/secciones"
-          className={`text-[11.5px] px-2.5 py-2 rounded-xl border font-bold transition-all min-h-[36px] flex items-center justify-center ${
+          className={`text-[12.5px] font-bold py-2 rounded-xl text-center transition-all flex items-center justify-center min-h-[38px] ${
             pathname.startsWith("/admin/secciones")
-              ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
-              : "border-white/10 text-white/60 bg-white/[0.04] active:bg-white/[0.08]"
+              ? "bg-[#c6f135] text-[#141210] shadow-sm"
+              : "text-white/60 hover:text-white active:bg-white/[0.08]"
           }`}
         >
           Categorías
         </Link>
-        <button
-          type="button"
-          onClick={handleLogout}
-          disabled={saliendo}
-          className="text-[11px] px-2 py-2 rounded-xl border border-white/10 text-white/40 hover:text-red-400 hover:border-red-400/30 transition-colors disabled:opacity-50 font-medium min-h-[36px] flex items-center justify-center cursor-pointer"
-        >
-          Salir
-        </button>
-      </div>
+      </nav>
     </div>
   );
 }

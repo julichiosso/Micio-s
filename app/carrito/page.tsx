@@ -139,16 +139,12 @@ export default function CarritoPage() {
       // Guardar el ID del pedido para confirmarlo al retornar
       pedidoCreadoIdRef.current = res.pedidoId;
 
-      // 2. Armar texto de WhatsApp con el turno asignado
-      const textoTurno = res.turnoHoraInicio
-        ? `${res.turnoHoraInicio} hs (${res.textoDemora || "~15-20 min de preparación"})`
-        : undefined;
-
+      // 2. Armar texto de WhatsApp con demora natural
       const link = armarLinkWhatsapp({
         items,
         nombre: nombreCompleto,
         total,
-        turnoAsignado: textoTurno,
+        demoraEstimada: res.textoDemora || "demora aprox. 15-20 min",
         pedidoId: res.pedidoId,
       });
 
@@ -236,34 +232,25 @@ export default function CarritoPage() {
               </div>
             )}
 
-            {/* Tarjeta de Turno / Horario Estimado de Retiro (Solo lectura, 100% clara) */}
+            {/* Tarjeta de Retiro / Demora Estimada (Directa, simple y sin tecnicismos) */}
             {estadoTurno.abierto && (
               <div className="bg-white rounded-2xl p-4 border border-black/[0.06] mb-5 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[#c6f135]/25 text-[#3e4d00] flex items-center justify-center shrink-0 mt-0.5">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#c6f135]/25 text-[#3e4d00] flex items-center justify-center shrink-0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <span className="text-[10.5px] font-bold uppercase tracking-wider text-black/40 block mb-0.5">
-                      Modalidad: Retiro en el local
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-black/40 block mb-0.5">
+                      Retiro en el local
                     </span>
-                    {estadoTurno.turno ? (
-                      <p className="text-[14.5px] font-extrabold text-black leading-snug">
-                        Tu pizza va a estar lista para retirar aprox. a las{" "}
-                        <span className="text-[#3e4d00] bg-[#c6f135]/30 px-2 py-0.5 rounded-lg font-black inline-block">
-                          {estadoTurno.turno.horaInicio} hs
-                        </span>
-                      </p>
-                    ) : (
-                      <p className="text-[14px] font-bold text-black">
-                        {estadoTurno.textoDemora}
-                      </p>
-                    )}
-                    <p className="text-[12px] text-black/50 mt-1">
-                      El pago se realiza en el mostrador al momento de retirar.
+                    <p className="text-[15px] font-extrabold text-black leading-tight">
+                      {estadoTurno.textoDemora || "Demora estimada: ~15 a 20 min"}
+                    </p>
+                    <p className="text-[12px] text-black/50 mt-0.5">
+                      El pago se coordina en el mostrador al retirar.
                     </p>
                   </div>
                 </div>

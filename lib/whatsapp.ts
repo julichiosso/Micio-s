@@ -6,31 +6,34 @@ export function armarLinkWhatsapp({
   items,
   nombre,
   total,
-  turnoAsignado,
+  demoraEstimada,
   pedidoId,
 }: {
   items: ItemCarrito[];
   nombre: string;
   total: number;
-  turnoAsignado?: string;
+  demoraEstimada?: string;
+  turnoAsignado?: string; // retrocompatibilidad
   horaRetiroDeseada?: string;
   pedidoId?: number;
 }) {
   const lineas = items.map(
     (item) =>
-      `- ${item.cantidad}x ${item.nombre} (${item.label}) - $${(
+      `• ${item.cantidad}x ${item.nombre} (${item.label}) - $${(
         item.precio * item.cantidad
       ).toLocaleString("es-AR")}`
   );
 
+  const detalleDemora = demoraEstimada || "";
+
   const mensaje = [
-    pedidoId ? `¡Hola! Quiero hacer un pedido (#${pedidoId}):` : "¡Hola! Quiero hacer un pedido:",
+    `¡Hola! Quiero hacer este pedido:`,
     "",
     ...lineas,
     "",
     `Total: $${total.toLocaleString("es-AR")}`,
     `Nombre: ${nombre}`,
-    ...(turnoAsignado ? [`Turno para retirar: ${turnoAsignado}`] : []),
+    ...(detalleDemora ? [`Retiro en el local (${detalleDemora})`] : [`Retiro en el local`]),
   ].join("\n");
 
   const mensajeCodificado = encodeURIComponent(mensaje);
