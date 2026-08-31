@@ -602,6 +602,5 @@ export function TurnosAdminView({ estadoInicial, turnosIniciales }: Props) {
         </section>
       </div>
     </>
-
-);
+  );
 }
