@@ -16,7 +16,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-[#141210] md:bg-gray-50 font-sans">
       {/* Mobile header: only visible below md */}
       <AdminMobileHeader />
 

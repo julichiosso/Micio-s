@@ -165,21 +165,21 @@ export function AdminMobileHeader() {
   }
 
   return (
-    <div className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-gray-200 px-3 py-2.5 flex items-center justify-between shadow-sm">
+    <div className="md:hidden sticky top-0 z-20 bg-[#141210]/95 backdrop-blur-md border-b border-white/[0.1] px-3 py-2.5 flex items-center justify-between shadow-sm">
       <div className="min-w-0 pr-1.5">
-        <div className="flex items-center gap-2">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none">
+        <div className="flex items-center gap-1.5">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 leading-none">
             Admin · Micio&apos;s
           </p>
           <Link
             href="/"
             target="_blank"
-            className="text-[10px] font-bold text-[#5e7700] hover:underline flex items-center gap-0.5 bg-[#c6f135]/20 px-1.5 py-0.5 rounded"
+            className="text-[10px] font-bold text-[#c6f135] hover:underline flex items-center gap-0.5 bg-[#c6f135]/20 border border-[#c6f135]/30 px-1.5 py-0.5 rounded"
           >
             Ver web ↗
           </Link>
         </div>
-        <p className="text-[16px] font-black text-gray-900 leading-tight mt-0.5 truncate">
+        <p className="text-[16px] font-black text-white leading-tight mt-0.5 truncate">
           {titulo}
         </p>
       </div>
@@ -188,8 +188,8 @@ export function AdminMobileHeader() {
           href="/admin/turnos"
           className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
             pathname.startsWith("/admin/turnos")
-              ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
-              : "border-gray-200 text-gray-600 bg-white"
+              ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
+              : "border-white/10 text-white/60 bg-white/[0.04]"
           }`}
         >
           Horarios
@@ -198,8 +198,8 @@ export function AdminMobileHeader() {
           href="/admin/productos"
           className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
             pathname.startsWith("/admin/productos")
-              ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
-              : "border-gray-200 text-gray-600 bg-white"
+              ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
+              : "border-white/10 text-white/60 bg-white/[0.04]"
           }`}
         >
           Productos
@@ -208,8 +208,8 @@ export function AdminMobileHeader() {
           href="/admin/secciones"
           className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
             pathname.startsWith("/admin/secciones")
-              ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
-              : "border-gray-200 text-gray-600 bg-white"
+              ? "bg-[#c6f135]/20 border-[#c6f135] text-[#c6f135]"
+              : "border-white/10 text-white/60 bg-white/[0.04]"
           }`}
         >
           Categorías
@@ -218,7 +218,7 @@ export function AdminMobileHeader() {
           type="button"
           onClick={handleLogout}
           disabled={saliendo}
-          className="text-[11px] px-2 py-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-red-600 hover:border-red-200 transition-colors disabled:opacity-50 font-medium"
+          className="text-[11px] px-2 py-1.5 rounded-lg border border-white/10 text-white/40 hover:text-red-400 hover:border-red-400/30 transition-colors disabled:opacity-50 font-medium"
         >
           Salir
         </button>
