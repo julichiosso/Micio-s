@@ -15,7 +15,25 @@ const horarios = [
 
 export default function HorariosToggle() {
   const [abierto, setAbierto] = useState(false);
+  const [localAbierto, setLocalAbierto] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function checkEstado() {
+      try {
+        const res = await fetch("/api/estado-turno");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data.abierto === "boolean") {
+            setLocalAbierto(data.abierto);
+          }
+        }
+      } catch (e) {
+        // Fallback silencioso
+      }
+    }
+    checkEstado();
+  }, []);
 
   // Cerrar al hacer clic afuera
   useEffect(() => {
@@ -54,9 +72,13 @@ export default function HorariosToggle() {
         aria-expanded={abierto}
         aria-label="Desplegar horarios de atención"
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-[#c6f135]" />
+        <span
+          className={`w-1.5 h-1.5 rounded-full ${
+            localAbierto ? "bg-[#c6f135]" : "bg-red-500"
+          }`}
+        />
         <span className="text-white/70 text-[13px] font-normal hover:text-white transition-colors">
-          Jueves a domingos, 20 a 23 hs
+          {localAbierto ? "Jueves a domingos, 20 a 23 hs" : "Cerrado en este momento"}
         </span>
         <IconChevronDown
           size={13}

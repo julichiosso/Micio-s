@@ -6,10 +6,16 @@ export function armarLinkWhatsapp({
   items,
   nombre,
   total,
+  turnoAsignado,
+  horaRetiroDeseada,
+  pedidoId,
 }: {
   items: ItemCarrito[];
   nombre: string;
   total: number;
+  turnoAsignado?: string;
+  horaRetiroDeseada?: string;
+  pedidoId?: number;
 }) {
   const lineas = items.map(
     (item) =>
@@ -19,12 +25,14 @@ export function armarLinkWhatsapp({
   );
 
   const mensaje = [
-    "¡Hola! Quiero hacer un pedido:",
+    pedidoId ? `¡Hola! Quiero hacer un pedido (#${pedidoId}):` : "¡Hola! Quiero hacer un pedido:",
     "",
     ...lineas,
     "",
     `Total: $${total.toLocaleString("es-AR")}`,
     `Nombre: ${nombre}`,
+    ...(horaRetiroDeseada ? [`Hora de retiro deseada: ${horaRetiroDeseada}`] : []),
+    ...(turnoAsignado ? [`🕒 ${turnoAsignado}`] : []),
   ].join("\n");
 
   const mensajeCodificado = encodeURIComponent(mensaje);

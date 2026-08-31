@@ -7,6 +7,16 @@ import { useState } from "react";
 
 const NAV = [
   {
+    href: "/admin/turnos",
+    label: "Horarios y Pedidos",
+    icon: (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    ),
+  },
+  {
     href: "/admin/productos",
     label: "Productos",
     icon: (
@@ -55,7 +65,7 @@ export function AdminSidebar() {
       {/* Navegación Principal */}
       <nav className="flex-1 px-3.5 py-4 flex flex-col gap-1">
         <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-3 mb-1">
-          Gestión del Catálogo
+          Operación y Catálogo
         </p>
 
         {NAV.map(({ href, label, icon }) => {
@@ -138,7 +148,9 @@ export function AdminMobileHeader() {
   const [saliendo, setSaliendo] = useState(false);
 
   const titulo =
-    pathname.startsWith("/admin/secciones")
+    pathname.startsWith("/admin/turnos")
+      ? "Horarios y Pedidos"
+      : pathname.startsWith("/admin/secciones")
       ? "Categorías"
       : pathname.startsWith("/admin/productos")
       ? "Productos"
@@ -158,12 +170,22 @@ export function AdminMobileHeader() {
         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none">
           Admin · Micio&apos;s
         </p>
-        <p className="text-[17px] font-black text-gray-900 leading-tight mt-0.5">{titulo}</p>
+        <p className="text-[16px] font-black text-gray-900 leading-tight mt-0.5">{titulo}</p>
       </div>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1">
+        <Link
+          href="/admin/turnos"
+          className={`text-[11.5px] px-2.5 py-1.5 rounded-lg border font-bold transition-all ${
+            pathname.startsWith("/admin/turnos")
+              ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
+              : "border-gray-200 text-gray-600 bg-white"
+          }`}
+        >
+          Horarios
+        </Link>
         <Link
           href="/admin/productos"
-          className={`text-[12.5px] px-3 py-1.5 rounded-lg border font-bold transition-all ${
+          className={`text-[11.5px] px-2.5 py-1.5 rounded-lg border font-bold transition-all ${
             pathname.startsWith("/admin/productos")
               ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
               : "border-gray-200 text-gray-600 bg-white"
@@ -173,7 +195,7 @@ export function AdminMobileHeader() {
         </Link>
         <Link
           href="/admin/secciones"
-          className={`text-[12.5px] px-3 py-1.5 rounded-lg border font-bold transition-all ${
+          className={`text-[11.5px] px-2.5 py-1.5 rounded-lg border font-bold transition-all ${
             pathname.startsWith("/admin/secciones")
               ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
               : "border-gray-200 text-gray-600 bg-white"
@@ -185,7 +207,7 @@ export function AdminMobileHeader() {
           type="button"
           onClick={handleLogout}
           disabled={saliendo}
-          className="text-[12px] px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-red-600 hover:border-red-200 transition-colors disabled:opacity-50 font-medium"
+          className="text-[11px] px-2 py-1.5 rounded-lg border border-gray-200 text-gray-400 hover:text-red-600 hover:border-red-200 transition-colors disabled:opacity-50 font-medium"
         >
           Salir
         </button>

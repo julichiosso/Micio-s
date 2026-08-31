@@ -78,3 +78,63 @@ export const preciosRelations = relations(precios, ({ one }) => ({
   }),
 }));
 
+// ==========================================
+// ESTADO EN VIVO DEL LOCAL (Singleton: id = 1)
+// ==========================================
+export const estadoLocal = pgTable("estado_local", {
+  id: serial("id").primaryKey(),
+  abierto: boolean("abierto").notNull().default(true),
+  mensajePersonalizado: text("mensaje_personalizado"), // Ej: "Demora de 30 min por alta demanda"
+  capacidadDefaultTurno: integer("capacidad_default_turno").notNull().default(7),
+  actualizadoEn: timestamp("actualizado_en").notNull().defaultNow(),
+});
+
+// ==========================================
+// TURNOS DE 15 MINUTOS
+// ==========================================
+export const turnos = pgTable(
+  "turnos",
+  {
+    id: serial("id").primaryKey(),
+    fecha: text("fecha").notNull(), // Formato YYYY-MM-DD (hora Argentina)
+    horaInicio: text("hora_inicio").notNull(), // Ej: "20:00"
+    horaFin: text("hora_fin").notNull(), // Ej: "20:15"
+    capacidad: integer("capacidad").notNull().default(7),
+    bloqueado: boolean("bloqueado").notNull().default(false), // Bloqueo manual por el dueño
+    creadoEn: timestamp("creado_en").notNull().defaultNow(),
+  },
+  (table) => [
+    unique("turno_fecha_hora_inicio_unico").on(table.fecha, table.horaInicio),
+  ]
+);
+
+// ==========================================
+// PEDIDOS ASOCIADOS A TURNOS
+// ==========================================
+export const pedidos = pgTable("pedidos", {
+  id: serial("id").primaryKey(),
+  turnoId: integer("turno_id").references(() => turnos.id, {
+    onDelete: "set null",
+  }),
+  fecha: text("fecha").notNull(), // YYYY-MM-DD
+  clienteNombre: text("cliente_nombre").notNull(),
+  clienteTelefono: text("cliente_telefono"),
+  horaRetiroDeseada: text("hora_retiro_deseada"),
+  total: integer("total").notNull(),
+  detalles: text("detalles").notNull(), // JSON o resumen de items
+  creadoEn: timestamp("creado_en").notNull().defaultNow(),
+});
+
+// Relaciones para Turnos y Pedidos
+export const turnosRelations = relations(turnos, ({ many }) => ({
+  pedidos: many(pedidos),
+}));
+
+export const pedidosRelations = relations(pedidos, ({ one }) => ({
+  turno: one(turnos, {
+    fields: [pedidos.turnoId],
+    references: [turnos.id],
+  }),
+}));
+
+

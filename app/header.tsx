@@ -6,6 +6,7 @@ import { IconMenu, IconCarrito, IconInstagram } from "./icons";
 import dynamic from "next/dynamic";
 import { getCarrito } from "@/lib/carrito";
 import Image from "next/image";
+import EstadoBanner from "./estado-banner";
 
 const Sidebar = dynamic(() => import("./sidebar"), { ssr: false });
 
@@ -60,55 +61,57 @@ export default function Header({ variante = "oscura", secciones = [] }: HeaderPr
       <div className="h-[60px]" />
 
       <div
-  className={`fixed top-0 inset-x-0 z-40 flex items-center justify-between px-5 pt-5 pb-3 transition-all duration-300 ease-out ${
-    scrolled
-      ? "bg-[#141210]/90 backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]"
-      : "bg-transparent"
-  }`}
->
-  {/* Izquierda: menú */}
-  <button
-    onClick={() => setSidebarAbierto(true)}
-    className={`${colorTexto} active:opacity-60 transition-opacity relative z-10`}
-    aria-label="Abrir menú"
-  >
-    <IconMenu size={20} />
-  </button>
+        className={`fixed top-0 inset-x-0 z-40 flex items-center justify-between px-5 pt-5 pb-3 transition-all duration-300 ease-out ${
+          scrolled
+            ? "bg-[#141210]/90 backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]"
+            : "bg-transparent"
+        }`}
+      >
+        {/* Izquierda: menú */}
+        <button
+          onClick={() => setSidebarAbierto(true)}
+          className={`${colorTexto} active:opacity-60 transition-opacity relative z-10`}
+          aria-label="Abrir menú"
+        >
+          <IconMenu size={20} />
+        </button>
 
-  {/* Centro: logo, centrado absoluto respecto a toda la barra */}
-  <div className="absolute left-1/2 -translate-x-1/2">
-    <Image
-      src="/micios_logo_white.svg"
-      alt="Micio's"
-      width={140}
-      height={40}
-      priority
-      className="h-6 w-auto"
-    />
-  </div>
+        {/* Centro: logo, centrado absoluto respecto a toda la barra */}
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <Image
+            src="/micios_logo_white.svg"
+            alt="Micio's"
+            width={140}
+            height={40}
+            priority
+            className="h-6 w-auto"
+          />
+        </div>
 
-  {/* Derecha: instagram + carrito, agrupados */}
-  <div className="flex items-center gap-4 relative z-10">
-    
-    <a  href="https://www.instagram.com/miciospizza/"
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`${colorTexto} active:opacity-60 transition-opacity`}
-      aria-label="Ver Instagram"
-    >
-      <IconInstagram size={20} />
-    </a>
+        {/* Derecha: instagram + carrito, agrupados */}
+        <div className="flex items-center gap-4 relative z-10">
+          <a
+            href="https://www.instagram.com/miciospizza/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${colorTexto} active:opacity-60 transition-opacity`}
+            aria-label="Ver Instagram"
+          >
+            <IconInstagram size={20} />
+          </a>
 
-    <Link href="/carrito" className={`relative ${colorTexto}`} aria-label="Ver carrito">
-      <IconCarrito size={20} />
-      {cantidadCarrito > 0 && (
-        <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#c6f135] text-[#141210] text-[9px] font-black flex items-center justify-center leading-none">
-          {cantidadCarrito}
-        </span>
-      )}
-    </Link>
-  </div>
-</div>
+          <Link href="/carrito" className={`relative ${colorTexto}`} aria-label="Ver carrito">
+            <IconCarrito size={20} />
+            {cantidadCarrito > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#c6f135] text-[#141210] text-[9px] font-black flex items-center justify-center leading-none">
+                {cantidadCarrito}
+              </span>
+            )}
+          </Link>
+        </div>
+      </div>
+
+      <EstadoBanner />
     </>
   );
 }
