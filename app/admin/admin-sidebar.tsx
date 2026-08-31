@@ -149,7 +149,7 @@ export function AdminMobileHeader() {
 
   const titulo =
     pathname.startsWith("/admin/turnos")
-      ? "Horarios y Pedidos"
+      ? "Horarios"
       : pathname.startsWith("/admin/secciones")
       ? "Categorías"
       : pathname.startsWith("/admin/productos")
@@ -165,14 +165,16 @@ export function AdminMobileHeader() {
   }
 
   return (
-    <div className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none">
-          Admin · Micio&apos;s
+    <div className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-gray-200 px-3 py-2.5 flex items-center justify-between shadow-sm">
+      <div className="min-w-0 pr-2">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none truncate">
+          Micio&apos;s
         </p>
-        <p className="text-[16px] font-black text-gray-900 leading-tight mt-0.5">{titulo}</p>
+        <p className="text-[16px] font-black text-gray-900 leading-tight mt-0.5 truncate">
+          {titulo}
+        </p>
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 shrink-0">
         <Link
           href="/admin/turnos"
           className={`text-[11.5px] px-2.5 py-1.5 rounded-lg border font-bold transition-all ${
