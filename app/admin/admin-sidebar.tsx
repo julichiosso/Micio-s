@@ -166,10 +166,19 @@ export function AdminMobileHeader() {
 
   return (
     <div className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-gray-200 px-3 py-2.5 flex items-center justify-between shadow-sm">
-      <div className="min-w-0 pr-2">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none truncate">
-          Admin · Micio&apos;s
-        </p>
+      <div className="min-w-0 pr-1.5">
+        <div className="flex items-center gap-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none">
+            Admin · Micio&apos;s
+          </p>
+          <Link
+            href="/"
+            target="_blank"
+            className="text-[10px] font-bold text-[#5e7700] hover:underline flex items-center gap-0.5 bg-[#c6f135]/20 px-1.5 py-0.5 rounded"
+          >
+            Ver web ↗
+          </Link>
+        </div>
         <p className="text-[16px] font-black text-gray-900 leading-tight mt-0.5 truncate">
           {titulo}
         </p>
@@ -177,7 +186,7 @@ export function AdminMobileHeader() {
       <div className="flex items-center gap-1 shrink-0">
         <Link
           href="/admin/turnos"
-          className={`text-[11.5px] px-2.5 py-1.5 rounded-lg border font-bold transition-all ${
+          className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
             pathname.startsWith("/admin/turnos")
               ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
               : "border-gray-200 text-gray-600 bg-white"
@@ -187,7 +196,7 @@ export function AdminMobileHeader() {
         </Link>
         <Link
           href="/admin/productos"
-          className={`text-[11.5px] px-2.5 py-1.5 rounded-lg border font-bold transition-all ${
+          className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
             pathname.startsWith("/admin/productos")
               ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
               : "border-gray-200 text-gray-600 bg-white"
@@ -197,7 +206,7 @@ export function AdminMobileHeader() {
         </Link>
         <Link
           href="/admin/secciones"
-          className={`text-[11.5px] px-2.5 py-1.5 rounded-lg border font-bold transition-all ${
+          className={`text-[11px] px-2 py-1.5 rounded-lg border font-bold transition-all ${
             pathname.startsWith("/admin/secciones")
               ? "bg-[#c6f135]/25 border-[#c6f135] text-[#3e4d00]"
               : "border-gray-200 text-gray-600 bg-white"
