@@ -178,7 +178,13 @@ export default function CarritoPage() {
             {/* Aviso si el local está cerrado */}
             {!estadoTurno.abierto && (
               <div className="bg-red-50 border border-red-200 text-red-800 rounded-2xl p-4 mb-5 flex items-start gap-3">
-                <span className="text-[18px] shrink-0">⚠️</span>
+                <div className="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
                 <div>
                   <p className="font-bold text-[14px]">Local cerrado en este momento</p>
                   <p className="text-[12.5px] text-red-700 mt-0.5">
@@ -192,23 +198,31 @@ export default function CarritoPage() {
             {/* Aviso o mensaje de alta demanda si el local está abierto */}
             {estadoTurno.abierto && estadoTurno.mensajePersonalizado && (
               <div className="bg-[#fff9e6] border border-[#f0df95] text-[#634e00] rounded-2xl p-3.5 mb-5 flex items-center gap-2.5">
-                <span className="text-[16px] shrink-0">📢</span>
+                <div className="w-6 h-6 rounded-full bg-[#fceba7] text-[#7a5e00] flex items-center justify-center shrink-0">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  </svg>
+                </div>
                 <p className="text-[12.5px] font-semibold leading-snug">
                   {estadoTurno.mensajePersonalizado}
                 </p>
               </div>
             )}
 
-            {/* Tarjeta de Turno Estimado en Tiempo Real */}
+            {/* Tarjeta de Turno / Horario Estimado en Tiempo Real */}
             {estadoTurno.abierto && (
               <div className="bg-white rounded-2xl p-4 border border-black/[0.06] mb-5 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-[#c6f135]/20 text-[#3e4d00] flex items-center justify-center font-bold text-[14px]">
-                      🕒
+                    <div className="w-8 h-8 rounded-full bg-[#c6f135]/20 text-[#3e4d00] flex items-center justify-center shrink-0">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
                     </div>
                     <div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-black/40">
+                      <span className="text-[10.5px] font-bold uppercase tracking-wider text-black/40">
                         Tiempo estimado de preparación
                       </span>
                       <p className="text-[14px] font-black text-black">

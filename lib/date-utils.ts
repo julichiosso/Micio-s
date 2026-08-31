@@ -69,7 +69,7 @@ export function isTurnoPasado(horaFin: string, fechaTurno?: string): boolean {
   return horaActual >= horaFin;
 }
 
-// Calcula una descripción amigable de la demora estimada para el cliente
+// Formatear demora estimada de forma natural e inteligente para el cliente
 export function formatearDemoraEstimada(horaInicioTurno: string): {
   minutosEspera: number;
   textoDemora: string;
@@ -81,19 +81,29 @@ export function formatearDemoraEstimada(horaInicioTurno: string): {
   const actTotalMin = hAct * 60 + mAct;
   const turnoTotalMin = hTurno * 60 + mTurno;
 
-  const diffMin = Math.max(0, turnoTotalMin - actTotalMin);
-  // Estimamos un tiempo de preparación base de 15-20 min sumado a la diferencia de turnos
-  const minEstimados = diffMin <= 0 ? 15 : diffMin + 15;
-
-  let textoDemora = "";
-  if (minEstimados <= 15) {
-    textoDemora = "Preparación inmediata (~15-20 min)";
-  } else {
-    textoDemora = `Turno de las ${horaInicioTurno} hs (~${minEstimados} min de espera)`;
+  // 1. Si el cliente pide ANTES de la apertura (ej: durante la tarde, antes de las 20:00)
+  if (actTotalMin < 20 * 60) {
+    return {
+      minutosEspera: 15,
+      textoDemora: `Para la apertura: horario ${horaInicioTurno} hs`,
+    };
   }
 
+  // 2. Si estamos dentro del horario de atención (20:00 en adelante)
+  const diffMin = Math.max(0, turnoTotalMin - actTotalMin);
+
+  // Si el turno asignado es el actual (o inicia en menos de 5 min)
+  if (diffMin <= 5) {
+    return {
+      minutosEspera: 15,
+      textoDemora: "Preparación estimada: ~15 a 20 min",
+    };
+  }
+
+  // Si el turno actual está lleno y pasa a un turno posterior
+  const esperaAprox = diffMin + 15;
   return {
-    minutosEspera: minEstimados,
-    textoDemora,
+    minutosEspera: esperaAprox,
+    textoDemora: `Horario asignado: ${horaInicioTurno} hs (~${esperaAprox} min de espera)`,
   };
 }

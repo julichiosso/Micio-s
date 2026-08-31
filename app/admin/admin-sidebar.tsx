@@ -142,8 +142,9 @@ export function AdminSidebar() {
 }
 
 // Header mobile para celulares
-export function AdminMobileHeader() {
-  const pathname = usePathname();
+export function AdminMobileHeader({ currentPath }: { currentPath?: string }) {
+  const routerPath = usePathname();
+  const pathname = currentPath || routerPath || "";
   const router = useRouter();
   const [saliendo, setSaliendo] = useState(false);
 
@@ -165,7 +166,10 @@ export function AdminMobileHeader() {
   }
 
   return (
-    <div className="md:hidden sticky top-0 z-20 bg-[#141210]/95 backdrop-blur-md border-b border-white/[0.1] px-3 py-2.5 flex items-center justify-between shadow-sm">
+    <div
+      suppressHydrationWarning
+      className="md:hidden sticky top-0 z-20 bg-[#141210]/95 backdrop-blur-md border-b border-white/[0.1] px-3 py-2.5 flex items-center justify-between shadow-sm"
+    >
       <div className="min-w-0 pr-1.5">
         <div className="flex items-center gap-1.5">
           <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 leading-none">
